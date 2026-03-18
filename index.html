@@ -244,8 +244,8 @@ html,body{min-height:100%;background:var(--bd);color:var(--cream);font-family:Jo
     <div class="login-logo">&#10022;</div>
     <div class="login-title">Event Dispatch</div>
     <div class="login-sub">Enter password to continue</div>
-    <input class="login-input" id="login-inp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Enter</button>
+    <input class="login-input" id="login-inp" type="password" placeholder="Password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Enter</button>
     <div class="login-err" id="login-err">Incorrect password. Try again.</div>
   </div>
 </div>
@@ -540,7 +540,7 @@ setTimeout(function() { t.classList.remove(“show”); }, 2500);
 }
 
 function doLogin() {
-var v = document.getElementById(“login-inp”).value;
+var v = document.getElementById(“login-inp”).value.trim();
 if (v === APP_PASS) {
 sessionStorage.setItem(“auth”, “1”);
 go(“screen-home”);
