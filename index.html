@@ -245,8 +245,14 @@ html,body{min-height:100%;background:var(--bd);color:var(--cream);font-family:Jo
     <div class="login-title">Event Dispatch</div>
     <div class="login-sub">Enter password to continue</div>
     <input class="login-input" id="login-inp" type="text" placeholder="Password"
-      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
-    <button class="login-btn" id="login-btn">Enter</button>
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+      oninput="document.getElementById('login-err').style.display='none'">
+    <button class="login-btn" id="login-btn" onclick="
+      var v=document.getElementById('login-inp').value.trim();
+      var p='Happenings@7866';
+      if(v===p){sessionStorage.setItem('auth','1');document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById('screen-home').classList.add('active');loadAll();}
+      else{document.getElementById('login-err').style.display='block';}
+    ">Enter</button>
     <div class="login-err" id="login-err">Incorrect password. Try again.</div>
   </div>
 </div>
