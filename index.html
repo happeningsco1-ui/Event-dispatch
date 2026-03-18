@@ -244,8 +244,9 @@ html,body{min-height:100%;background:var(--bd);color:var(--cream);font-family:Jo
     <div class="login-logo">&#10022;</div>
     <div class="login-title">Event Dispatch</div>
     <div class="login-sub">Enter password to continue</div>
-    <input class="login-input" id="login-inp" type="password" placeholder="Password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Enter</button>
+    <input class="login-input" id="login-inp" type="text" placeholder="Password"
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+    <button class="login-btn" id="login-btn">Enter</button>
     <div class="login-err" id="login-err">Incorrect password. Try again.</div>
   </div>
 </div>
@@ -540,7 +541,7 @@ setTimeout(function() { t.classList.remove(“show”); }, 2500);
 }
 
 function doLogin() {
-var v = document.getElementById(“login-inp”).value.trim();
+var v = document.getElementById(“login-inp”).value.trim().replace(/[\u200B-\u200D\uFEFF]/g, “”);
 if (v === APP_PASS) {
 sessionStorage.setItem(“auth”, “1”);
 go(“screen-home”);
@@ -1039,6 +1040,8 @@ b.paid = newPaid; hideLoad(); closeM(“pay-modal”); renderFin(); toast(“Pay
 }
 
 if (sessionStorage.getItem(“auth”) === “1”) { go(“screen-home”); loadAll(); }
+document.getElementById(“login-btn”).addEventListener(“click”, function() { doLogin(); });
+document.getElementById(“login-inp”).addEventListener(“keyup”, function(e) { if(e.key === “Enter”) doLogin(); });
 
 </script>
 </body>
