@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Event Dispatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bd:#1A0F08;--bd2:#231408;--bm:#3D2314;--bl:#5C3420;
+  --gold:#C9A84C;--gl:#E8C97A;--gdim:rgba(201,168,76,0.13);--gds:rgba(201,168,76,0.06);
+  --cream:#F0E6D3;--cm:#C4A882;--mut:#8B7355;
+  --brd:rgba(201,168,76,0.18);--brs:rgba(201,168,76,0.08);
+  --grn:#7BAF72;--red:#C96B5A;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:var(--bd);color:var(--cream);font-family:Jost,sans-serif;font-weight:300;}
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+.topbar{background:var(--bd2);border-bottom:1px solid var(--brd);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.tb-brand{display:flex;align-items:center;gap:10px;}
+.tb-logo{width:34px;height:34px;border-radius:9px;background:var(--bm);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;flex-shrink:0;}
+.tb-logo img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+.tb-title{font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;color:var(--cream);}
+.tb-sub{font-size:10px;color:var(--gold);letter-spacing:1.2px;text-transform:uppercase;}
+.tb-acts{display:flex;gap:7px;}
+.tbtn{background:var(--bm);border:1px solid var(--brd);color:var(--cream);padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;transition:all .2s;white-space:nowrap;}
+.tbtn:hover{border-color:var(--gold);color:var(--gold);}
+.tbtn.gold{background:linear-gradient(135deg,var(--gold),var(--gl));color:#1A0F08;border-color:transparent;font-weight:600;}
+#screen-login{background:radial-gradient(ellipse at 50% 30%,rgba(201,168,76,.1) 0%,transparent 60%),var(--bd);align-items:center;justify-content:center;}
+.login-box{width:100%;max-width:340px;padding:32px 24px;text-align:center;}
+.login-logo{width:64px;height:64px;border-radius:16px;background:var(--bm);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;box-shadow:0 8px 28px rgba(201,168,76,.18);}
+.login-title{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--mut);margin-bottom:28px;}
+.login-input{width:100%;background:var(--bm);border:1px solid var(--brs);color:var(--cream);padding:13px 16px;border-radius:10px;font-size:14px;font-family:Jost,sans-serif;outline:none;text-align:center;letter-spacing:2px;margin-bottom:14px;}
+.login-input:focus{border-color:var(--gold);}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gl));color:#1A0F08;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:Jost,sans-serif;}
+.login-err{font-size:12px;color:var(--red);margin-top:10px;display:none;}
+#screen-home{background:radial-gradient(ellipse at 15% 15%,rgba(201,168,76,.07) 0%,transparent 55%),var(--bd);}
+.home-hero{padding:48px 20px 22px;text-align:center;}
+.logo-wrap{width:70px;height:70px;border-radius:18px;background:var(--bm);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;box-shadow:0 8px 28px rgba(201,168,76,.18);cursor:pointer;position:relative;}
+.logo-wrap img{width:100%;height:100%;object-fit:cover;}
+.logo-wrap .uh{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;font-size:18px;border-radius:17px;}
+.logo-wrap:hover .uh{display:flex;}
+.biz-name{font-family:"Cormorant Garamond",serif;font-size:27px;font-weight:700;color:var(--cream);cursor:pointer;margin-bottom:3px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.biz-name:hover{color:var(--gold);}
+.biz-tag{font-size:11px;color:var(--mut);letter-spacing:.8px;}
+.home-cards{padding:8px 16px 32px;display:flex;flex-direction:column;gap:10px;}
+.hcard{background:var(--bd2);border:1px solid var(--brs);border-radius:13px;padding:17px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:all .22s;}
+.hcard:hover{border-color:var(--gold);transform:translateY(-1px);}
+.hcard-ic{width:44px;height:44px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.hct{font-size:14px;font-weight:500;color:var(--cream);margin-bottom:2px;}
+.hcd{font-size:11px;color:var(--mut);}
+.hca{margin-left:auto;color:var(--mut);font-size:20px;}
+.fbody{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.fsec{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--gold);padding-bottom:7px;border-bottom:1px solid var(--brs);margin-top:4px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fl{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);font-weight:500;}
+.fi,.fs{background:var(--bm);border:1px solid var(--brs);color:var(--cream);padding:11px 13px;border-radius:9px;font-size:13px;font-family:Jost,sans-serif;font-weight:300;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus,.fs:focus{border-color:var(--gold);}
+.fs option{background:var(--bm);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-save{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gl));color:#1A0F08;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:Jost,sans-serif;margin-top:6px;}
+.list{flex:1;padding:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+.bcard{background:var(--bd2);border:1px solid var(--brs);border-radius:12px;padding:15px;transition:border-color .2s;}
+.bcard:hover{border-color:var(--gold);}
+.bc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.bc-name{font-size:15px;font-weight:500;color:var(--cream);}
+.pill{font-size:10px;letter-spacing:.7px;text-transform:uppercase;font-weight:500;padding:3px 9px;border-radius:20px;}
+.p-confirmed{background:rgba(123,175,114,.12);color:var(--grn);}
+.p-inquiry{background:rgba(201,168,76,.12);color:var(--gold);}
+.p-completed{background:rgba(139,98,80,.18);color:var(--mut);}
+.bc-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.bc-mi{font-size:11px;color:var(--mut);}
+.bc-mi b{color:var(--cm);font-weight:400;}
+.bc-btns{display:flex;gap:7px;}
+.bc-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:Jost,sans-serif;border:1px solid var(--brd);background:var(--bm);color:var(--cream);transition:all .2s;text-align:center;}
+.bc-btn:hover{border-color:var(--gold);color:var(--gold);}
+.bc-btn.hi{background:var(--gdim);border-color:var(--gold);color:var(--gold);}
+.inv-section{margin-bottom:8px;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bm);border-radius:10px;cursor:pointer;border:1px solid var(--brs);transition:border-color .2s;}
+.sec-hdr:hover{border-color:var(--gold);}
+.sec-hdr.open{border-radius:10px 10px 0 0;border-bottom-color:var(--brd);}
+.sec-hdr-l{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--cream);}
+.sec-cnt{font-size:10px;color:var(--gold);background:var(--gdim);padding:2px 8px;border-radius:20px;}
+.sec-arr{font-size:13px;color:var(--mut);transition:transform .25s;}
+.sec-hdr.open .sec-arr{transform:rotate(90deg);}
+.sec-body{display:none;border:1px solid var(--brs);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+.sec-hdr.open + .sec-body{display:block;}
+.imcard{background:var(--bd2);border-bottom:1px solid var(--brs);padding:11px 13px;display:flex;align-items:center;gap:11px;}
+.imcard:last-child{border-bottom:none;}
+.imimg{width:48px;height:48px;border-radius:9px;background:var(--bm);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;overflow:hidden;cursor:pointer;position:relative;}
+.imimg img{width:100%;height:100%;object-fit:cover;}
+.imimg .uh{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;font-size:13px;border-radius:9px;}
+.imimg:hover .uh{display:flex;}
+.iminfo{flex:1;}
+.imname{font-size:13px;font-weight:500;color:var(--cream);}
+.imqty{font-size:11px;color:var(--gold);margin-top:2px;}
+.imdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:15px;padding:4px;}
+.imdel:hover{color:var(--red);}
+.add-fab{margin:0 14px 14px;padding:13px;background:var(--gdim);border:1px dashed var(--gold);color:var(--gold);border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:Jost,sans-serif;text-align:center;transition:all .2s;}
+.add-fab:hover{background:rgba(201,168,76,.2);}
+.dinfo{background:var(--bd2);border-bottom:1px solid var(--brd);padding:12px 16px;}
+.dl{font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;}
+.dn{font-size:17px;font-family:"Cormorant Garamond",serif;font-weight:600;color:var(--cream);margin:2px 0;}
+.dm{font-size:11px;color:var(--gold);}
+.cattabs{background:var(--bd2);border-bottom:1px solid var(--brs);padding:9px 14px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;}
+.cattabs::-webkit-scrollbar{display:none;}
+.ctab{flex-shrink:0;padding:6px 13px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid var(--brs);background:var(--bm);color:var(--mut);white-space:nowrap;}
+.ctab.active{background:var(--gold);color:#1A0F08;border-color:var(--gold);}
+.inv-grid{flex:1;padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;overflow-y:auto;align-content:start;}
+.icard{background:var(--bd2);border:1px solid var(--brs);border-radius:11px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
+.icard:hover{border-color:var(--gold);}
+.icard.incart{border-color:var(--gold);box-shadow:0 0 0 1px var(--gdim);}
+.icard.depleted{opacity:.4;pointer-events:none;}
+.ithumb{width:100%;aspect-ratio:4/3;background:var(--bm);display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;}
+.ithumb img{width:100%;height:100%;object-fit:cover;}
+.ibody{padding:8px 10px;}
+.iname{font-size:11px;font-weight:500;color:var(--cream);margin-bottom:2px;line-height:1.3;}
+.istock{font-size:10px;color:var(--mut);}
+.istock.low{color:var(--red);}
+.ibadge{position:absolute;top:6px;right:6px;background:var(--gold);color:#1A0F08;font-size:10px;font-weight:700;min-width:20px;height:20px;border-radius:10px;padding:0 5px;display:none;align-items:center;justify-content:center;}
+.icard.incart .ibadge{display:flex;}
+.cart-bar{background:linear-gradient(90deg,var(--bm),var(--bl));border-top:1px solid var(--gold);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.cart-bar:hover{opacity:.9;}
+.cb-l{display:flex;align-items:center;gap:9px;}
+.cb-cnt{background:var(--gold);color:#1A0F08;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.cb-txt{font-size:13px;font-weight:500;color:var(--cream);}
+.cb-r{font-size:12px;color:var(--gold);}
+.cart-list{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.citem{background:var(--bd2);border:1px solid var(--brs);border-radius:10px;padding:11px;display:flex;align-items:center;gap:11px;}
+.cimg{width:50px;height:50px;border-radius:9px;background:var(--bm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
+.cimg img{width:100%;height:100%;object-fit:cover;}
+.cinfo{flex:1;}
+.cname{font-size:13px;font-weight:500;color:var(--cream);margin-bottom:2px;}
+.ccat{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.7px;}
+.cqty{font-size:16px;font-weight:600;color:var(--gold);flex-shrink:0;}
+.crem{background:none;border:none;color:var(--mut);cursor:pointer;font-size:16px;padding:4px;}
+.crem:hover{color:var(--red);}
+.inspo-box{margin:0 14px 10px;background:var(--bd2);border:1px solid var(--brd);border-radius:11px;padding:13px;}
+.inspo-lbl{font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;}
+.inspo-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+.inspo-thumb{position:relative;width:90px;height:90px;border-radius:9px;overflow:hidden;flex-shrink:0;}
+.inspo-thumb img{width:100%;height:100%;object-fit:cover;}
+.inspo-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.inspo-add{border:1.5px dashed var(--brd);border-radius:9px;padding:14px;text-align:center;cursor:pointer;color:var(--mut);font-size:12px;transition:all .2s;}
+.inspo-add:hover{border-color:var(--gold);}
+.sheet-body{flex:1;padding:14px;overflow-y:auto;}
+.sh-hdr{background:var(--bd2);border:1px solid var(--brd);border-radius:12px;padding:15px;margin-bottom:16px;}
+.sh-biz{font-size:10px;color:var(--gold);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px;}
+.sh-name{font-family:"Cormorant Garamond",serif;font-size:22px;color:var(--cream);margin-bottom:10px;}
+.sh-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.sh-f{font-size:11px;color:var(--mut);}
+.sh-f span{color:var(--cream);display:block;font-size:12px;margin-top:1px;}
+.sh-inspo-lbl{font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin:10px 0 7px;}
+.sh-inspo-wrap{display:flex;flex-wrap:wrap;gap:8px;}
+.sh-inspo-wrap img{width:100%;max-width:320px;height:220px;object-fit:cover;border-radius:9px;}
+.sheet-cat{margin-bottom:16px;}
+.sheet-cat-hdr{font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:600;color:var(--cream);padding:8px 0 6px;border-bottom:1px solid var(--brd);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.sheet-cat-cnt{font-size:10px;color:var(--gold);background:var(--gdim);padding:2px 8px;border-radius:20px;font-family:Jost,sans-serif;font-weight:400;}
+.sheet-items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px;}
+.scard{background:var(--bm);border:1px solid var(--brs);border-radius:10px;overflow:hidden;}
+.scard-img{width:100%;aspect-ratio:1;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;}
+.scard-img img{width:100%;height:100%;object-fit:cover;}
+.scard-body{padding:7px 9px;}
+.scard-name{font-size:11px;font-weight:500;color:var(--cream);margin-bottom:2px;line-height:1.3;}
+.scard-qty{font-size:13px;font-weight:600;color:var(--gold);}
+.sheet-acts{padding:12px 14px;display:flex;gap:9px;}
+.btn-print{flex:1;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gl));color:#1A0F08;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:Jost,sans-serif;}
+.btn-back2{padding:13px 15px;background:var(--bm);color:var(--cream);border:1px solid var(--brd);border-radius:10px;font-size:13px;cursor:pointer;font-family:Jost,sans-serif;}
+.fin-wrap{flex:1;padding:14px;overflow-y:auto;}
+.fin-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.fstat{background:var(--bd2);border:1px solid var(--brs);border-radius:10px;padding:13px;}
+.fstat-lbl{font-size:10px;color:var(--mut);letter-spacing:.9px;text-transform:uppercase;margin-bottom:3px;}
+.fstat-val{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:600;color:var(--cream);}
+.fstat-val.g{color:var(--grn);}
+.fstat-val.r{color:var(--red);}
+.fcard{background:var(--bd2);border:1px solid var(--brs);border-radius:10px;padding:13px;margin-bottom:8px;}
+.fc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.fc-name{font-size:14px;font-weight:500;color:var(--cream);}
+.fc-date{font-size:11px;color:var(--mut);}
+.fc-row{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:3px;}
+.fc-row span{color:var(--cm);}
+.fc-bal{margin-top:7px;padding:7px 11px;border-radius:7px;font-size:12px;font-weight:500;display:flex;justify-content:space-between;}
+.fc-bal.owed{background:rgba(201,107,90,.1);color:var(--red);}
+.fc-bal.paid{background:rgba(123,175,114,.08);color:var(--grn);}
+.fc-paybtn{margin-top:7px;width:100%;padding:8px;background:var(--gdim);border:1px solid var(--gold);color:var(--gold);border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:Jost,sans-serif;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,5,3,.78);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--bd2);border:1px solid var(--brd);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;animation:slideUp .25s ease;max-height:90vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.mname{font-family:"Cormorant Garamond",serif;font-size:21px;color:var(--cream);margin-bottom:3px;}
+.msub{font-size:11px;color:var(--mut);margin-bottom:14px;}
+.mavail{font-size:12px;color:var(--gold);margin-bottom:14px;padding:7px 11px;background:var(--gds);border-radius:7px;}
+.mavail.warn{color:var(--red);background:rgba(201,107,90,.08);}
+.qty-row{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:20px;}
+.qbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--brd);background:var(--bm);color:var(--cream);font-size:21px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.qbtn:hover{border-color:var(--gold);color:var(--gold);}
+.qinp{background:transparent;border:none;outline:none;font-size:34px;font-weight:600;color:var(--cream);width:80px;text-align:center;font-family:Jost,sans-serif;}
+.mbtns{display:flex;gap:9px;}
+.mbtn-c{padding:12px 16px;background:var(--bm);color:var(--cream);border:1px solid var(--brd);border-radius:9px;font-size:13px;cursor:pointer;font-family:Jost,sans-serif;}
+.mbtn-a{flex:1;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gl));color:#1A0F08;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:Jost,sans-serif;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bm);border:1px solid var(--gold);color:var(--cream);padding:10px 20px;border-radius:20px;font-size:12px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+.loading{position:fixed;inset:0;background:rgba(26,15,8,.7);z-index:400;display:none;align-items:center;justify-content:center;}
+.loading.show{display:flex;}
+.spinner{width:36px;height:36px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:44px 18px;color:var(--mut);}
+.empty-ic{font-size:40px;margin-bottom:9px;}
+.empty-tx{font-size:13px;line-height:1.6;}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:#fff!important;color:#111!important;}
+  .screen{display:none!important;}
+  .noprint{display:none!important;}
+  #print-sheet{display:block!important;padding:12mm 14mm;max-width:210mm;margin:0 auto;font-family:Jost,sans-serif;}
+  .ps-biz{font-size:8pt;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:2pt;}
+  .ps-name{font-size:20pt;font-weight:700;color:#111;border-bottom:1.5pt solid #C9A84C;padding-bottom:5pt;margin-bottom:8pt;}
+  .ps-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4pt 10pt;margin-bottom:8pt;}
+  .ps-field{font-size:8pt;color:#888;}
+  .ps-field span{color:#111;display:block;font-size:9pt;font-weight:500;margin-top:1pt;}
+  .ps-inspo-title{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:5pt;border-top:0.5pt solid #eee;padding-top:7pt;}
+  .ps-inspo-wrap{display:flex;flex-wrap:wrap;gap:6pt;margin-bottom:10pt;}
+  .ps-inspo-wrap img{height:130pt;width:auto;max-width:180pt;object-fit:cover;border-radius:4pt;}
+  .ps-cat-block{margin-bottom:10pt;break-inside:avoid;}
+  .ps-cat-title{font-size:10pt;font-weight:700;color:#3d2314;border-bottom:1pt solid #C9A84C;padding-bottom:3pt;margin-bottom:5pt;}
+  .ps-items{display:grid;grid-template-columns:repeat(4,1fr);gap:5pt;}
+  .ps-item{border:0.5pt solid #ddd;border-radius:3pt;overflow:hidden;break-inside:avoid;}
+  .ps-item-img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+  .ps-item-emoji{width:100%;aspect-ratio:1;background:#f5f0e8;display:flex;align-items:center;justify-content:center;font-size:20pt;}
+  .ps-item-body{padding:3pt 5pt;}
+  .ps-item-name{font-size:7.5pt;font-weight:600;color:#111;line-height:1.2;margin-bottom:1pt;}
+  .ps-item-qty{font-size:9pt;font-weight:700;color:#C9A84C;}
+}
+#print-sheet{display:none;}
+</style>
+</head>
+<body>
+
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">&#10022;</div>
+    <div class="login-title">Event Dispatch</div>
+    <div class="login-sub">Enter password to continue</div>
+    <input class="login-input" id="login-inp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Enter</button>
+    <div class="login-err" id="login-err">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div id="screen-home" class="screen">
+  <div class="home-hero">
+    <div class="logo-wrap" id="logo-wrap" onclick="document.getElementById('logo-file').click()">
+      <span id="logo-emoji" style="font-size:28px;">&#10022;</span>
+      <img id="logo-img" src="" style="display:none;">
+      <div class="uh">&#128247;</div>
+    </div>
+    <input type="file" accept="image/*" id="logo-file" style="display:none" onchange="handleLogo(this)">
+    <div class="biz-name" id="biz-name-el" onclick="openNameModal()">
+      <span id="biz-name-txt">Your Business Name</span>
+      <span style="font-size:14px;color:var(--gold);">&#9998;</span>
+    </div>
+    <div class="biz-tag">Event Management &middot; Dispatch System</div>
+  </div>
+  <div class="home-cards">
+    <div class="hcard" onclick="go('screen-bookings')">
+      <div class="hcard-ic" style="background:rgba(123,175,114,.1);">&#128197;</div>
+      <div><div class="hct">Bookings</div><div class="hcd">Manage all your events</div></div>
+      <div class="hca">&#8250;</div>
+    </div>
+    <div class="hcard" onclick="go('screen-inv-mgr')">
+      <div class="hcard-ic" style="background:rgba(201,168,76,.1);">&#128230;</div>
+      <div><div class="hct">Inventory</div><div class="hcd">Add and manage items with photos</div></div>
+      <div class="hca">&#8250;</div>
+    </div>
+    <div class="hcard" onclick="goFinance()">
+      <div class="hcard-ic" style="background:rgba(201,107,90,.1);">&#128176;</div>
+      <div><div class="hct">Finance</div><div class="hcd">Track payments and balances</div></div>
+      <div class="hca">&#8250;</div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-bookings" class="screen">
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-logo"><span id="tb-logo-e">&#10022;</span><img id="tb-logo-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+      <div><div class="tb-title">Bookings</div><div class="tb-sub">All Events</div></div>
+    </div>
+    <div class="tb-acts">
+      <button class="tbtn gold" onclick="go('screen-new-booking')">+ New</button>
+      <button class="tbtn" onclick="go('screen-home')">&#8962;</button>
+    </div>
+  </div>
+  <div class="list" id="bookings-list"></div>
+</div>
+
+<div id="screen-new-booking" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">New Booking</div><div class="tb-sub">Event Details</div></div></div>
+    <button class="tbtn" onclick="go('screen-bookings')">&#8592; Back</button>
+  </div>
+  <div class="fbody">
+    <div class="fsec">Client Information</div>
+    <div class="fg"><div class="fl">Client Name</div><input class="fi" id="nb-name" placeholder="e.g. Ahmed Family"></div>
+    <div class="fg"><div class="fl">WhatsApp Number</div><input class="fi" id="nb-phone" type="tel" placeholder="+92 300 0000000"></div>
+    <div class="fg"><div class="fl">Instagram Handle</div><input class="fi" id="nb-insta" placeholder="@clienthandle"></div>
+    <div class="fsec">Event Details</div>
+    <div class="frow">
+      <div class="fg"><div class="fl">Event Date</div><input class="fi" id="nb-date" type="date"></div>
+      <div class="fg"><div class="fl">Event Type</div>
+        <select class="fs" id="nb-type">
+          <option>Nikkah</option><option>Engagement</option><option>Bridal Shower</option>
+          <option>Birthday</option><option>Mehendi / Mayoun / Dholki</option>
+          <option>Dua e Khair / Milaad</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><div class="fl">Venue / Location</div><input class="fi" id="nb-venue" placeholder="Hall name or address"></div>
+    <div class="frow">
+      <div class="fg"><div class="fl">Ready Time</div><input class="fi" id="nb-ready" type="time"></div>
+      <div class="fg"><div class="fl">Pickup Time</div><input class="fi" id="nb-pickup" type="time"></div>
+    </div>
+    <div class="fg"><div class="fl">Status</div><select class="fs" id="nb-status"><option>Inquiry</option><option>Confirmed</option></select></div>
+    <div class="fg"><div class="fl">Notes</div><input class="fi" id="nb-notes" placeholder="Special instructions..."></div>
+    <div class="fsec">Finance (Private)</div>
+    <div class="frow">
+      <div class="fg"><div class="fl">Total (PKR)</div><input class="fi" id="nb-total" type="number" placeholder="0"></div>
+      <div class="fg"><div class="fl">Advance Paid</div><input class="fi" id="nb-paid" type="number" placeholder="0"></div>
+    </div>
+    <button class="btn-save" onclick="saveBooking()">Save Booking</button>
+  </div>
+</div>
+
+<div id="screen-dispatch" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">Select Items</div><div class="tb-sub">Build Dispatch</div></div></div>
+    <button class="tbtn" onclick="go('screen-bookings')">&#8592; Back</button>
+  </div>
+  <div class="dinfo" id="dinfo"></div>
+  <div class="cattabs">
+    <div class="ctab active" onclick="filterCat('All',this)">All</div>
+    <div class="ctab" onclick="filterCat('Decor Rental',this)">Decor Rental</div>
+    <div class="ctab" onclick="filterCat('Backdrops',this)">Backdrops</div>
+    <div class="ctab" onclick="filterCat('Florals',this)">Florals</div>
+    <div class="ctab" onclick="filterCat('Crockery and Cutlery',this)">Crockery</div>
+    <div class="ctab" onclick="filterCat('Detailing',this)">Detailing</div>
+    <div class="ctab" onclick="filterCat('Setup',this)">Setup</div>
+    <div class="ctab" onclick="filterCat('Lighting',this)">Lighting</div>
+  </div>
+  <div class="inv-grid" id="inv-grid"></div>
+  <div class="cart-bar" id="cart-bar" onclick="go('screen-cart')" style="display:none;">
+    <div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Dispatch Cart</span></div>
+    <div class="cb-r">Review &#8594;</div>
+  </div>
+</div>
+
+<div id="screen-cart" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">Dispatch Cart</div><div class="tb-sub">Review Items</div></div></div>
+    <button class="tbtn" onclick="go('screen-dispatch')">&#8592; Edit</button>
+  </div>
+  <div class="inspo-box">
+    <div class="inspo-lbl">Setup Inspo / Reference Photos (max 10)</div>
+    <div class="inspo-thumbs" id="inspo-thumbs"></div>
+    <div class="inspo-add" id="inspo-add-btn" onclick="document.getElementById('inspo-file').click()">
+      <div style="font-size:22px;margin-bottom:4px;">+</div><div>Add inspo photo</div>
+    </div>
+    <input type="file" accept="image/*" id="inspo-file" style="display:none" onchange="handleInspo(this)">
+  </div>
+  <div class="cart-list" id="cart-list"></div>
+  <div style="padding:0 14px 14px;">
+    <button class="btn-save" onclick="generateSheet()">Generate Dispatch Sheet</button>
+  </div>
+</div>
+
+<div id="screen-sheet" class="screen">
+  <div class="topbar noprint">
+    <div class="tb-brand"><div><div class="tb-title">Dispatch Sheet</div><div class="tb-sub">Ready to Print</div></div></div>
+    <button class="tbtn" onclick="go('screen-bookings')">Done</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+  <div class="sheet-acts noprint">
+    <button class="btn-back2" onclick="go('screen-cart')">&#8592; Edit</button>
+    <button class="btn-print" onclick="window.print()">Print Sheet</button>
+  </div>
+</div>
+
+<div id="screen-inv-mgr" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">Inventory</div><div class="tb-sub">All Items</div></div></div>
+    <button class="tbtn" onclick="go('screen-home')">&#8962; Home</button>
+  </div>
+  <div class="list" id="imlist" style="gap:8px;"></div>
+  <div class="add-fab" onclick="openAddModal()">+ Add New Item</div>
+</div>
+
+<div id="screen-finance" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">Finance</div><div class="tb-sub">Payments</div></div></div>
+    <button class="tbtn" onclick="go('screen-home')">&#8962; Home</button>
+  </div>
+  <div class="fin-wrap"><div class="fin-stats" id="fin-stats"></div><div id="fin-list"></div></div>
+</div>
+
+<div class="overlay" id="qty-modal">
+  <div class="modal">
+    <div class="mname" id="m-name"></div>
+    <div class="msub" id="m-sub"></div>
+    <div class="mavail" id="m-avail"></div>
+    <div class="qty-row">
+      <button class="qbtn" onclick="chQty(-1)">&#8722;</button>
+      <input class="qinp" id="qty-inp" type="number" min="1" value="1">
+      <button class="qbtn" onclick="chQty(1)">+</button>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="closeM('qty-modal')">Cancel</button>
+      <button class="mbtn-a" onclick="confirmAdd()">Add to Dispatch</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="add-modal">
+  <div class="modal">
+    <div class="mname">Add Inventory Item</div>
+    <div style="height:12px;"></div>
+    <div class="fg" style="margin-bottom:11px;"><div class="fl">Item Name</div><input class="fi" id="ai-name" placeholder="e.g. Gold Tiffany Chair"></div>
+    <div class="fg" style="margin-bottom:11px;"><div class="fl">Category</div>
+      <select class="fs" id="ai-cat">
+        <option>Decor Rental</option><option>Backdrops</option><option>Florals</option>
+        <option>Crockery and Cutlery</option><option>Detailing</option><option>Setup</option><option>Lighting</option>
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:11px;"><div class="fl">Total Quantity in Stock</div><input class="fi" id="ai-qty" type="number" placeholder="100" min="1"></div>
+    <div class="fg" style="margin-bottom:18px;">
+      <div class="fl">Photo (optional)</div>
+      <input type="file" accept="image/*" id="ai-photo" style="display:none" onchange="handleItemPhoto(this)">
+      <div style="background:var(--bm);border:1px dashed var(--brd);border-radius:9px;padding:15px;text-align:center;cursor:pointer;color:var(--mut);font-size:12px;" onclick="document.getElementById('ai-photo').click()">
+        <div style="font-size:24px;margin-bottom:4px;" id="ai-photo-icon">&#128247;</div>
+        <div id="ai-photo-lbl">Tap to upload item photo</div>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="closeM('add-modal')">Cancel</button>
+      <button class="mbtn-a" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="name-modal">
+  <div class="modal">
+    <div class="mname">Business Name</div>
+    <div style="height:12px;"></div>
+    <div class="fg" style="margin-bottom:18px;">
+      <div class="fl">Enter your business name</div>
+      <input class="fi" id="name-inp" placeholder="e.g. Al Noor Events" style="font-size:15px;">
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="closeM('name-modal')">Cancel</button>
+      <button class="mbtn-a" onclick="saveName()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="pay-modal">
+  <div class="modal">
+    <div class="mname" id="pay-name"></div>
+    <div class="msub" id="pay-sub"></div>
+    <div class="fg" style="margin-bottom:18px;">
+      <div class="fl">Payment Received (PKR)</div>
+      <input class="fi" id="pay-amt" type="number" placeholder="Enter amount">
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="closeM('pay-modal')">Cancel</button>
+      <button class="mbtn-a" onclick="confirmPay()">Record Payment</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="fin-modal">
+  <div class="modal">
+    <div class="mname">Finance Access</div>
+    <div style="height:8px;"></div>
+    <div class="msub">This section is restricted.</div>
+    <div class="fg" style="margin-bottom:18px;">
+      <div class="fl">Finance Password</div>
+      <input class="fi" id="fin-inp" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkFinPass()">
+    </div>
+    <div style="font-size:12px;color:var(--red);margin-bottom:14px;display:none;" id="fin-err">Incorrect password.</div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="closeM('fin-modal')">Cancel</button>
+      <button class="mbtn-a" onclick="checkFinPass()">Enter</button>
+    </div>
+  </div>
+</div>
+<div class="loading" id="loading"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+<div id="print-sheet"></div><script>
+var SUPA_URL = "https://oqxlzyimondgwbqslibw.supabase.co";
+var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
+var APP_PASS = "Happenings@7866";
+var FIN_PASS = "Finance@7866";
+
+var INV = [];
+var BKN = [];
+var BIZ_NAME = localStorage.getItem(“ev_biz”) || “Your Business Name”;
+var BIZ_LOGO = localStorage.getItem(“ev_logo”) || null;
+var cart = {};
+var curBkg = null;
+var curInspos = [];
+var curItemPhoto = null;
+var modalItemId = null;
+var payBkgId = null;
+var CATS = [“Decor Rental”,“Backdrops”,“Florals”,“Crockery and Cutlery”,“Detailing”,“Setup”,“Lighting”];
+
+function supa(path, method, body) {
+var headers = {
+“apikey”: SUPA_KEY,
+“Authorization”: “Bearer “ + SUPA_KEY,
+“Content-Type”: “application/json”
+};
+if (method === “POST”) headers[“Prefer”] = “return=minimal”;
+if (method === “PATCH”) headers[“Prefer”] = “return=minimal”;
+return fetch(SUPA_URL + “/rest/v1/” + path, {
+method: method || “GET”,
+headers: headers,
+body: body ? JSON.stringify(body) : undefined
+}).then(function(r) {
+if (r.status >= 200 && r.status < 300) {
+return r.text().then(function(t) { return t ? JSON.parse(t) : {}; });
+}
+return r.text().then(function(t) { throw new Error(t); });
+});
+}
+
+function showLoad() { document.getElementById(“loading”).classList.add(“show”); }
+function hideLoad() { document.getElementById(“loading”).classList.remove(“show”); }
+function toast(msg) {
+var t = document.getElementById(“toast”);
+t.textContent = msg; t.classList.add(“show”);
+setTimeout(function() { t.classList.remove(“show”); }, 2500);
+}
+
+function doLogin() {
+var v = document.getElementById(“login-inp”).value;
+if (v === APP_PASS) {
+sessionStorage.setItem(“auth”, “1”);
+go(“screen-home”);
+loadAll();
+} else {
+document.getElementById(“login-err”).style.display = “block”;
+document.getElementById(“login-inp”).value = “”;
+}
+}
+
+function goFinance() {
+if (sessionStorage.getItem(“fin_auth”) === “1”) { go(“screen-finance”); return; }
+document.getElementById(“fin-inp”).value = “”;
+document.getElementById(“fin-err”).style.display = “none”;
+openM(“fin-modal”);
+}
+
+function checkFinPass() {
+if (document.getElementById(“fin-inp”).value === FIN_PASS) {
+sessionStorage.setItem(“fin_auth”, “1”);
+closeM(“fin-modal”);
+go(“screen-finance”);
+} else {
+document.getElementById(“fin-err”).style.display = “block”;
+document.getElementById(“fin-inp”).value = “”;
+}
+}
+
+function loadAll() {
+showLoad();
+Promise.all([
+supa(“inventory?order=created_at.asc”, “GET”),
+supa(“bookings?order=created_at.desc”, “GET”)
+]).then(function(res) {
+INV = Array.isArray(res[0]) ? res[0] : [];
+BKN = Array.isArray(res[1]) ? res[1].map(function(b) {
+b.dispatchItems = b.dispatch_items;
+return b;
+}) : [];
+hideLoad();
+initBiz();
+}).catch(function() { hideLoad(); toast(“Connection error. Check internet.”); });
+}
+
+function initBiz() {
+document.getElementById(“biz-name-txt”).textContent = BIZ_NAME;
+if (BIZ_LOGO) { applyLogo(BIZ_LOGO); }
+}
+
+function applyLogo(src) {
+document.getElementById(“logo-img”).src = src;
+document.getElementById(“logo-img”).style.display = “block”;
+document.getElementById(“logo-emoji”).style.display = “none”;
+document.getElementById(“tb-logo-img”).src = src;
+document.getElementById(“tb-logo-img”).style.display = “block”;
+document.getElementById(“tb-logo-e”).style.display = “none”;
+}
+
+function handleLogo(inp) {
+var f = inp.files[0]; if (!f) return;
+readF(f, function(src) {
+BIZ_LOGO = src; localStorage.setItem(“ev_logo”, src); applyLogo(src);
+});
+}
+
+function openNameModal() {
+document.getElementById(“name-inp”).value = BIZ_NAME;
+openM(“name-modal”);
+setTimeout(function() { document.getElementById(“name-inp”).focus(); }, 300);
+}
+
+function saveName() {
+var n = document.getElementById(“name-inp”).value.trim();
+if (!n) return;
+BIZ_NAME = n; localStorage.setItem(“ev_biz”, n);
+document.getElementById(“biz-name-txt”).textContent = n;
+closeM(“name-modal”);
+}
+
+function go(id) {
+document.querySelectorAll(”.screen”).forEach(function(s) { s.classList.remove(“active”); });
+document.getElementById(id).classList.add(“active”);
+if (id === “screen-bookings”) renderBKN();
+if (id === “screen-inv-mgr”) renderINV();
+if (id === “screen-dispatch”) renderGrid(“All”);
+if (id === “screen-cart”) renderCart();
+if (id === “screen-finance”) renderFin();
+}
+
+function readF(f, cb) { var r = new FileReader(); r.onload = function(e) { cb(e.target.result); }; r.readAsDataURL(f); }
+
+function fmtDate(d) {
+if (!d) return “-”;
+var dt = new Date(d + “T00:00:00”);
+return dt.toLocaleDateString(“en-PK”, {day:“numeric”,month:“short”,year:“numeric”});
+}
+
+function fmtTime(t) {
+if (!t) return “-”;
+var p = t.split(”:”); var h = parseInt(p[0]);
+return (h % 12 || 12) + “:” + p[1] + “ “ + (h >= 12 ? “PM” : “AM”);
+}
+
+function openM(id) { document.getElementById(id).classList.add(“open”); }
+function closeM(id) { document.getElementById(id).classList.remove(“open”); }
+
+document.querySelectorAll(”.overlay”).forEach(function(el) {
+el.addEventListener(“click”, function(e) { if (e.target === this) this.classList.remove(“open”); });
+});
+
+function renderBKN() {
+var el = document.getElementById(“bookings-list”);
+if (!BKN.length) { el.innerHTML = “<div class="empty"><div class="empty-ic">📅</div><div class="empty-tx">No bookings yet.<br>Tap + New to add your first.</div></div>”; return; }
+var h = “”;
+BKN.forEach(function(b) {
+h += “<div class="bcard">”;
+h += “<div class="bc-top"><div class="bc-name">” + b.name + “</div><div class="pill p-” + b.status.toLowerCase() + “">” + b.status + “</div></div>”;
+h += “<div class="bc-meta">”;
+h += “<div class="bc-mi">📅 <b>” + fmtDate(b.date) + “</b></div>”;
+h += “<div class="bc-mi">🎉 <b>” + b.type + “</b></div>”;
+if (b.venue) h += “<div class="bc-mi">📍 <b>” + b.venue + “</b></div>”;
+if (b.ready) h += “<div class="bc-mi">Ready <b>” + fmtTime(b.ready) + “</b></div>”;
+if (b.pickup) h += “<div class="bc-mi">Pickup <b>” + fmtTime(b.pickup) + “</b></div>”;
+h += “</div>”;
+h += “<div class="bc-btns">”;
+h += “<div class="bc-btn hi" onclick="openDispatch(’” + b.id + “’)">🚚 Dispatch</div>”;
+h += “<div class="bc-btn" onclick="delBKN(’” + b.id + “’)">🗑 Delete</div>”;
+h += “</div></div>”;
+});
+el.innerHTML = h;
+}
+
+function saveBooking() {
+var name = document.getElementById(“nb-name”).value.trim();
+var date = document.getElementById(“nb-date”).value;
+if (!name || !date) { alert(“Please enter client name and date.”); return; }
+var b = {
+id: “b” + Date.now(), name: name, date: date,
+phone: document.getElementById(“nb-phone”).value,
+insta: document.getElementById(“nb-insta”).value,
+type: document.getElementById(“nb-type”).value,
+venue: document.getElementById(“nb-venue”).value,
+ready: document.getElementById(“nb-ready”).value,
+pickup: document.getElementById(“nb-pickup”).value,
+status: document.getElementById(“nb-status”).value,
+notes: document.getElementById(“nb-notes”).value,
+total: parseFloat(document.getElementById(“nb-total”).value) || 0,
+paid: parseFloat(document.getElementById(“nb-paid”).value) || 0,
+dispatch_items: null
+};
+showLoad();
+supa(“bookings”, “POST”, b).then(function() {
+b.dispatchItems = null;
+BKN.unshift(b); hideLoad();
+[“nb-name”,“nb-phone”,“nb-insta”,“nb-date”,“nb-venue”,“nb-ready”,“nb-pickup”,“nb-notes”,“nb-total”,“nb-paid”].forEach(function(id) { document.getElementById(id).value = “”; });
+toast(“Booking saved!”);
+go(“screen-bookings”);
+}).catch(function(err) { hideLoad(); alert(“Error: “ + err.message); });
+}
+
+function delBKN(id) {
+if (!confirm(“Delete this booking?”)) return;
+showLoad();
+supa(“bookings?id=eq.” + id, “DELETE”).then(function() {
+BKN = BKN.filter(function(b) { return b.id !== id; });
+hideLoad(); renderBKN(); toast(“Deleted.”);
+}).catch(function() { hideLoad(); toast(“Error deleting.”); });
+}
+
+function availQty(itemId, date, exId) {
+var item = INV.find(function(i) { return i.id === itemId; });
+if (!item) return 0;
+if (!date) return item.qty;
+var used = 0;
+BKN.forEach(function(b) {
+if (b.date === date && b.id !== exId && b.dispatchItems) {
+b.dispatchItems.forEach(function(d) { if (d.itemId === itemId) used += d.qty; });
+}
+});
+return Math.max(0, item.qty - used);
+}
+
+function openDispatch(bkgId) {
+cart = {}; curInspos = [];
+curBkg = BKN.find(function(b) { return b.id === bkgId; });
+if (!curBkg) { alert(“Booking not found.”); return; }
+if (curBkg.dispatchItems) { curBkg.dispatchItems.forEach(function(d) { cart[d.itemId] = d.qty; }); }
+var meta = fmtDate(curBkg.date) + “ - “ + curBkg.type;
+if (curBkg.venue) meta += “ - “ + curBkg.venue;
+if (curBkg.ready) meta += “ - Ready “ + fmtTime(curBkg.ready);
+if (curBkg.pickup) meta += “ - Pickup “ + fmtTime(curBkg.pickup);
+document.getElementById(“dinfo”).innerHTML = “<div class="dl">Dispatch for</div><div class="dn">” + curBkg.name + “</div><div class="dm">” + meta + “</div>”;
+go(“screen-dispatch”);
+}
+
+function filterCat(cat, el) {
+document.querySelectorAll(”.ctab”).forEach(function(t) { t.classList.remove(“active”); });
+el.classList.add(“active”); renderGrid(cat);
+}
+
+function renderGrid(cat) {
+var grid = document.getElementById(“inv-grid”);
+var items = (cat === “All”) ? INV : INV.filter(function(i) { return i.cat === cat; });
+if (!items.length) { grid.innerHTML = “<div style="grid-column:1/-1" class="empty"><div class="empty-ic">📦</div><div class="empty-tx">No items here.<br>Add from Inventory.</div></div>”; updateBar(); return; }
+var h = “”;
+items.forEach(function(item) {
+var inCart = cart[item.id] || 0;
+var avail = availQty(item.id, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+var depleted = (avail <= 0 && !inCart);
+var imgH = item.photo ? “<img src="” + item.photo + “" alt="">” : “📦”;
+var lowC = (!depleted && avail < 10) ? “ low” : “”;
+h += “<div class="icard” + (inCart > 0 ? “ incart” : “”) + (depleted ? “ depleted” : “”) + “" onclick="openQtyModal(’” + item.id + “’)"> “;
+h += “<div class="ithumb">” + imgH + “</div>”;
+h += “<div class="ibody"><div class="iname">” + item.name + “</div>”;
+h += “<div class="istock” + lowC + “">” + (depleted ? “Fully Booked” : avail + “ available”) + “</div></div>”;
+h += “<div class="ibadge">” + inCart + “</div></div>”;
+});
+grid.innerHTML = h; updateBar();
+}
+
+function openQtyModal(itemId) {
+modalItemId = itemId;
+var item = INV.find(function(i) { return i.id === itemId; });
+var avail = availQty(itemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+var already = cart[itemId] || 0;
+document.getElementById(“m-name”).textContent = item.name;
+document.getElementById(“m-sub”).textContent = item.cat + “ - “ + item.qty + “ total in stock”;
+var av = document.getElementById(“m-avail”);
+av.textContent = “Available on this date: “ + avail;
+av.className = “mavail” + (avail < 5 ? “ warn” : “”);
+var inp = document.getElementById(“qty-inp”);
+inp.value = already || 1; inp.max = avail + already;
+openM(“qty-modal”);
+}
+
+function chQty(d) {
+var inp = document.getElementById(“qty-inp”);
+var avail = availQty(modalItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+var max = avail + (cart[modalItemId] || 0);
+inp.value = Math.max(1, Math.min(max, (parseInt(inp.value) || 1) + d));
+}
+
+function confirmAdd() {
+var qty = parseInt(document.getElementById(“qty-inp”).value) || 1;
+var avail = availQty(modalItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+var max = avail + (cart[modalItemId] || 0);
+if (qty > max) { alert(“Only “ + max + “ available on this date.”); return; }
+cart[modalItemId] = qty; closeM(“qty-modal”);
+var t = document.querySelector(”.ctab.active”); renderGrid(t ? t.textContent.trim() : “All”);
+}
+
+function updateBar() {
+var n = Object.keys(cart).length;
+document.getElementById(“cart-bar”).style.display = n > 0 ? “flex” : “none”;
+document.getElementById(“cart-cnt”).textContent = n;
+}
+
+function handleInspo(inp) {
+var f = inp.files[0]; if (!f) return;
+if (curInspos.length >= 10) { alert(“Maximum 10 inspo photos.”); return; }
+readF(f, function(src) { curInspos.push(src); renderInspoThumbs(); inp.value = “”; });
+}
+
+function renderInspoThumbs() {
+var el = document.getElementById(“inspo-thumbs”);
+var h = “”;
+curInspos.forEach(function(src, idx) {
+h += “<div class="inspo-thumb"><img src="” + src + “"><button class="inspo-del" onclick="removeInspo(” + idx + “)">x</button></div>”;
+});
+el.innerHTML = h;
+document.getElementById(“inspo-add-btn”).style.display = curInspos.length >= 10 ? “none” : “block”;
+}
+
+function removeInspo(idx) { curInspos.splice(idx, 1); renderInspoThumbs(); }
+
+function renderCart() {
+renderInspoThumbs();
+var el = document.getElementById(“cart-list”);
+var keys = Object.keys(cart);
+if (!keys.length) { el.innerHTML = “<div class="empty"><div class="empty-ic">🛒</div><div class="empty-tx">Cart is empty.</div></div>”; return; }
+var h = “”;
+keys.forEach(function(id) {
+var item = INV.find(function(i) { return i.id === id; }); if (!item) return;
+var imgH = item.photo ? “<img src="” + item.photo + “">” : “📦”;
+h += “<div class="citem"><div class="cimg">” + imgH + “</div>”;
+h += “<div class="cinfo"><div class="cname">” + item.name + “</div><div class="ccat">” + item.cat + “</div></div>”;
+h += “<div class="cqty">x” + cart[id] + “</div>”;
+h += “<button class="crem" onclick="removeFromCart(’” + id + “’)">✕</button></div>”;
+});
+el.innerHTML = h;
+}
+
+function removeFromCart(id) { delete cart[id]; renderCart(); updateBar(); }
+
+function generateSheet() {
+if (!Object.keys(cart).length) { alert(“Add at least one item first.”); return; }
+var di = []; Object.keys(cart).forEach(function(id) { di.push({itemId: id, qty: cart[id]}); });
+if (curBkg) {
+curBkg.dispatchItems = di;
+supa(“bookings?id=eq.” + curBkg.id, “PATCH”, {dispatch_items: di});
+}
+var b = curBkg;
+var h = “”;
+h += “<div class="sh-hdr">”;
+h += “<div class="sh-biz">” + BIZ_NAME + “ - Dispatch Sheet</div>”;
+h += “<div class="sh-name">” + b.name + “</div>”;
+h += “<div class="sh-meta">”;
+h += “<div class="sh-f">Date<span>” + fmtDate(b.date) + “</span></div>”;
+h += “<div class="sh-f">Event<span>” + b.type + “</span></div>”;
+h += “<div class="sh-f">Venue<span>” + (b.venue || “-”) + “</span></div>”;
+h += “<div class="sh-f">Contact<span>” + (b.phone || “-”) + “</span></div>”;
+h += “<div class="sh-f">Ready<span>” + fmtTime(b.ready) + “</span></div>”;
+h += “<div class="sh-f">Pickup<span>” + fmtTime(b.pickup) + “</span></div>”;
+if (b.notes) h += “<div class="sh-f" style="grid-column:1/-1">Notes<span>” + b.notes + “</span></div>”;
+h += “</div>”;
+if (curInspos.length > 0) {
+h += “<div class="sh-inspo-lbl">Setup Reference Photos</div><div class="sh-inspo-wrap">”;
+curInspos.forEach(function(src) { h += “<img src="” + src + “">”; });
+h += “</div>”;
+}
+h += “</div>”;
+CATS.forEach(function(cat) {
+var items = Object.keys(cart).map(function(id) { return INV.find(function(i) { return i.id === id; }); }).filter(function(item) { return item && item.cat === cat; });
+if (!items.length) return;
+h += “<div class="sheet-cat">”;
+h += “<div class="sheet-cat-hdr">” + cat + “<span class="sheet-cat-cnt">” + items.length + “</span></div>”;
+h += “<div class="sheet-items-grid">”;
+items.forEach(function(item) {
+var imgH = item.photo ? “<img src="” + item.photo + “">” : “📦”;
+h += “<div class="scard"><div class="scard-img">” + imgH + “</div>”;
+h += “<div class="scard-body"><div class="scard-name">” + item.name + “</div><div class="scard-qty">Qty: “ + cart[item.id] + “</div></div></div>”;
+});
+h += “</div></div>”;
+});
+document.getElementById(“sheet-body”).innerHTML = h;
+var ps = “”;
+ps += “<div class="ps-biz">” + BIZ_NAME + “ - Dispatch Sheet</div>”;
+ps += “<div class="ps-name">” + b.name + “</div>”;
+ps += “<div class="ps-meta">”;
+ps += “<div class="ps-field">Date<span>” + fmtDate(b.date) + “</span></div>”;
+ps += “<div class="ps-field">Event<span>” + b.type + “</span></div>”;
+ps += “<div class="ps-field">Venue<span>” + (b.venue || “-”) + “</span></div>”;
+ps += “<div class="ps-field">Contact<span>” + (b.phone || “-”) + “</span></div>”;
+ps += “<div class="ps-field">Ready<span>” + fmtTime(b.ready) + “</span></div>”;
+ps += “<div class="ps-field">Pickup<span>” + fmtTime(b.pickup) + “</span></div>”;
+if (b.notes) ps += “<div class="ps-field" style="grid-column:1/-1">Notes<span>” + b.notes + “</span></div>”;
+ps += “</div>”;
+if (curInspos.length > 0) {
+ps += “<div class="ps-inspo-title">Setup Reference Photos</div><div class="ps-inspo-wrap">”;
+curInspos.forEach(function(src) { ps += “<img src="” + src + “">”; });
+ps += “</div>”;
+}
+CATS.forEach(function(cat) {
+var items = Object.keys(cart).map(function(id) { return INV.find(function(i) { return i.id === id; }); }).filter(function(item) { return item && item.cat === cat; });
+if (!items.length) return;
+ps += “<div class="ps-cat-block"><div class="ps-cat-title">” + cat + “ (” + items.length + “)</div><div class="ps-items">”;
+items.forEach(function(item) {
+ps += “<div class="ps-item">”;
+if (item.photo) { ps += “<img class="ps-item-img" src="” + item.photo + “">”; }
+else { ps += “<div class="ps-item-emoji">📦</div>”; }
+ps += “<div class="ps-item-body"><div class="ps-item-name">” + item.name + “</div><div class="ps-item-qty">Qty: “ + cart[item.id] + “</div></div></div>”;
+});
+ps += “</div></div>”;
+});
+document.getElementById(“print-sheet”).innerHTML = ps;
+go(“screen-sheet”);
+}
+
+function renderINV() {
+var el = document.getElementById(“imlist”);
+if (!INV.length) { el.innerHTML = “<div class="empty"><div class="empty-ic">📦</div><div class="empty-tx">No items yet.</div></div>”; return; }
+var h = “”;
+CATS.forEach(function(cat) {
+var items = INV.filter(function(i) { return i.cat === cat; });
+if (!items.length) return;
+var sid = “s” + cat.replace(/[^a-zA-Z0-9]/g, “”);
+h += “<div class="inv-section">”;
+h += “<div class="sec-hdr open" id="hdr” + sid + “" onclick="togSec(’” + sid + “’)"> “;
+h += “<div class="sec-hdr-l"><span>” + cat + “</span><span class="sec-cnt">” + items.length + “</span></div>”;
+h += “<span class="sec-arr">›</span></div>”;
+h += “<div class="sec-body" id="bdy” + sid + “">”;
+items.forEach(function(item) {
+var imgH = item.photo ? “<img src="” + item.photo + “">” : “📦”;
+h += “<div class="imcard">”;
+h += “<div class="imimg" onclick="document.getElementById(‘upd” + item.id + “’).click()">” + imgH;
+h += “<div class="uh">📷</div>”;
+h += “<input type="file" accept="image/*" id="upd” + item.id + “" style="display:none" onchange="updPhoto(’” + item.id + “’,this)"></div>”;
+h += “<div class="iminfo"><div class="imname">” + item.name + “</div><div class="imqty">Stock: “ + item.qty + “</div></div>”;
+h += “<button class="imdel" onclick="delItem(’” + item.id + “’)">🗑</button></div>”;
+});
+h += “</div></div>”;
+});
+el.innerHTML = h;
+}
+
+function togSec(sid) {
+var hdr = document.getElementById(“hdr” + sid);
+var bdy = document.getElementById(“bdy” + sid);
+if (!hdr || !bdy) return;
+hdr.classList.toggle(“open”);
+bdy.style.display = hdr.classList.contains(“open”) ? “block” : “none”;
+}
+
+function openAddModal() {
+curItemPhoto = null;
+document.getElementById(“ai-name”).value = “”;
+document.getElementById(“ai-qty”).value = “”;
+document.getElementById(“ai-photo-icon”).innerHTML = “📷”;
+document.getElementById(“ai-photo-lbl”).textContent = “Tap to upload item photo”;
+openM(“add-modal”);
+}
+
+function handleItemPhoto(inp) {
+var f = inp.files[0]; if (!f) return;
+readF(f, function(src) {
+curItemPhoto = src;
+document.getElementById(“ai-photo-icon”).innerHTML = “<img src="” + src + “" style="width:48px;height:48px;object-fit:cover;border-radius:7px;">”;
+document.getElementById(“ai-photo-lbl”).textContent = “Photo added”;
+});
+}
+
+function saveItem() {
+var name = document.getElementById(“ai-name”).value.trim();
+var qty = parseInt(document.getElementById(“ai-qty”).value) || 0;
+if (!name) { alert(“Please enter item name.”); return; }
+var item = { id: “i” + Date.now(), name: name, qty: qty, cat: document.getElementById(“ai-cat”).value, photo: curItemPhoto };
+showLoad();
+supa(“inventory”, “POST”, item).then(function() {
+INV.push(item); hideLoad(); closeM(“add-modal”); renderINV(); toast(“Item saved!”);
+}).catch(function(err) { hideLoad(); alert(“Error: “ + err.message); });
+}
+
+function updPhoto(id, inp) {
+var f = inp.files[0]; if (!f) return;
+readF(f, function(src) {
+var item = INV.find(function(i) { return i.id === id; });
+if (!item) return;
+item.photo = src;
+showLoad();
+supa(“inventory?id=eq.” + id, “PATCH”, {photo: src}).then(function() {
+hideLoad(); renderINV(); toast(“Photo updated!”);
+}).catch(function() { hideLoad(); toast(“Error updating photo.”); });
+});
+}
+
+function delItem(id) {
+if (!confirm(“Remove this item?”)) return;
+showLoad();
+supa(“inventory?id=eq.” + id, “DELETE”).then(function() {
+INV = INV.filter(function(i) { return i.id !== id; });
+hideLoad(); renderINV(); toast(“Item removed.”);
+}).catch(function() { hideLoad(); toast(“Error deleting.”); });
+}
+
+function renderFin() {
+var rev = 0, rec = 0;
+BKN.forEach(function(b) { rev += (b.total || 0); rec += (b.paid || 0); });
+document.getElementById(“fin-stats”).innerHTML =
+“<div class="fstat"><div class="fstat-lbl">Total Revenue</div><div class="fstat-val">PKR “ + rev.toLocaleString() + “</div></div>” +
+“<div class="fstat"><div class="fstat-lbl">Received</div><div class="fstat-val g">PKR “ + rec.toLocaleString() + “</div></div>” +
+“<div class="fstat"><div class="fstat-lbl">Outstanding</div><div class="fstat-val r">PKR “ + (rev-rec).toLocaleString() + “</div></div>” +
+“<div class="fstat"><div class="fstat-lbl">Bookings</div><div class="fstat-val">” + BKN.length + “</div></div>”;
+if (!BKN.length) { document.getElementById(“fin-list”).innerHTML = “<div class="empty"><div class="empty-ic">💰</div><div class="empty-tx">No records yet.</div></div>”; return; }
+var h = “”;
+BKN.forEach(function(b) {
+var bal = (b.total || 0) - (b.paid || 0);
+h += “<div class="fcard">”;
+h += “<div class="fc-top"><div class="fc-name">” + b.name + “</div><div class="fc-date">” + fmtDate(b.date) + “</div></div>”;
+h += “<div class="fc-row"><span>Total</span><span>PKR “ + (b.total||0).toLocaleString() + “</span></div>”;
+h += “<div class="fc-row"><span>Received</span><span>PKR “ + (b.paid||0).toLocaleString() + “</span></div>”;
+h += “<div class="fc-bal “ + (bal > 0 ? “owed” : “paid”) + “"><span>” + (bal > 0 ? “Balance Due” : “Fully Paid”) + “</span><span>” + (bal > 0 ? “PKR “ + bal.toLocaleString() : “”) + “</span></div>”;
+if (bal > 0) h += “<button class="fc-paybtn" onclick="openPay(’” + b.id + “’)">+ Record Payment</button>”;
+h += “</div>”;
+});
+document.getElementById(“fin-list”).innerHTML = h;
+}
+
+function openPay(id) {
+payBkgId = id;
+var b = BKN.find(function(x) { return x.id === id; });
+document.getElementById(“pay-name”).textContent = b.name;
+document.getElementById(“pay-sub”).textContent = “Balance: PKR “ + ((b.total||0)-(b.paid||0)).toLocaleString();
+document.getElementById(“pay-amt”).value = “”;
+openM(“pay-modal”);
+}
+
+function confirmPay() {
+var amt = parseFloat(document.getElementById(“pay-amt”).value) || 0;
+if (!amt) { alert(“Enter a valid amount.”); return; }
+var b = BKN.find(function(x) { return x.id === payBkgId; });
+var newPaid = (b.paid || 0) + amt;
+showLoad();
+supa(“bookings?id=eq.” + b.id, “PATCH”, {paid: newPaid}).then(function() {
+b.paid = newPaid; hideLoad(); closeM(“pay-modal”); renderFin(); toast(“Payment recorded!”);
+}).catch(function() { hideLoad(); toast(“Error saving payment.”); });
+}
+
+if (sessionStorage.getItem(“auth”) === “1”) { go(“screen-home”); loadAll(); }
+
+</script>
+</body>
+</html>
