@@ -1508,8 +1508,7 @@ function renderDesk(id) {
 // ── LOGIN ──────────────────────────────────────────────────────────────────
 document.getElementById("l-btn").addEventListener("click", function() {
   var v = document.getElementById("l-inp").value.trim();
-  if(v===AP) { sessionStorage.setItem("auth","1"); initLayout(); go("s-dash"); loadAll(); }
-  else { document.getElementById("l-err").style.display="block"; }
+  if(v===AP) { sessionStorage.setItem("auth","1"); var lx=document.getElementById("s-login"); if(lx){lx.style.cssText="";lx.style.display="none";} initLayout(); go("s-dash"); loadAll(); } else { document.getElementById("l-err").style.display="block"; }
 });
 document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.key==="Enter") document.getElementById("l-btn").click(); });
 
@@ -2428,11 +2427,10 @@ document.getElementById("pkg-cancel").addEventListener("click",function(){cM("pk
 
 // ── FINANCE ───────────────────────────────────────────────────────────────────
 function goFin() {
-  if(sessionStorage.getItem("fin_auth")==="1"){go("s-fin");return;}
   document.getElementById("fin-inp").value=""; document.getElementById("fin-err").style.display="none"; oM("fin-modal");
 }
 document.getElementById("fin-confirm").addEventListener("click",function(){
-  if(document.getElementById("fin-inp").value.trim()===FP){sessionStorage.setItem("fin_auth","1");cM("fin-modal");go("s-fin");}
+  if(document.getElementById("fin-inp").value.trim()===FP){cM("fin-modal");go("s-fin");}
   else{document.getElementById("fin-err").style.display="block";}
 });
 document.getElementById("fin-cancel").addEventListener("click",function(){cM("fin-modal");});
@@ -2859,7 +2857,6 @@ document.querySelectorAll(".overlay").forEach(function(el){
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 initLayout();
-if(sessionStorage.getItem("auth")==="1"){go("s-dash");loadAll();}
 
 } catch(e) { console.warn("Init:", e.message); }</script>
 </body>
