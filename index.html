@@ -28,12 +28,12 @@
   --mob-brs: rgba(201,168,76,0.08);
   --grn: #6B9E63;
   --red: #B85C4A;
-  --desk-bg: #F0E8DC;
+  --desk-bg: #F5EFE6;
   --desk-bg2: #EDE4D6;
   --desk-sidebar: #1A0F08;
   --desk-card: #FFFFFF;
-  --desk-text: #0F0905;
-  --desk-mut: #5A4530;
+  --desk-text: #2C1A0E;
+  --desk-mut: #8B7355;
   --desk-brd: rgba(44,26,14,0.12);
   --desk-brs: rgba(44,26,14,0.06);
 }
@@ -330,7 +330,8 @@ body {background:#0F0905;color:#F0E6D3;}
     min-height: 100vh;
   }
 
-  /* Hide mobile elements */
+  /* Hide ALL mobile screens on desktop */
+  .screen { display: none !important; }
   .bnav { display: none !important; }
   .topbar { display: none !important; }
 
@@ -539,7 +540,7 @@ body {background:#0F0905;color:#F0E6D3;}
     border-radius: 12px;
     box-shadow: 0 1px 4px rgba(44,26,14,.05);
   }
-  .bc-name { color: var(--desk-text); font-size: 16px; }
+  .bc-name { color: var(--desk-text); font-size: 15px; }
   .bc-mi { color: var(--desk-mut); }
   .bc-mi b { color: #8B6914; }
   .bcbtn { background: var(--desk-bg2); border-color: var(--desk-brd); color: var(--desk-text); }
@@ -786,9 +787,14 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni on" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -802,9 +808,14 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni on" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni on" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni on" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -825,9 +836,14 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni on" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni on" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -835,13 +851,8 @@ body {background:#0F0905;color:#F0E6D3;}
 </div>
 
 <div id="s-new-bkn" class="screen">
-  <div class="topbar"><div class="tb-brand"><div><div class="tb-title" id="nb-step-title">New Booking</div><div class="tb-sub" id="nb-step-sub">Step 1 of 3 — Booking Details</div></div></div>
+  <div class="topbar"><div class="tb-brand"><div><div class="tb-title">New Booking</div><div class="tb-sub">Event Details</div></div></div>
     <button class="tbtn" id="back-new-bkn">&#8592; Back</button>
-  </div>
-  <div style="display:flex;gap:4px;padding:10px 14px 0;background:var(--mob-bg2,#1A0F08);">
-    <div style="flex:1;height:3px;border-radius:2px;background:var(--gold);" id="step-bar-1"></div>
-    <div style="flex:1;height:3px;border-radius:2px;background:var(--mob-brs);" id="step-bar-2"></div>
-    <div style="flex:1;height:3px;border-radius:2px;background:var(--mob-brs);" id="step-bar-3"></div>
   </div>
   <div class="fbody">
     <div class="fsec">Client Information</div>
@@ -860,112 +871,8 @@ body {background:#0F0905;color:#F0E6D3;}
     </div>
     <div class="fg"><div class="fl">Venue / Location</div><input class="fi" id="nb-venue" placeholder="Hall name or address"></div>
     <div class="frow">
-      <div class="fg"><div class="fl">Ready Time</div>
-        <select class="fs" id="nb-ready">
-          <option value="">Select time</option>
-          <option value="00:00">12:00 AM</option>
-          <option value="00:30">12:30 AM</option>
-          <option value="01:00">1:00 AM</option>
-          <option value="01:30">1:30 AM</option>
-          <option value="02:00">2:00 AM</option>
-          <option value="02:30">2:30 AM</option>
-          <option value="03:00">3:00 AM</option>
-          <option value="03:30">3:30 AM</option>
-          <option value="04:00">4:00 AM</option>
-          <option value="04:30">4:30 AM</option>
-          <option value="05:00">5:00 AM</option>
-          <option value="05:30">5:30 AM</option>
-          <option value="06:00">6:00 AM</option>
-          <option value="06:30">6:30 AM</option>
-          <option value="07:00">7:00 AM</option>
-          <option value="07:30">7:30 AM</option>
-          <option value="08:00">8:00 AM</option>
-          <option value="08:30">8:30 AM</option>
-          <option value="09:00">9:00 AM</option>
-          <option value="09:30">9:30 AM</option>
-          <option value="10:00">10:00 AM</option>
-          <option value="10:30">10:30 AM</option>
-          <option value="11:00">11:00 AM</option>
-          <option value="11:30">11:30 AM</option>
-          <option value="12:00">12:00 PM</option>
-          <option value="12:30">12:30 PM</option>
-          <option value="13:00">1:00 PM</option>
-          <option value="13:30">1:30 PM</option>
-          <option value="14:00">2:00 PM</option>
-          <option value="14:30">2:30 PM</option>
-          <option value="15:00">3:00 PM</option>
-          <option value="15:30">3:30 PM</option>
-          <option value="16:00">4:00 PM</option>
-          <option value="16:30">4:30 PM</option>
-          <option value="17:00">5:00 PM</option>
-          <option value="17:30">5:30 PM</option>
-          <option value="18:00">6:00 PM</option>
-          <option value="18:30">6:30 PM</option>
-          <option value="19:00">7:00 PM</option>
-          <option value="19:30">7:30 PM</option>
-          <option value="20:00">8:00 PM</option>
-          <option value="20:30">8:30 PM</option>
-          <option value="21:00">9:00 PM</option>
-          <option value="21:30">9:30 PM</option>
-          <option value="22:00">10:00 PM</option>
-          <option value="22:30">10:30 PM</option>
-          <option value="23:00">11:00 PM</option>
-          <option value="23:30">11:30 PM</option>
-        </select>
-      </div>
-      <div class="fg"><div class="fl">Pickup Time</div>
-        <select class="fs" id="nb-pickup">
-          <option value="">Select time</option>
-          <option value="00:00">12:00 AM</option>
-          <option value="00:30">12:30 AM</option>
-          <option value="01:00">1:00 AM</option>
-          <option value="01:30">1:30 AM</option>
-          <option value="02:00">2:00 AM</option>
-          <option value="02:30">2:30 AM</option>
-          <option value="03:00">3:00 AM</option>
-          <option value="03:30">3:30 AM</option>
-          <option value="04:00">4:00 AM</option>
-          <option value="04:30">4:30 AM</option>
-          <option value="05:00">5:00 AM</option>
-          <option value="05:30">5:30 AM</option>
-          <option value="06:00">6:00 AM</option>
-          <option value="06:30">6:30 AM</option>
-          <option value="07:00">7:00 AM</option>
-          <option value="07:30">7:30 AM</option>
-          <option value="08:00">8:00 AM</option>
-          <option value="08:30">8:30 AM</option>
-          <option value="09:00">9:00 AM</option>
-          <option value="09:30">9:30 AM</option>
-          <option value="10:00">10:00 AM</option>
-          <option value="10:30">10:30 AM</option>
-          <option value="11:00">11:00 AM</option>
-          <option value="11:30">11:30 AM</option>
-          <option value="12:00">12:00 PM</option>
-          <option value="12:30">12:30 PM</option>
-          <option value="13:00">1:00 PM</option>
-          <option value="13:30">1:30 PM</option>
-          <option value="14:00">2:00 PM</option>
-          <option value="14:30">2:30 PM</option>
-          <option value="15:00">3:00 PM</option>
-          <option value="15:30">3:30 PM</option>
-          <option value="16:00">4:00 PM</option>
-          <option value="16:30">4:30 PM</option>
-          <option value="17:00">5:00 PM</option>
-          <option value="17:30">5:30 PM</option>
-          <option value="18:00">6:00 PM</option>
-          <option value="18:30">6:30 PM</option>
-          <option value="19:00">7:00 PM</option>
-          <option value="19:30">7:30 PM</option>
-          <option value="20:00">8:00 PM</option>
-          <option value="20:30">8:30 PM</option>
-          <option value="21:00">9:00 PM</option>
-          <option value="21:30">9:30 PM</option>
-          <option value="22:00">10:00 PM</option>
-          <option value="22:30">10:30 PM</option>
-          <option value="23:00">11:00 PM</option>
-          <option value="23:30">11:30 PM</option>
-        </select>
-      </div>
+      <div class="fg"><div class="fl">Ready Time</div><input class="fi" id="nb-ready" type="time" step="1800"></div>
+      <div class="fg"><div class="fl">Pickup Time</div><input class="fi" id="nb-pickup" type="time" step="1800"></div>
     </div>
     <div class="fg"><div class="fl">Notes</div><input class="fi" id="nb-notes" placeholder="Special instructions..."></div>
     <div class="fsec">External Elements</div>
@@ -983,53 +890,8 @@ body {background:#0F0905;color:#F0E6D3;}
       <div class="fg"><div class="fl">Total (PKR)</div><input class="fi" id="nb-total" type="number" placeholder="0"></div>
       <div class="fg"><div class="fl">Advance Paid</div><input class="fi" id="nb-paid" type="number" placeholder="0"></div>
     </div>
-    <button class="btn-save" id="nb-next-btn">Next — Event Details &#8594;</button>
-    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="save-bkn-later-btn">Save Only (Skip Details)</button>
-  </div>
-
-  <!-- STEP 2: EVENT DETAILS -->
-  <div id="nb-step2" style="display:none;" class="fbody">
-    <div class="fsec">Event Discussion Notes</div>
-    <div class="fg">
-      <textarea class="fi" id="nb-ed-notes" placeholder="Color palette, special requests, table setup, client preferences..." style="min-height:120px;resize:vertical;"></textarea>
-    </div>
-    <div class="fsec">Inspo & Reference Photos</div>
-    <div class="inspo-box" style="margin-top:6px;">
-      <div class="inspo-thumbs" id="nb-ed-thumbs"></div>
-      <div class="inspo-add" id="nb-ed-add"><div style="font-size:18px;margin-bottom:3px;">+</div><div>Add Photo</div></div>
-      <input type="file" accept="image/*" id="nb-ed-file" style="display:none" multiple>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:16px;">
-      <button style="flex:1;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;" id="nb-back-step2">&#8592; Back</button>
-      <button class="btn-save" style="flex:2;" id="nb-next-step2">Next — Select Inventory &#8594;</button>
-    </div>
-    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="nb-skip-step2">Skip — Save Booking Only</button>
-  </div>
-
-  <!-- STEP 3: INVENTORY -->
-  <div id="nb-step3" style="display:none;">
-    <div class="cattabs" id="nb-reserve-cattabs">
-      <div class="ctab on" data-cat="All">All</div>
-      <div class="ctab" data-cat="Decor Rental">Decor</div>
-      <div class="ctab" data-cat="Backdrops">Backdrops</div>
-      <div class="ctab" data-cat="Florals">Florals</div>
-      <div class="ctab" data-cat="Crockery and Cutlery">Crockery</div>
-      <div class="ctab" data-cat="Detailing">Detailing</div>
-      <div class="ctab" data-cat="Setup">Setup</div>
-      <div class="ctab" data-cat="Lighting">Lighting</div>
-    </div>
-    <div class="inv-grid" id="nb-reserve-grid"></div>
-    <div style="padding:12px;">
-      <div class="cart-bar" id="nb-reserve-bar" style="display:none;border-radius:10px;margin-bottom:8px;">
-        <div class="cb-l"><span class="cb-cnt" id="nb-reserve-cnt">0</span><span class="cb-txt">Items Selected</span></div>
-        <div class="cb-r"></div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button style="flex:1;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;" id="nb-back-step3">&#8592; Back</button>
-        <button class="btn-save" style="flex:2;" id="nb-confirm-booking">Confirm &amp; Save Booking &#10003;</button>
-      </div>
-      <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="nb-skip-step3">Save Without Inventory</button>
-    </div>
+    <button class="btn-save" id="save-bkn-btn">Save &amp; Reserve Inventory</button>
+    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="save-bkn-later-btn">Save Only — Reserve Inventory Later</button>
   </div>
 </div>
 
@@ -1050,9 +912,14 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -1140,9 +1007,14 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
-    <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni on" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni on" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -1180,69 +1052,17 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni on" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
     <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
-  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+  </div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
-  </div>
-</div>
-
-<!-- EVENT DETAILS -->
-<div id="s-event-details" class="screen">
-  <div class="topbar">
-    <div class="tb-brand"><div><div class="tb-title">Event Details</div><div class="tb-sub" id="ed-sub">Discussion &amp; Inspos</div></div></div>
-    <button class="tbtn" id="skip-event-details">Skip &#8594;</button>
-  </div>
-  <div class="fbody" id="event-details-body" style="padding-bottom:80px;">
-    <div class="fg"><div class="fl">Event Discussion Notes</div>
-      <textarea class="fi" id="ed-notes" placeholder="Color palette, special requests, table setup, anything discussed with client..." style="min-height:100px;resize:vertical;"></textarea>
-    </div>
-    <div class="fg" style="margin-top:12px;">
-      <div class="fl">Inspo / Reference Photos</div>
-      <div class="inspo-box" style="margin-top:6px;">
-        <div class="inspo-thumbs" id="ed-inspo-thumbs"></div>
-        <div class="inspo-add" id="ed-inspo-add"><div style="font-size:18px;margin-bottom:3px;">+</div><div>Add inspo photo</div></div>
-        <input type="file" accept="image/*" id="ed-inspo-file" style="display:none" multiple>
-      </div>
-    </div>
-    <button class="btn-save" style="margin-top:16px;" id="save-event-details-btn">Save &amp; Reserve Inventory &#8594;</button>
-  </div>
-</div>
-
-<!-- INVOICE BUILDER -->
-<div id="s-invoice" class="screen">
-  <div class="topbar">
-    <div class="tb-brand"><div><div class="tb-title">Invoice</div><div class="tb-sub">Add Line Items</div></div></div>
-    <button class="tbtn" id="back-invoice">&#8592; Back</button>
-  </div>
-  <div class="fbody" id="invoice-screen-body"></div>
-</div>
-
-<!-- INVOICE PREVIEW -->
-<div id="s-invoice-preview" class="screen">
-  <div class="topbar noprint">
-    <div class="tb-brand"><div><div class="tb-title">Invoice</div><div class="tb-sub">Ready to Print</div></div></div>
-    <button class="tbtn" id="back-invoice-preview">&#8592; Edit</button>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding:14px;" id="invoice-preview-body"></div>
-  <div style="padding:12px;display:flex;gap:8px;" class="noprint">
-    <button class="btn-print" id="invoice-print-btn" style="flex:1;">&#128424; Print Invoice</button>
-    <button class="tbtn" id="invoice-whatsapp-btn" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25d366;padding:11px 14px;">&#128172; WhatsApp</button>
-  </div>
-</div>
-
-<!-- MEDIA GALLERY -->
-<div id="s-media" class="screen">
-  <div class="topbar"><div class="tb-brand"><div><div class="tb-title">Event Gallery</div><div class="tb-sub">Photos &amp; References</div></div></div></div>
-  <div style="flex:1;overflow-y:auto;padding:14px;" id="media-body"></div>
-  <div class="bnav">
-    <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
-    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
-    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
-    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
-    <div class="ni on" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
   </div>
 </div>
 
@@ -1335,14 +1155,8 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="mname">Staff Members</div>
     <div class="msub">Manage your team list</div>
     <div id="staff-list-el" style="margin-bottom:14px;"></div>
-    <div style="margin-bottom:8px;">
-      <select class="fs" id="staff-role-sel" style="margin-bottom:8px;">
-        <option>Florist</option><option>Labour</option><option>Supervisor</option><option>Driver</option><option>Other</option>
-      </select>
-    </div>
-    <div id="staff-form-area"></div>
     <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <input class="fi" id="staff-name-inp" placeholder="Enter name" style="flex:1;">
+      <input class="fi" id="staff-name-inp" placeholder="Enter staff name" style="flex:1;">
       <button class="mbtn-a" id="staff-add-btn" style="flex:none;padding:10px 14px;">Add</button>
     </div>
     <div class="mbtns">
@@ -1404,14 +1218,35 @@ body {background:#0F0905;color:#F0E6D3;}
   </div>
 </div>
 
+<!-- MEDIA ADD MODAL -->
+<div class="overlay" id="media-add-modal">
+  <div class="modal">
+    <div class="mname">Add to Gallery</div>
+    <div style="height:8px;"></div>
+    <div id="media-preview" style="margin-bottom:12px;border-radius:8px;overflow:hidden;max-height:200px;"></div>
+    <div class="fg" style="margin-bottom:10px;"><div class="fl">Title</div><input class="fi" id="media-title-inp" placeholder="e.g. Nikkah Setup 2026"></div>
+    <div class="fg" style="margin-bottom:10px;"><div class="fl">Category</div>
+      <select class="fs" id="media-cat-sel">
+        <option>Nikkah</option><option>Engagement</option><option>Bridal Shower</option>
+        <option>Birthday</option><option>Mehendi</option><option>Backdrop</option>
+        <option>Florals</option><option>Setup</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:16px;"><div class="fl">Tags (comma separated)</div><input class="fi" id="media-tags-inp" placeholder="e.g. dusty rose, floral, elegant"></div>
+    <div class="mbtns">
+      <button class="mbtn-c" onclick="cM('media-add-modal')">Cancel</button>
+      <button class="mbtn-a" id="media-save-btn">Save to Gallery</button>
+    </div>
+  </div>
+</div>
+
 <div class="loading" id="loading"><div class="spinner"></div></div>
 <div class="toast" id="toast"></div>
 <div id="print-sheet"></div>
 <input type="file" accept="image/*" id="logo-file" style="display:none">
 <input type="file" accept="image/*" id="desk-logo-file" style="display:none">
 
-<script>try {
-var AP="12345678", FP="12345678";
+<script>var AP="12345678", FP="12345678";
 var INV=[], BKN=[];
 var BN=localStorage.getItem("biz_n")||"Happenings.co";
 var BL=localStorage.getItem("biz_l")||null;
@@ -1425,8 +1260,10 @@ var invoiceLines=[], bknCounter=parseInt(localStorage.getItem("ev_bkn_counter")|
 var CATS=["Decor Rental","Backdrops","Florals","Crockery and Cutlery","Detailing","Setup","Lighting"];
 var CAT_SUBS={"Decor Rental":["Basic","Fancy","Premium"],"Florals":["White","Pink","Mixed","Leaves","Other"],"Lighting":["Basic","Fancy","Outdoor"],"Backdrops":["Floral","Fairy Lights","Custom","Printed"]};
 var COSTS=["Transport","Labour","Night","Light","Printing","Balloons","Rental","Fresh Floral","Misc"];
-var STAFF_LIST=JSON.parse(localStorage.getItem("ev_staff")||"[]");
 var STAFF_ROLES=["Florist","Labour","Supervisor","Driver","Other"];
+var STAFF_LIST=JSON.parse(localStorage.getItem("ev_staff")||"[]");
+var invoiceLines=[], invoiceBkgId=null;
+var STAFF_LIST=JSON.parse(localStorage.getItem("ev_staff")||"[]");
 var MEDIA=JSON.parse(localStorage.getItem("ev_media")||"[]");
 var mediaFilter="All";
 var PACKAGES=JSON.parse(localStorage.getItem("ev_pkgs")||"[]");
@@ -1436,21 +1273,31 @@ var SU="https://oqxlzyimondgwbqslibw.supabase.co";
 var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
 
 function db(path, method, body) {
-  var headers = {
-    "apikey": SK,
-    "Authorization": "Bearer " + SK,
-    "Content-Type": "application/json"
-  };
-  if (method === "POST" || method === "PATCH") headers["Prefer"] = "return=minimal";
-  return fetch(SU + "/rest/v1/" + path, {
-    method: method || "GET",
-    headers: headers,
-    body: body ? JSON.stringify(body) : undefined
-  }).then(function(r) {
-    if (r.status >= 200 && r.status < 300) {
-      return r.text().then(function(t) { return t ? JSON.parse(t) : {}; });
+  var headers={"apikey":SK,"Authorization":"Bearer "+SK,"Content-Type":"application/json"};
+  if(method==="POST"||method==="PATCH") headers["Prefer"]="return=minimal";
+  return fetch(SU+"/rest/v1/"+path,{method:method||"GET",headers:headers,body:body?JSON.stringify(body):undefined})
+    .then(function(r){return r.text().then(function(t){if(r.ok)return t?JSON.parse(t):{};throw new Error(t);});});
+}
+
+function db_ls(path, method, body) {
+  return new Promise(function(resolve) {
+    var id = path.indexOf("eq.") > -1 ? path.split("eq.")[1] : null;
+    if (method === "POST") {
+      if (path === "bookings") { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); a.push(body); localStorage.setItem("ev_bkns",JSON.stringify(a)); }
+      else if (path === "inventory") { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); a.push(body); localStorage.setItem("ev_inv",JSON.stringify(a)); }
+    } else if (method === "PATCH") {
+      if (path.indexOf("bookings") === 0) { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); a=a.map(function(x){return x.id===id?Object.assign({},x,body):x;}); localStorage.setItem("ev_bkns",JSON.stringify(a)); }
+      else if (path.indexOf("inventory") === 0) { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); a=a.map(function(x){return x.id===id?Object.assign({},x,body):x;}); localStorage.setItem("ev_inv",JSON.stringify(a)); }
+    } else if (method === "DELETE") {
+      if (path.indexOf("bookings") === 0) { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); localStorage.setItem("ev_bkns",JSON.stringify(a.filter(function(x){return x.id!==id;}))); }
+      else if (path.indexOf("inventory") === 0) { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); localStorage.setItem("ev_inv",JSON.stringify(a.filter(function(x){return x.id!==id;}))); }
+    } else {
+      if (path.indexOf("inventory") === 0) resolve(JSON.parse(localStorage.getItem("ev_inv")||"[]"));
+      else if (path.indexOf("bookings") === 0) resolve(JSON.parse(localStorage.getItem("ev_bkns")||"[]"));
+      else resolve([]);
+      return;
     }
-    return r.text().then(function(t) { throw new Error(t); });
+    resolve({});
   });
 }
 
@@ -1470,10 +1317,16 @@ function initLayout() {
   if (isDesk) {
     document.getElementById("desk-sidebar").style.display = "flex";
     document.getElementById("desk-main").style.display = "flex";
-    document.querySelectorAll(".screen").forEach(function(s){s.style.display="none";});
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.style.display="none";
+      s.classList.remove("active");
+    });
   } else {
     document.getElementById("desk-sidebar").style.display = "none";
     document.getElementById("desk-main").style.display = "none";
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.style.display="";
+    });
   }
 }
 window.addEventListener("resize", function() {
@@ -1489,7 +1342,7 @@ function go(id) {
   } else {
     document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
     var el = document.getElementById(id);
-    if(el) el.classList.add("active");
+    if(el) { el.style.display=""; el.classList.add("active"); }
     if(id==="s-dash") rDash();
     else if(id==="s-cal") rCal();
     else if(id==="s-bkns") rBkns();
@@ -1499,45 +1352,6 @@ function go(id) {
     else if(id==="s-dispatch") rGrid("All");
     else if(id==="s-cart") rCart();
     else if(id==="s-bkn-detail" && curDetailId) rDetail(curDetailId);
-    else if(id==="s-invoice") rInvoiceScreen();
-    else if(id==="s-event-details") { rEventDetails(); }
-    else if(id==="s-invoice-preview") rInvoicePreview();
-    else if(id==="s-media") rMedia();
-    else if(id==="s-event-details") {
-    document.getElementById("desk-page-title").textContent="Event Details";
-    document.getElementById("desk-page-sub").textContent="Discussion & Inspos";
-    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-skip-ed">Skip &#8594;</button>';
-    setTimeout(function(){
-      var sk=document.getElementById("d-skip-ed"); if(sk) sk.onclick=function(){go("s-inv-reserve");};
-    },50);
-    var dc=document.getElementById("desk-content");
-    dc.innerHTML=
-      '<div style="max-width:700px;">'
-      +'<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      +'<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Event Discussion Notes</div>'
-      +'<textarea id="ed-notes" placeholder="Color palette, special requests, table setup, anything discussed with client..." style="width:100%;min-height:120px;background:var(--desk-card2);border:1px solid var(--desk-brd);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--desk-text);resize:vertical;font-family:Jost,sans-serif;"></textarea>'
-      +'</div>'
-      +'<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      +'<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Inspo & Reference Photos</div>'
-      +'<div class="inspo-thumbs" id="ed-inspo-thumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>'
-      +'<div class="inspo-add" id="ed-inspo-add" style="width:80px;height:80px;"><div style="font-size:20px;">+</div><div style="font-size:9px;">Add Photo</div></div>'
-      +'<input type="file" accept="image/*" id="ed-inspo-file" style="display:none" multiple>'
-      +'</div>'
-      +'<button class="btn-save" id="save-event-details-btn">Save & Reserve Inventory &#8594;</button>'
-      +'</div>';
-    rEventDetails();
-    var edAdd=document.getElementById("ed-inspo-add"); if(edAdd) edAdd.onclick=function(){document.getElementById("ed-inspo-file").click();};
-    var edFile=document.getElementById("ed-inspo-file"); if(edFile) edFile.onchange=function(){
-      Array.from(this.files).forEach(function(f){if(curEventInspos.length>=10)return;rF(f,function(s){curEventInspos.push(s);rEdInspoThumbs();});});
-      this.value="";
-    };
-    var saveEd=document.getElementById("save-event-details-btn"); if(saveEd) saveEd.onclick=function(){
-      curEventNotes=document.getElementById("ed-notes").value.trim();
-      if(curBkg){curBkg.eventNotes=curEventNotes;curBkg.eventInspos=curEventInspos;db("bookings?id=eq."+curBkg.id,"PATCH",{reminder_notes:curEventNotes});}
-      go("s-inv-reserve");
-    };
-  }
-  else if(id==="s-inv-reserve") { rReserveGrid("All"); }
   }
 }
 
@@ -1610,103 +1424,11 @@ function renderDesk(id) {
       });
     });
     rBkns();
-    // Rebind invoice buttons after render
-    setTimeout(function(){
-      document.querySelectorAll("[data-invoice]").forEach(function(btn){
-        btn.onclick=function(e){e.stopPropagation();e.preventDefault();openInvoice(this.getAttribute("data-invoice"));};
-      });
-    },100);
   }
   else if(id==="s-new-bkn") {
-    // Render all steps inline for desktop
-    dc.innerHTML = '<div style="max-width:700px;">'
-      + '<div style="display:flex;gap:4px;margin-bottom:20px;">'
-      + '<div style="flex:1;height:3px;border-radius:2px;background:var(--gold);" id="step-bar-1"></div>'
-      + '<div style="flex:1;height:3px;border-radius:2px;background:var(--desk-brd);" id="step-bar-2"></div>'
-      + '<div style="flex:1;height:3px;border-radius:2px;background:var(--desk-brd);" id="step-bar-3"></div>'
-      + '</div>'
-      + document.getElementById("s-new-bkn").querySelector(".fbody").innerHTML
-      + '</div>'
-      + '<div id="nb-step2-desk" style="display:none;max-width:700px;">'
-      + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      + '<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Event Discussion Notes</div>'
-      + '<textarea id="ed-notes-d" placeholder="Color palette, special requests..." style="width:100%;min-height:120px;background:var(--desk-card2);border:1px solid var(--desk-brd);border-radius:8px;padding:10px;font-size:13px;color:var(--desk-text);resize:vertical;font-family:Jost,sans-serif;"></textarea>'
-      + '</div>'
-      + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      + '<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Inspo & Reference Photos</div>'
-      + '<div class="inspo-thumbs" id="ed-inspo-thumbs-d" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>'
-      + '<div class="inspo-add" id="ed-inspo-add-d"><div style="font-size:20px;">+</div><div style="font-size:9px;">Add</div></div>'
-      + '<input type="file" accept="image/*" id="ed-inspo-file-d" style="display:none" multiple>'
-      + '</div>'
-      + '<div style="display:flex;gap:8px;">'
-      + '<button class="desk-btn" id="back-ed-d">&#8592; Back</button>'
-      + '<button class="desk-btn gold" id="next-ed-d">Next — Inventory &#8594;</button>'
-      + '</div></div>'
-      + '<div id="nb-step3-desk" style="display:none;max-width:700px;">'
-      + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:16px;margin-bottom:16px;">'
-      + '<div class="cattabs" id="nb-reserve-cattabs-d" style="background:transparent;border:none;margin-bottom:12px;">'
-      + '<div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor</div>'
-      + '<div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div>'
-      + '<div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div>'
-      + '<div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div>'
-      + '</div>'
-      + '<div class="inv-grid" id="nb-reserve-grid-d" style="height:350px;"></div>'
-      + '</div>'
-      + '<div style="display:flex;gap:8px;">'
-      + '<button class="desk-btn" id="back-inv-d">&#8592; Back</button>'
-      + '<button class="desk-btn gold" id="confirm-booking-d">Confirm &amp; Save Booking &#10003;</button>'
-      + '</div></div>';
-    setTimeout(function(){
-      bindNewBkn();
-      // Desktop step navigation
-      var nextBtn=document.getElementById("nb-next-btn");
-      if(nextBtn) nextBtn.onclick=function(){
-        var name=(document.getElementById("nb-name")||{}).value||"";
-        var date=(document.getElementById("nb-date")||{}).value||"";
-        if(!name.trim()||!date){alert("Enter client name and date.");return;}
-        document.querySelector("[style*='max-width:700px']").style.display="none";
-        document.getElementById("nb-step2-desk").style.display="block";
-        document.getElementById("step-bar-2").style.background="var(--gold)";
-        document.getElementById("desk-page-sub").textContent="Step 2 of 3 — Event Details";
-        var edAdd=document.getElementById("ed-inspo-add-d");
-        if(edAdd) edAdd.onclick=function(){document.getElementById("ed-inspo-file-d").click();};
-        var edFile=document.getElementById("ed-inspo-file-d");
-        if(edFile) edFile.onchange=function(){
-          Array.from(this.files).forEach(function(f){if(curEventInspos.length>=10)return;rF(f,function(s){curEventInspos.push(s);rEdInspoThumbsD();});});this.value="";
-        };
-      };
-      var backEd=document.getElementById("back-ed-d");
-      if(backEd) backEd.onclick=function(){
-        document.getElementById("nb-step2-desk").style.display="none";
-        document.querySelector("[style*='max-width:700px']").style.display="block";
-        document.getElementById("step-bar-2").style.background="var(--desk-brd)";
-      };
-      var nextEd=document.getElementById("next-ed-d");
-      if(nextEd) nextEd.onclick=function(){
-        curEventNotes=(document.getElementById("ed-notes-d")||{}).value||"";
-        document.getElementById("nb-step2-desk").style.display="none";
-        document.getElementById("nb-step3-desk").style.display="block";
-        document.getElementById("step-bar-3").style.background="var(--gold)";
-        document.getElementById("desk-page-sub").textContent="Step 3 of 3 — Inventory";
-        rNbReserveGridD("All");
-        var cats=document.getElementById("nb-reserve-cattabs-d");
-        if(cats) cats.onclick=function(e){
-          var t=e.target.closest(".ctab"); if(!t) return;
-          cats.querySelectorAll(".ctab").forEach(function(x){x.classList.remove("on");});
-          t.classList.add("on"); rNbReserveGridD(t.getAttribute("data-cat"));
-        };
-      };
-      var backInv=document.getElementById("back-inv-d");
-      if(backInv) backInv.onclick=function(){
-        document.getElementById("nb-step3-desk").style.display="none";
-        document.getElementById("nb-step2-desk").style.display="block";
-        document.getElementById("step-bar-3").style.background="var(--desk-brd)";
-      };
-      var confirmBtn=document.getElementById("confirm-booking-d");
-      if(confirmBtn) confirmBtn.onclick=function(){doFinalSave(true);};
-      var skipLater=document.getElementById("save-bkn-later-btn");
-      if(skipLater) skipLater.onclick=function(){doFinalSave(false);};
-    },50);
+    var fbody = document.getElementById("s-new-bkn").querySelector(".fbody");
+    dc.innerHTML = fbody ? fbody.outerHTML : "";
+    bindNewBkn();
   }
   else if(id==="s-bkn-detail") { dc.innerHTML='<div class="bdetail-wrap" id="bdetail-body" style="padding:0;overflow:visible;flex:none;"></div>'; if(curDetailId) rDetail(curDetailId); }
   else if(id==="s-dispatch-hub") { dc.innerHTML='<div class="list" id="dispatch-hub-list" style="padding:0;overflow:visible;flex:none;"></div>'; rDispatchHub(); }
@@ -1743,40 +1465,6 @@ function renderDesk(id) {
     rINV();
     document.getElementById("add-fab-desk").addEventListener("click",openAddItem);
   }
-  else if(id==="s-event-details") {
-    document.getElementById("desk-page-title").textContent="Event Details";
-    document.getElementById("desk-page-sub").textContent="Discussion & Inspos";
-    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-skip-ed">Skip &#8594;</button>';
-    setTimeout(function(){
-      var sk=document.getElementById("d-skip-ed"); if(sk) sk.onclick=function(){go("s-inv-reserve");};
-    },50);
-    var dc=document.getElementById("desk-content");
-    dc.innerHTML=
-      '<div style="max-width:700px;">'
-      +'<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      +'<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Event Discussion Notes</div>'
-      +'<textarea id="ed-notes" placeholder="Color palette, special requests, table setup, anything discussed with client..." style="width:100%;min-height:120px;background:var(--desk-card2);border:1px solid var(--desk-brd);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--desk-text);resize:vertical;font-family:Jost,sans-serif;"></textarea>'
-      +'</div>'
-      +'<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:20px;margin-bottom:16px;">'
-      +'<div style="font-size:11px;color:var(--desk-mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Inspo & Reference Photos</div>'
-      +'<div class="inspo-thumbs" id="ed-inspo-thumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>'
-      +'<div class="inspo-add" id="ed-inspo-add" style="width:80px;height:80px;"><div style="font-size:20px;">+</div><div style="font-size:9px;">Add Photo</div></div>'
-      +'<input type="file" accept="image/*" id="ed-inspo-file" style="display:none" multiple>'
-      +'</div>'
-      +'<button class="btn-save" id="save-event-details-btn">Save & Reserve Inventory &#8594;</button>'
-      +'</div>';
-    rEventDetails();
-    var edAdd=document.getElementById("ed-inspo-add"); if(edAdd) edAdd.onclick=function(){document.getElementById("ed-inspo-file").click();};
-    var edFile=document.getElementById("ed-inspo-file"); if(edFile) edFile.onchange=function(){
-      Array.from(this.files).forEach(function(f){if(curEventInspos.length>=10)return;rF(f,function(s){curEventInspos.push(s);rEdInspoThumbs();});});
-      this.value="";
-    };
-    var saveEd=document.getElementById("save-event-details-btn"); if(saveEd) saveEd.onclick=function(){
-      curEventNotes=document.getElementById("ed-notes").value.trim();
-      if(curBkg){curBkg.eventNotes=curEventNotes;curBkg.eventInspos=curEventInspos;db("bookings?id=eq."+curBkg.id,"PATCH",{reminder_notes:curEventNotes});}
-      go("s-inv-reserve");
-    };
-  }
   else if(id==="s-inv-reserve") {
     dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;"><div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor Rental</div><div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div><div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div><div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div></div>'
       +'<div class="inv-grid" id="reserve-inv-grid" style="height:400px;"></div>'
@@ -1786,44 +1474,20 @@ function renderDesk(id) {
     document.getElementById("confirm-reserve-btn2").addEventListener("click",confirmReserve);
   }
   else if(id==="s-fin") { dc.innerHTML='<div class="fin-wrap" id="fin-body" style="padding:0;overflow:visible;flex:none;"></div>'; rFin(); }
-  else if(id==="s-invoice") {
-    document.getElementById("desk-page-title").textContent="Invoice";
-    document.getElementById("desk-page-sub").textContent="Add Line Items";
-    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-back-invoice">&#8592; Back</button>';
-    setTimeout(function(){var b=document.getElementById("d-back-invoice");if(b)b.onclick=function(){go("s-bkns");};},50);
-    var dc2=document.getElementById("desk-content");
-    dc2.innerHTML='<div style="max-width:600px;"><div id="invoice-screen-body"></div></div>';
-    rInvoiceScreen();
-  }
-  else if(id==="s-invoice-preview") {
-    document.getElementById("desk-page-title").textContent="Invoice Preview";
-    document.getElementById("desk-page-sub").textContent="Ready to Print";
-    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-inv-print">&#128424; Print</button><button class="desk-btn" id="d-inv-wa">&#128172; WhatsApp</button><button class="desk-btn" id="d-back-inv-prev">&#8592; Edit</button>';
-    setTimeout(function(){
-      var bp=document.getElementById("d-back-inv-prev");if(bp)bp.onclick=function(){go("s-invoice");};
-      var pp=document.getElementById("d-inv-print");if(pp)pp.onclick=function(){window.print();};
-      var wa=document.getElementById("d-inv-wa");if(wa)wa.onclick=function(){
-        var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
-        var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
-        var bal=total-(b.paid||0);
-        var msg="Assalam o Alaikum *"+b.name+"*,%0A%0APlease find your invoice:%0A%0A";
-        invoiceLines.forEach(function(l){msg+="• "+l.desc+": PKR "+parseInt(l.amt).toLocaleString()+"/%0A";});
-        msg+="%0A*Total: PKR "+total.toLocaleString()+"*%0AAdvance: PKR "+(b.paid||0).toLocaleString()+"%0A*Balance: PKR "+bal.toLocaleString()+"*%0A%0AJazakAllah";
-        var phone=b.phone?b.phone.replace(/[^0-9]/g,""):"";
-        window.open(phone?"https://wa.me/92"+phone.replace(/^0/,"")+"?text="+msg:"https://wa.me/?text="+msg,"_blank");
-      };
-    },50);
-    var dc3=document.getElementById("desk-content");
-    dc3.innerHTML='<div id="invoice-preview-body"></div><div style="margin-top:16px;display:none;" id="print-sheet"></div>';
-    rInvoicePreview();
-  }
   else if(id==="s-media") { dc.innerHTML='<div id="media-body" style="padding:0;"></div>'; rMedia(); }
 }
 
 // ── LOGIN ──────────────────────────────────────────────────────────────────
 document.getElementById("l-btn").addEventListener("click", function() {
   var v = document.getElementById("l-inp").value.trim();
-  if(v===AP) { sessionStorage.setItem("auth","1"); var lx=document.getElementById("s-login"); if(lx){lx.style.cssText="";lx.style.display="none";} initLayout(); go("s-dash"); loadAll(); } else { document.getElementById("l-err").style.display="block"; }
+  if(v===AP) {
+    sessionStorage.setItem("auth","1");
+    document.getElementById("s-login").classList.remove("active");
+    document.getElementById("s-login").style.display="none";
+    initLayout();
+    go("s-dash");
+    loadAll();
+  } else { document.getElementById("l-err").style.display="block"; }
 });
 document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.key==="Enter") document.getElementById("l-btn").click(); });
 
@@ -1848,48 +1512,6 @@ function loadAll() {
     }).catch(function() { hd(); toast("Error loading data."); });
 }
 
-// Global invoice button handler - works on any render
-document.addEventListener("click", function(e){
-  var inv = e.target.closest("[data-invoice]");
-  if(inv){
-    e.stopPropagation();
-    e.preventDefault();
-    openInvoice(inv.getAttribute("data-invoice"));
-    return;
-  }
-  var det = e.target.closest("[data-detail]");
-  if(det){
-    e.stopPropagation();
-    curDetailId=det.getAttribute("data-detail");
-    go("s-bkn-detail");
-    return;
-  }
-  var del = e.target.closest("[data-del]");
-  if(del){
-    e.stopPropagation();
-    var me=del, id=me.getAttribute("data-del");
-    if(me.getAttribute("data-c")==="1"){
-      ld(); db("bookings?id=eq."+id,"DELETE").then(function(){BKN=BKN.filter(function(b){return b.id!==id;});hd();rBkns();toast("Deleted.");}).catch(function(){hd();});
-    } else {
-      me.setAttribute("data-c","1"); me.textContent="Sure?"; me.style.color="var(--red)";
-      setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.innerHTML="&#128465;";me.style.color="";}},2000);
-    }
-    return;
-  }
-});
-
-// Global delegated click handlers
-document.addEventListener("click", function(e){
-  var invBtn=e.target.closest("[data-invoice]");
-  if(invBtn){e.stopPropagation();e.preventDefault();openInvoice(invBtn.getAttribute("data-invoice"));return;}
-  var dispBtn=e.target.closest("[data-dispatch-id]");
-  if(dispBtn){e.stopPropagation();openDispatch(dispBtn.getAttribute("data-dispatch-id"));return;}
-  var detBtn=e.target.closest("[data-detail]");
-  if(detBtn && !e.target.closest("[data-invoice],[data-dispatch-id],[data-del]")){
-    curDetailId=detBtn.getAttribute("data-detail");go("s-bkn-detail");return;
-  }
-});
-
 function initBiz() {
   var els = [document.getElementById("tb-biz"), document.getElementById("desk-biz-txt")];
   els.forEach(function(el) { if(el) el.textContent = BN; });
@@ -1903,7 +1525,7 @@ function applyLogo(s) {
 }
 
 // ── BIZ NAME/LOGO ──────────────────────────────────────────────────────────
-var logoFileEl=document.getElementById("logo-file"); if(logoFileEl) logoFileEl.addEventListener("change", function() {
+document.getElementById("logo-file").addEventListener("change", function() {
   var f=this.files[0]; if(!f) return;
   rF(f, function(s) { BL=s; localStorage.setItem("biz_l",s); applyLogo(s); });
 });
@@ -1914,7 +1536,7 @@ document.getElementById("name-confirm").addEventListener("click", function() {
   cM("name-modal");
 });
 document.getElementById("name-cancel").addEventListener("click", function() { cM("name-modal"); });
-var nameBtnEl=document.getElementById("name-btn"); if(nameBtnEl) nameBtnEl.addEventListener("click", function() { document.getElementById("name-inp").value=BN; oM("name-modal"); });
+document.getElementById("name-btn").addEventListener("click", function() { document.getElementById("name-inp").value=BN; oM("name-modal"); });
 var deskedit = document.getElementById("desk-name-edit-btn");
 if(deskedit) deskedit.addEventListener("click", function() { document.getElementById("name-inp").value=BN; oM("name-modal"); });
 
@@ -2028,6 +1650,7 @@ function rBkns() {
     if(bal>0) h += "<div class='bc-mi' style='color:var(--red)'>PKR <b>"+bal.toLocaleString()+"</b> due</div>";
     h += "</div><div class='bc-btns'>";
     h += "<div class='bcbtn hi' data-detail='"+b.id+"'>&#128065; View</div>";
+    h += "<div class='bcbtn' data-dispatch='"+b.id+"'>&#128666; Dispatch</div>";
     h += "<div class='bcbtn' data-invoice='"+b.id+"'>&#128203; Invoice</div>";
     h += "<div class='bcbtn' data-del='"+b.id+"'>&#128465;</div>";
     h += "</div></div>";
@@ -2040,17 +1663,7 @@ function rBkns() {
   });
   el.innerHTML = h;
   el.querySelectorAll("[data-detail]").forEach(function(btn){btn.addEventListener("click",function(){curDetailId=this.getAttribute("data-detail");go("s-bkn-detail");});});
-  el.querySelectorAll(".bcard").forEach(function(card){
-    card.style.cursor="pointer";
-    card.onclick=function(e){
-      if(e.target.closest("[data-detail],[data-invoice],[data-del],.bcbtn")) return;
-      var did=this.querySelector("[data-detail]");
-      if(did){curDetailId=did.getAttribute("data-detail");go("s-bkn-detail");}
-    };
-  });
-  el.querySelectorAll("[data-invoice]").forEach(function(btn){
-    btn.onclick=function(e){e.stopPropagation();openInvoice(this.getAttribute("data-invoice"));};
-  });
+  el.querySelectorAll("[data-invoice]").forEach(function(btn){btn.addEventListener("click",function(){openInvoice(this.getAttribute("data-invoice"));});});
   el.querySelectorAll("[data-del]").forEach(function(btn){
     btn.addEventListener("click",function(e){
       e.stopPropagation();
@@ -2067,8 +1680,7 @@ function rBkns() {
 document.querySelectorAll(".ftab").forEach(function(t) {
   t.addEventListener("click", function() {
     document.querySelectorAll(".ftab").forEach(function(x){x.classList.remove("on");});
-    this.classList.add("on"); curFilter=this.getAttribute("data-f");
-    var bl=document.getElementById("bkns-list"); if(bl) rBkns();
+    this.classList.add("on"); curFilter=this.getAttribute("data-f"); rBkns();
   });
 });
 
@@ -2078,172 +1690,28 @@ function clearNewBkn() {
   ["nb-name","nb-phone","nb-date","nb-venue","nb-ready","nb-pickup","nb-notes","nb-total","nb-paid"].forEach(function(id){
     var el=document.getElementById(id); if(el) el.value="";
   });
-  curEventInspos=[]; curEventNotes=""; draftCart={};
-  // Reset to step 1
-  showNbStep(1);
-}
-
-function showNbStep(step) {
-  var step1=document.getElementById("s-new-bkn"); 
-  var fbody=step1?step1.querySelector(".fbody"):null;
-  var step2=document.getElementById("nb-step2");
-  var step3=document.getElementById("nb-step3");
-  var titleEl=document.getElementById("nb-step-title");
-  var subEl=document.getElementById("nb-step-sub");
-  var bars=["step-bar-1","step-bar-2","step-bar-3"];
-  if(fbody) fbody.style.display=step===1?"block":"none";
-  if(step2) step2.style.display=step===2?"block":"none";
-  if(step3) step3.style.display=step===3?"block":"none";
-  bars.forEach(function(id,i){
-    var el=document.getElementById(id);
-    if(el) el.style.background=i<step?"var(--gold)":"var(--mob-brs)";
-  });
-  var titles=["","New Booking","Event Details","Reserve Inventory"];
-  var subs=["","Step 1 of 3 — Booking Details","Step 2 of 3 — Event Details","Step 3 of 3 — Inventory"];
-  if(titleEl) titleEl.textContent=titles[step]||"";
-  if(subEl) subEl.textContent=subs[step]||"";
-  // Refresh reserve grid on step 3
-  if(step===3) rNbReserveGrid("All");
 }
 function bindNewBkn() {
-  document.querySelectorAll(".echk").forEach(function(e){e.onclick=function(){this.classList.toggle("on");};});
-  // Step 1 next
-  var nextBtn=document.getElementById("nb-next-btn");
-  if(nextBtn) nextBtn.onclick=function(){
-    var name=(document.getElementById("nb-name")||{}).value||"";
-    var date=(document.getElementById("nb-date")||{}).value||"";
-    if(!name.trim()||!date){alert("Please enter client name and date.");return;}
-    showNbStep(2);
-    rNbEdThumbs();
-  };
-  // Save only (skip all)
-  var saveLater=document.getElementById("save-bkn-later-btn");
-  if(saveLater) saveLater.onclick=function(){doFinalSave(false);};
-  // Step 2
-  var backStep2=document.getElementById("nb-back-step2");
-  if(backStep2) backStep2.onclick=function(){showNbStep(1);};
-  var nextStep2=document.getElementById("nb-next-step2");
-  if(nextStep2) nextStep2.onclick=function(){
-    curEventNotes=(document.getElementById("nb-ed-notes")||{}).value||"";
-    showNbStep(3);
-  };
-  var skipStep2=document.getElementById("nb-skip-step2");
-  if(skipStep2) skipStep2.onclick=function(){doFinalSave(false);};
-  // Step 3
-  var backStep3=document.getElementById("nb-back-step3");
-  if(backStep3) backStep3.onclick=function(){showNbStep(2);};
-  var confirmBtn=document.getElementById("nb-confirm-booking");
-  if(confirmBtn) confirmBtn.onclick=function(){doFinalSave(true);};
-  var skipStep3=document.getElementById("nb-skip-step3");
-  if(skipStep3) skipStep3.onclick=function(){doFinalSave(false);};
-  // Inspo photos step 2
-  var edAdd=document.getElementById("nb-ed-add");
-  if(edAdd) edAdd.onclick=function(){document.getElementById("nb-ed-file").click();};
-  var edFile=document.getElementById("nb-ed-file");
-  if(edFile) edFile.onchange=function(){
-    Array.from(this.files).forEach(function(f){
-      if(curEventInspos.length>=10)return;
-      rF(f,function(s){curEventInspos.push(s);rNbEdThumbs();});
-    });
-    this.value="";
-  };
-  // Step 3 cattabs
-  var nbCattabs=document.getElementById("nb-reserve-cattabs");
-  if(nbCattabs) nbCattabs.onclick=function(e){
-    var t=e.target.closest(".ctab"); if(!t) return;
-    nbCattabs.querySelectorAll(".ctab").forEach(function(x){x.classList.remove("on");});
-    t.classList.add("on"); rNbReserveGrid(t.getAttribute("data-cat"));
-  };
+  document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click",function(){this.classList.toggle("on");});});
+  var sb=document.getElementById("save-bkn-btn"); if(sb) sb.addEventListener("click",function(){doSaveBooking(true);});
+  var sl=document.getElementById("save-bkn-later-btn"); if(sl) sl.addEventListener("click",function(){doSaveBooking(false);});
 }
-
-function rEdInspoThumbsD(){
-  var el=document.getElementById("ed-inspo-thumbs-d"); if(!el) return;
-  var h="";
-  curEventInspos.forEach(function(s,i){h+="<div class='inspo-thumb'><img src='"+s+"'><button class='inspo-del' data-di='"+i+"'>x</button></div>";});
-  el.innerHTML=h;
-  el.querySelectorAll("[data-di]").forEach(function(btn){btn.onclick=function(){curEventInspos.splice(parseInt(this.getAttribute("data-di")),1);rEdInspoThumbsD();};});
-}
-
-function rNbReserveGridD(cat){
-  var grid=document.getElementById("nb-reserve-grid-d"); if(!grid) return;
-  var items=(cat==="All")?INV:INV.filter(function(i){return i.cat===cat;});
-  var h="";
-  items.forEach(function(item){
-    var inC=draftCart[item.id]||0;
-    var imgH=item.photo?"<img src='"+item.photo+"'>":"&#128230;";
-    h+="<div class='icard"+(inC>0?" incart":"")+"' data-did='"+item.id+"'>";
-    h+="<div class='ithumb'>"+imgH+"</div><div class='ibody'><div class='iname'>"+item.name+"</div>";
-    h+="<div class='istock'>"+item.qty+" total</div></div><div class='ibadge'>"+inC+"</div></div>";
-  });
-  grid.innerHTML=h||"<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>";
-  grid.querySelectorAll("[data-did]").forEach(function(c){
-    c.onclick=function(){
-      var id=this.getAttribute("data-did");
-      var item=INV.find(function(i){return i.id===id;});
-      if(!item) return;
-      var cur=draftCart[id]||0;
-      draftCart[id]=cur<item.qty?cur+1:0;
-      if(draftCart[id]===0) delete draftCart[id];
-      rNbReserveGridD(cat);
-    };
-  });
-}
-
-function rNbEdThumbs(){
-  var el=document.getElementById("nb-ed-thumbs"); if(!el) return;
-  var h="";
-  curEventInspos.forEach(function(s,i){h+="<div class='inspo-thumb'><img src='"+s+"'><button class='inspo-del' data-ni='"+i+"'>x</button></div>";});
-  el.innerHTML=h;
-  el.querySelectorAll("[data-ni]").forEach(function(btn){btn.onclick=function(){curEventInspos.splice(parseInt(this.getAttribute("data-ni")),1);rNbEdThumbs();};});
-}
-
-function rNbReserveGrid(cat){
-  var grid=document.getElementById("nb-reserve-grid"); if(!grid) return;
-  var items=(cat==="All")?INV:INV.filter(function(i){return i.cat===cat;});
-  if(!items.length){grid.innerHTML="<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>";updNbBar();return;}
-  var h="";
-  items.forEach(function(item){
-    var inC=draftCart[item.id]||0;
-    var imgH=item.photo?"<img src='"+item.photo+"' alt=''>":"&#128230;";
-    h+="<div class='icard"+(inC>0?" incart":"")+"' data-nbid='"+item.id+"'>";
-    h+="<div class='ithumb'>"+imgH+"</div><div class='ibody'><div class='iname'>"+item.name+"</div>";
-    h+="<div class='istock'>"+item.qty+" total</div></div><div class='ibadge'>"+inC+"</div></div>";
-  });
-  grid.innerHTML=h; updNbBar();
-  grid.querySelectorAll("[data-nbid]").forEach(function(c){
-    c.onclick=function(){
-      var id=this.getAttribute("data-nbid");
-      var item=INV.find(function(i){return i.id===id;});
-      if(!item) return;
-      var cur=draftCart[id]||0;
-      draftCart[id]=cur<item.qty?cur+1:0;
-      if(draftCart[id]===0) delete draftCart[id];
-      rNbReserveGrid(cat);
-    };
-  });
-}
-
-function updNbBar(){
-  var n=Object.keys(draftCart).length;
-  var cb=document.getElementById("nb-reserve-bar"), cc=document.getElementById("nb-reserve-cnt");
-  if(cb) cb.style.display=n>0?"flex":"none";
-  if(cc) cc.textContent=n;
-}
-var newBknEl=document.getElementById("new-bkn-btn"); if(newBknEl) newBknEl.addEventListener("click", function(){clearNewBkn();go("s-new-bkn");});
-var backNewEl=document.getElementById("back-new-bkn"); if(backNewEl) backNewEl.addEventListener("click", function(){go("s-bkns");});
+document.getElementById("new-bkn-btn").addEventListener("click", function(){clearNewBkn();go("s-new-bkn");});
+document.getElementById("back-new-bkn").addEventListener("click", function(){go("s-bkns");});
 document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click",function(){this.classList.toggle("on");});});
-// save buttons bound in bindNewBkn() only
+document.getElementById("save-bkn-btn").addEventListener("click", function(){doSaveBooking(true);});
+document.getElementById("save-bkn-later-btn").addEventListener("click", function(){doSaveBooking(false);});
 
-function doFinalSave(withInventory) {
+function doSaveBooking(goReserve) {
   var nameEl=document.getElementById("nb-name"), dateEl=document.getElementById("nb-date");
   var name=nameEl?nameEl.value.trim():"", date=dateEl?dateEl.value:"";
-  if(!name||!date){alert("Please enter client name and date.");showNbStep(1);return;}
+  if(!name||!date){alert("Please enter client name and date.");return;}
   var ext=[];
   document.querySelectorAll(".echk.on").forEach(function(e){ext.push(e.getAttribute("data-v"));});
   bknCounter++;
-  var refNum="HAP-2026-"+String(bknCounter).padStart(3,"0");
-  var di=withInventory?Object.keys(draftCart).map(function(id){return{itemId:id,qty:draftCart[id]};}) : null;
-  var b={
+  localStorage.setItem("ev_bkn_counter",bknCounter);
+  var refNum = "HAP-2026-"+String(bknCounter).padStart(3,"0");
+  var b = {
     id:"b"+Date.now(), name:name, date:date, ref:refNum,
     phone:(document.getElementById("nb-phone")||{value:""}).value||"",
     type:(document.getElementById("nb-type")||{value:"Other"}).value||"Other",
@@ -2254,18 +1722,17 @@ function doFinalSave(withInventory) {
     notes:(document.getElementById("nb-notes")||{value:""}).value||"",
     total:parseFloat((document.getElementById("nb-total")||{value:"0"}).value)||0,
     paid:parseFloat((document.getElementById("nb-paid")||{value:"0"}).value)||0,
-    dispatch_items:di, pending_items:ext, costs:{}, reminder_notes:curEventNotes||"",
+    dispatch_items:null, pending_items:ext, costs:{}, reminder_notes:"",
     discussion_log:[], staff_assigned:[], invoice_items:[]
   };
   ld();
   db("bookings","POST",b).then(function(){
-    b.dispatchItems=di; b.extItems=ext; b.costs={}; b.reminder=curEventNotes||"";
+    b.dispatchItems=null; b.extItems=ext; b.costs={}; b.reminder="";
     b.discussionLog=[]; b.staffAssigned=[]; b.invoiceItems=[];
-    b.eventInspos=curEventInspos||[]; b.eventNotes=curEventNotes||"";
     BKN.push(b); BKN.sort(function(a,c){return a.date>c.date?1:-1;});
     hd(); toast("Booking saved! Ref: "+refNum);
-    clearNewBkn();
-    go("s-bkns");
+    if(goReserve){cart={}; curBkg=b; go("s-inv-reserve");}
+    else go("s-bkns");
   }).catch(function(err){hd();alert("Error: "+err.message);});
 }
 
@@ -2346,23 +1813,8 @@ function renderDiscussionLog(b) {
   });
 }
 
-var backDetailEl=document.getElementById("back-detail"); if(backDetailEl) backDetailEl.addEventListener("click", function(){go("s-bkns");});
-var backInvEl=document.getElementById("back-invoice"); if(backInvEl) backInvEl.addEventListener("click",function(){go("s-bkns");});
-var backInvPrevEl=document.getElementById("back-invoice-preview"); if(backInvPrevEl) backInvPrevEl.addEventListener("click",function(){go("s-invoice");});
-var invPrintEl=document.getElementById("invoice-print-btn"); if(invPrintEl) invPrintEl.addEventListener("click",function(){window.print();});
-var invWAEl=document.getElementById("invoice-whatsapp-btn");
-if(invWAEl) invWAEl.addEventListener("click",function(){
-  var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
-  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
-  var bal=total-(b.paid||0);
-  var msg="Assalam o Alaikum *"+b.name+"*,%0A%0APlease find your invoice details:%0A%0A*Event:* "+b.type+"%0A*Date:* "+b.date+"%0A*Ref:* "+b.ref+"%0A%0A";
-  invoiceLines.forEach(function(l){msg+="• "+l.desc+": PKR "+parseInt(l.amt).toLocaleString()+"/-"+"%0A";});
-  msg+="%0A*Total: PKR "+total.toLocaleString()+"/-*%0AAdvance Paid: PKR "+(b.paid||0).toLocaleString()+"/-"+"%0A*Balance Due: PKR "+bal.toLocaleString()+"/-*%0A%0AJazakAllah";
-  var phone=b.phone?b.phone.replace(/[^0-9]/g,""):"";
-  var url=phone?"https://wa.me/92"+phone.replace(/^0/,"")+"?text="+msg:"https://wa.me/?text="+msg;
-  window.open(url,"_blank");
-});
-var detDispEl=document.getElementById("detail-dispatch-btn"); if(detDispEl) detDispEl.addEventListener("click", function(){if(curDetailId)openDispatch(curDetailId);});
+document.getElementById("back-detail").addEventListener("click", function(){go("s-bkns");});
+document.getElementById("detail-dispatch-btn").addEventListener("click", function(){if(curDetailId)openDispatch(curDetailId);});
 
 // ── WHATSAPP ────────────────────────────────────────────────────────────────
 function sendWhatsApp(id) {
@@ -2401,7 +1853,7 @@ function rDispatchHub() {
     h += "<div class='bc-btns'><div class='bcbtn hi' data-dispatch-id='"+b.id+"'>&#128666; Open Dispatch</div></div></div></div>";
   });
   el.innerHTML = h;
-  el.querySelectorAll("[data-dispatch-id]").forEach(function(btn){btn.onclick=function(e){e.stopPropagation();openDispatch(this.getAttribute("data-dispatch-id"));};});
+  el.querySelectorAll("[data-dispatch-id]").forEach(function(btn){btn.addEventListener("click",function(){openDispatch(this.getAttribute("data-dispatch-id"));});});
 }
 
 // ── DISPATCH ────────────────────────────────────────────────────────────────
@@ -2430,7 +1882,7 @@ if(mobCattabs) mobCattabs.addEventListener("click",function(e){
 });
 var mobCartBar=document.getElementById("cart-bar");
 if(mobCartBar) mobCartBar.addEventListener("click",function(){go("s-cart");});
-var backDispEl=document.getElementById("back-dispatch"); if(backDispEl) backDispEl.addEventListener("click",function(){go("s-dispatch-hub");});
+document.getElementById("back-dispatch").addEventListener("click",function(){go("s-dispatch-hub");});
 
 function rGrid(cat) {
   var grid=document.getElementById("inv-grid"); if(!grid) return;
@@ -2544,38 +1996,8 @@ function confirmReserve() {
   if(curBkg){curBkg.dispatchItems=di;db("bookings?id=eq."+curBkg.id,"PATCH",{dispatch_items:di});}
   toast("Inventory reserved!"); go("s-bkns");
 }
-var skipResEl=document.getElementById("skip-reserve-btn"); if(skipResEl) skipResEl.addEventListener("click",function(){go("s-bkns");});
-var skipEdEl=document.getElementById("skip-event-details"); if(skipEdEl) skipEdEl.addEventListener("click",function(){go("s-inv-reserve");});
-var saveEdEl=document.getElementById("save-event-details-btn"); if(saveEdEl) saveEdEl.addEventListener("click",function(){
-  curEventNotes=document.getElementById("ed-notes").value.trim();
-  if(curBkg){curBkg.eventNotes=curEventNotes;curBkg.eventInspos=curEventInspos;
-    db("bookings?id=eq."+curBkg.id,"PATCH",{reminder_notes:curEventNotes});
-  }
-  go("s-inv-reserve");
-});
-var edInspoAdd=document.getElementById("ed-inspo-add"); if(edInspoAdd) edInspoAdd.addEventListener("click",function(){document.getElementById("ed-inspo-file").click();});
-var edInspoFile=document.getElementById("ed-inspo-file"); if(edInspoFile) edInspoFile.addEventListener("change",function(){
-  var files=Array.from(this.files);
-  files.forEach(function(f){
-    if(curEventInspos.length>=10) return;
-    rF(f,function(s){curEventInspos.push(s);rEdInspoThumbs();});
-  });
-  this.value="";
-});
-
-function rEdInspoThumbs(){
-  var el=document.getElementById("ed-inspo-thumbs"); if(!el) return;
-  var h="";
-  curEventInspos.forEach(function(s,i){h+="<div class='inspo-thumb'><img src='"+s+"'><button class='inspo-del' data-ei='"+i+"'>x</button></div>";});
-  el.innerHTML=h;
-  el.querySelectorAll(".inspo-del").forEach(function(btn){btn.addEventListener("click",function(){curEventInspos.splice(parseInt(this.getAttribute("data-ei")),1);rEdInspoThumbs();});});
-}
-
-function rEventDetails(){
-  var notesEl=document.getElementById("ed-notes"); if(notesEl) notesEl.value=curEventNotes||"";
-  rEdInspoThumbs();
-}
-var confResEl=document.getElementById("confirm-reserve-btn"); if(confResEl) confResEl.addEventListener("click",confirmReserve);
+document.getElementById("skip-reserve-btn").addEventListener("click",function(){go("s-bkns");});
+document.getElementById("confirm-reserve-btn").addEventListener("click",confirmReserve);
 
 // ── INSPO ────────────────────────────────────────────────────────────────────
 function bindInspo() {
@@ -2586,8 +2008,8 @@ function bindInspo() {
     rF(f,function(s){curInspos.push(s);rInspoThumbs();}); this.value="";
   });
 }
-var inspoAddEl=document.getElementById("inspo-add-btn"); if(inspoAddEl) inspoAddEl.addEventListener("click",function(){document.getElementById("inspo-file").click();});
-var inspoFileEl=document.getElementById("inspo-file"); if(inspoFileEl) inspoFileEl.addEventListener("change",function(){
+document.getElementById("inspo-add-btn").addEventListener("click",function(){document.getElementById("inspo-file").click();});
+document.getElementById("inspo-file").addEventListener("change",function(){
   var f=this.files[0]; if(!f) return;
   if(curInspos.length>=10){alert("Max 10.");return;}
   rF(f,function(s){curInspos.push(s);rInspoThumbs();}); this.value="";
@@ -2620,8 +2042,8 @@ function bindCartButtons(isDeskMode) {
   bind("gen-sheet-btn"+suffix, genSheet);
   bind("inspo-add-btn", function(){document.getElementById("inspo-file").click();});
 }
-var backCartEl=document.getElementById("back-cart"); if(backCartEl) backCartEl.addEventListener("click",function(){go("s-dispatch");});
-var genSheetEl=document.getElementById("gen-sheet-btn"); if(genSheetEl) genSheetEl.addEventListener("click",genSheet);
+document.getElementById("back-cart").addEventListener("click",function(){go("s-dispatch");});
+document.getElementById("gen-sheet-btn").addEventListener("click",genSheet);
 
 // Mobile cart staff/pkg buttons
 (function(){
@@ -2670,95 +2092,618 @@ function genSheet() {
 }
 function buildSheet() {
   var b=curBkg; if(!b) return;
-  var allInspos=(b.eventInspos&&b.eventInspos.length>0)?b.eventInspos.concat(curInspos):curInspos;
-  var eventNotes=b.eventNotes||b.reminder||"";
-  var logoSrc=BL||"";
-
-  // ── SCREEN VIEW ──
   var h="";
-  h+="<div class='sh-hdr'>";
-  h+="<div class='sh-biz'>"+BN+" — Dispatch Sheet</div>";
-  h+="<div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
-  h+="<div class='sh-meta'>";
-  h+="<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div>";
-  h+="<div class='sh-f'>Event<span>"+b.type+"</span></div>";
-  h+="<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div>";
-  h+="<div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
-  h+="<div class='sh-f'>Ready<span>"+fT(b.ready)+"</span></div>";
-  h+="<div class='sh-f'>Pickup<span>"+fT(b.pickup)+"</span></div>";
-  if(b.notes) h+="<div class='sh-f' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
-  if(eventNotes) h+="<div class='sh-f' style='grid-column:1/-1'>Event Details<span>"+eventNotes+"</span></div>";
-  if(curStaffAssign&&curStaffAssign.length>0) h+="<div class='sh-f' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
-  h+="</div>";
-  if(allInspos.length>0){
-    h+="<div class='sh-inspo-lbl'>Reference Photos</div><div class='sh-inspo-wrap'>";
-    allInspos.forEach(function(s){h+="<img src='"+s+"'>";});
-    h+="</div>";
+  h += "<div class='sh-hdr'><div class='sh-biz'>"+BN+" - Dispatch Sheet</div><div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
+  h += "<div class='sh-meta'>";
+  h += "<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div><div class='sh-f'>Event<span>"+b.type+"</span></div>";
+  h += "<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div><div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
+  h += "<div class='sh-f'>Ready<span>"+fT(b.ready)+"</span></div><div class='sh-f'>Pickup<span>"+fT(b.pickup)+"</span></div>";
+  if(b.notes) h += "<div class='sh-f' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
+  if(curStaffAssign&&curStaffAssign.length>0) h += "<div class='sh-f' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
+  h += "</div>";
+  if(curInspos.length>0){
+    h += "<div class='sh-inspo-lbl'>Setup Reference Photos</div><div class='sh-inspo-wrap'>";
+    curInspos.forEach(function(s){h+="<img src='"+s+"'>";});
+    h += "</div>";
   }
-  h+="</div>";
+  h += "</div>";
   CATS.forEach(function(cat){
     var items=Object.keys(cart).map(function(id){return INV.find(function(i){return i.id===id;});}).filter(function(i){return i&&i.cat===cat;});
     if(!items.length) return;
-    h+="<div class='sheet-cat'><div class='sheet-cat-hdr'>"+cat+"<span class='sheet-cat-cnt'>"+items.length+"</span></div><div class='sheet-items-grid'>";
+    h += "<div class='sheet-cat'><div class='sheet-cat-hdr'>"+cat+"<span class='sheet-cat-cnt'>"+items.length+"</span></div><div class='sheet-items-grid'>";
     items.forEach(function(item){
-      h+="<div class='scard'><div class='scard-img'>"+(item.photo?"<img src='"+item.photo+"'>":"&#128230;")+"</div>";
-      h+="<div class='scard-body'><div class='scard-name'>"+item.name+"</div><div class='scard-qty'>Qty: "+cart[item.id]+"</div></div></div>";
+      h += "<div class='scard'><div class='scard-img'>"+(item.photo?"<img src='"+item.photo+"'>":"&#128230;")+"</div>";
+      h += "<div class='scard-body'><div class='scard-name'>"+item.name+"</div><div class='scard-qty'>Qty: "+cart[item.id]+"</div></div></div>";
     });
-    h+="</div></div>";
+    h += "</div></div>";
   });
   var el=document.getElementById("sheet-body"); if(el) el.innerHTML=h;
-
-  // ── PRINT VERSION ──
-  var ps="";
-  // Page 1 header
-  ps+='<div style="font-family:Arial,sans-serif;padding:20px;color:#111;max-width:210mm;">';
-  // Logo + title
-  ps+='<div style="display:flex;align-items:center;gap:16px;border-bottom:3px solid #C9A84C;padding-bottom:12px;margin-bottom:16px;">';
-  ps+=(logoSrc?'<img src="'+logoSrc+'" style="width:60px;height:60px;object-fit:contain;">':'');
-  ps+='<div><div style="font-size:22pt;font-weight:700;color:#1A0F08;font-family:Georgia,serif;">'+BN+'</div>';
-  ps+='<div style="font-size:10pt;color:#C9A84C;letter-spacing:2px;">DISPATCH SHEET</div></div></div>';
-  // Client details grid
-  ps+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:10pt;">';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Client</span><div style="font-weight:700;font-size:12pt;">'+b.name.toUpperCase()+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Reference</span><div style="font-weight:600;color:#C9A84C;">'+b.ref+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Date</span><div style="font-weight:600;">'+fD(b.date)+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Event Type</span><div style="font-weight:600;">'+b.type+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Venue</span><div>'+(b.venue||"-")+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Contact</span><div>'+(b.phone||"-")+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Ready Time</span><div style="font-weight:600;">'+fT(b.ready)+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Pickup Time</span><div style="font-weight:600;">'+fT(b.pickup)+'</div></div>';
-  if(b.notes) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Booking Notes</span><div>'+b.notes+'</div></div>';
-  if(eventNotes) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Event Details</span><div style="white-space:pre-wrap;">'+eventNotes+'</div></div>';
-  if(curStaffAssign&&curStaffAssign.length>0) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Team</span><div style="font-weight:600;">'+curStaffAssign.join(", ")+'</div></div>';
-  ps+='</div>';
-  // Inspo photos
-  if(allInspos.length>0){
-    ps+='<div style="margin-bottom:14px;"><div style="font-size:9pt;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Reference Photos</div>';
-    ps+='<div style="display:flex;flex-wrap:wrap;gap:8px;">';
-    allInspos.forEach(function(s){ps+='<img src="'+s+'" style="width:120px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #ddd;">';});
-    ps+='</div></div>';
+  // Print version
+  var ps="<div class='ps-biz'>"+BN+" — Dispatch Sheet</div><div class='ps-name'>"+b.name+"</div>";
+  ps += "<div class='ps-meta'>";
+  ps += "<div class='ps-field'>Date<span>"+fD(b.date)+"</span></div><div class='ps-field'>Event<span>"+b.type+"</span></div>";
+  ps += "<div class='ps-field'>Venue<span>"+(b.venue||"-")+"</span></div><div class='ps-field'>Contact<span>"+(b.phone||"-")+"</span></div>";
+  ps += "<div class='ps-field'>Ready<span>"+fT(b.ready)+"</span></div><div class='ps-field'>Pickup<span>"+fT(b.pickup)+"</span></div>";
+  if(b.notes) ps += "<div class='ps-field' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
+  if(curStaffAssign&&curStaffAssign.length>0) ps += "<div class='ps-field' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
+  ps += "</div>";
+  if(curInspos.length>0){
+    ps += "<div class='ps-inspo-title'>Setup Reference Photos</div><div class='ps-inspo-wrap'>";
+    curInspos.forEach(function(s){ps+="<img src='"+s+"'>";});
+    ps += "</div>";
   }
-  // Page break before inventory
-  ps+='<div style="page-break-before:always;"></div>';
-  // Inventory pages
-  ps+='<div style="font-size:14pt;font-weight:700;color:#1A0F08;border-bottom:2px solid #C9A84C;padding-bottom:8px;margin-bottom:16px;">'+b.name+' — Inventory</div>';
   CATS.forEach(function(cat){
     var items=Object.keys(cart).map(function(id){return INV.find(function(i){return i.id===id;});}).filter(function(i){return i&&i.cat===cat;});
     if(!items.length) return;
-    ps+='<div style="margin-bottom:16px;"><div style="font-size:11pt;font-weight:700;color:#C9A84C;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #eee;padding-bottom:5px;margin-bottom:10px;">'+cat+' ('+items.length+')</div>';
-    ps+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">';
+    ps += "<div class='ps-cat-block'><div class='ps-cat-title'>"+cat+" ("+items.length+")</div><div class='ps-items'>";
     items.forEach(function(item){
-      ps+='<div style="border:1px solid #eee;border-radius:8px;overflow:hidden;text-align:center;">';
-      ps+=(item.photo?'<img src="'+item.photo+'" style="width:100%;height:80px;object-fit:cover;">':'<div style="width:100%;height:80px;background:#f5f0e8;display:flex;align-items:center;justify-content:center;font-size:24px;">&#128230;</div>');
-      ps+='<div style="padding:6px;"><div style="font-size:9pt;font-weight:600;">'+item.name+'</div><div style="font-size:8pt;color:#888;">Qty: '+cart[item.id]+'</div></div></div>';
+      ps += "<div class='ps-item'>"+(item.photo?"<img class='ps-item-img' src='"+item.photo+"'>":"<div class='ps-item-emoji'>&#128230;</div>");
+      ps += "<div class='ps-item-body'><div class='ps-item-name'>"+item.name+"</div><div class='ps-item-qty'>Qty: "+cart[item.id]+"</div></div></div>";
     });
-    ps+='</div></div>';
+    ps += "</div></div>";
   });
-  ps+='</div>';
-  document.getElementById("print-sheet").innerHTML=ps;
+  document.getElementById("print-sheet").innerHTML = ps;
+}
+document.getElementById("done-sheet").addEventListener("click",function(){go("s-bkns");});
+document.getElementById("edit-sheet").addEventListener("click",function(){go("s-cart");});
+document.getElementById("print-btn").addEventListener("click",function(){window.print();});
+
+// ── INVENTORY ────────────────────────────────────────────────────────────────
+function bindInvSearch() {
+  var el=document.getElementById("inv-search"); if(!el) return;
+  el.addEventListener("input",function(){curInvSearch=this.value.toLowerCase().trim();rINV();});
+}
+function bindInvCattabs() {
+  var el=document.getElementById("inv-cattabs"); if(!el) return;
+  el.addEventListener("click",function(e){
+    var t=e.target.closest(".ctab[data-icat]"); if(!t) return;
+    el.querySelectorAll(".ctab[data-icat]").forEach(function(x){x.classList.remove("on");});
+    t.classList.add("on"); curInvCat=t.getAttribute("data-icat"); rINV();
+  });
 }
 
+// Mobile inv bindings
+var mobInvSearch=document.getElementById("inv-search");
+if(mobInvSearch) mobInvSearch.addEventListener("input",function(){curInvSearch=this.value.toLowerCase().trim();rINV();});
+var mobInvCattabs=document.getElementById("inv-cattabs");
+if(mobInvCattabs) mobInvCattabs.addEventListener("click",function(e){
+  var t=e.target.closest(".ctab[data-icat]"); if(!t) return;
+  mobInvCattabs.querySelectorAll(".ctab[data-icat]").forEach(function(x){x.classList.remove("on");});
+  t.classList.add("on"); curInvCat=t.getAttribute("data-icat"); rINV();
+});
 
-} catch(e) { console.warn("Init:", e.message); }</script>
+function openAddItem() {
+  curItemPhoto=null;
+  document.getElementById("ai-name").value="";
+  document.getElementById("ai-qty").value="";
+  document.getElementById("ai-photo-icon").innerHTML="&#128247;";
+  document.getElementById("ai-photo-lbl").textContent="Tap to upload photo";
+  updateSubcatOptions();
+  oM("add-modal");
+}
+function updateSubcatOptions() {
+  var cat=document.getElementById("ai-cat"); if(!cat) return;
+  var wrap=document.getElementById("ai-subcat-wrap");
+  var sel=document.getElementById("ai-subcat");
+  if(!wrap||!sel) return;
+  var subs=CAT_SUBS[cat.value];
+  if(subs) {
+    wrap.style.display="block";
+    sel.innerHTML='<option value="">None</option>';
+    subs.forEach(function(s){sel.innerHTML+='<option>'+s+'</option>';});
+  } else {
+    wrap.style.display="none";
+    sel.value="";
+  }
+}
+document.getElementById("add-item-btn").addEventListener("click",openAddItem);
+var staffMgmtBtn=document.getElementById("staff-mgmt-btn");
+if(staffMgmtBtn) staffMgmtBtn.addEventListener("click",function(){renderStaffModal();oM("staff-modal");});
+document.getElementById("ai-cat").addEventListener("change",updateSubcatOptions);
+document.getElementById("ai-photo-box").addEventListener("click",function(){document.getElementById("ai-photo").click();});
+document.getElementById("ai-photo").addEventListener("change",function(){
+  var f=this.files[0]; if(!f) return;
+  rF(f,function(s){
+    curItemPhoto=s;
+    document.getElementById("ai-photo-icon").innerHTML="<img src='"+s+"' style='width:40px;height:40px;object-fit:cover;border-radius:6px;'>";
+    document.getElementById("ai-photo-lbl").textContent="Photo added";
+  });
+});
+document.getElementById("add-cancel").addEventListener("click",function(){cM("add-modal");});
+document.getElementById("add-confirm").addEventListener("click",function(){
+  var name=document.getElementById("ai-name").value.trim();
+  var qty=parseInt(document.getElementById("ai-qty").value)||0;
+  if(!name){alert("Please enter item name.");return;}
+  var subcatEl=document.getElementById("ai-subcat");
+  var subcat=subcatEl?subcatEl.value:"";
+  var item={id:"i"+Date.now(),name:name,qty:qty,cat:document.getElementById("ai-cat").value,subcat:subcat||null,photo:curItemPhoto};
+  ld();
+  db("inventory","POST",item).then(function(){INV.push(item);hd();cM("add-modal");rINV();toast("Item saved!");}).catch(function(err){hd();alert("Error: "+err.message);});
+});
+
+function rINV() {
+  var el=document.getElementById("imlist"); if(!el) return;
+  if(!INV.length){el.innerHTML="<div class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items yet.</div></div>";return;}
+  var catsToShow=(curInvCat==="All")?CATS:[curInvCat];
+  var h="";
+  catsToShow.forEach(function(cat){
+    var items=INV.filter(function(i){
+      if(i.cat!==cat) return false;
+      if(!curInvSearch) return true;
+      return (i.name.toLowerCase().indexOf(curInvSearch)>-1)||(i.subcat&&i.subcat.toLowerCase().indexOf(curInvSearch)>-1);
+    });
+    if(!items.length) return;
+    var sid="s"+cat.replace(/[^a-zA-Z0-9]/g,"");
+    h += "<div class='inv-section'><div class='sec-hdr open' data-sid='"+sid+"'>";
+    h += "<div class='sec-hdr-l'><span>"+cat+"</span><span class='sec-cnt'>"+items.length+"</span></div><span class='sec-arr'>&#8250;</span></div>";
+    h += "<div class='sec-body' id='bdy"+sid+"'>";
+    items.forEach(function(item){
+      var imgH=item.photo?"<img src='"+item.photo+"'>":"&#128230;";
+      h += "<div class='imcard'><div class='imimg' data-uid='"+item.id+"'>"+imgH+"<div class='uh'>&#128247;</div><input type='file' accept='image/*' id='upd"+item.id+"' style='display:none'></div>";
+      h += "<div class='iminfo'><div class='imname'>"+item.name+"</div>";
+      h += "<div class='imqty'>"+(item.subcat?"<span style='font-size:8px;padding:1px 6px;border-radius:10px;background:var(--gdim);color:var(--gold);margin-right:4px;'>"+item.subcat+"</span>":"")+"Total: "+item.qty+"</div></div>";
+      h += "<button class='imdel' data-did='"+item.id+"'>&#128465;</button></div>";
+    });
+    h += "</div></div>";
+  });
+  el.innerHTML = h;
+  el.querySelectorAll(".sec-hdr").forEach(function(hdr){
+    hdr.addEventListener("click",function(){
+      var sid=this.getAttribute("data-sid"); this.classList.toggle("open");
+      var bd=document.getElementById("bdy"+sid); if(bd) bd.style.display=this.classList.contains("open")?"block":"none";
+    });
+  });
+  el.querySelectorAll("[data-uid]").forEach(function(img){img.addEventListener("click",function(){document.getElementById("upd"+this.getAttribute("data-uid")).click();});});
+  el.querySelectorAll("[data-did]").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var me=this, id=me.getAttribute("data-did");
+      if(me.getAttribute("data-c")==="1"){
+        ld(); db("inventory?id=eq."+id,"DELETE").then(function(){INV=INV.filter(function(i){return i.id!==id;});hd();rINV();toast("Item removed.");}).catch(function(){hd();});
+      } else {
+        me.setAttribute("data-c","1"); me.textContent="Sure?"; me.style.color="var(--red)"; me.style.fontSize="10px";
+        setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.innerHTML="&#128465;";me.style.color="";me.style.fontSize="";}},2000);
+      }
+    });
+  });
+  INV.forEach(function(item){
+    var inp=document.getElementById("upd"+item.id);
+    if(inp) inp.addEventListener("change",function(){
+      var f=this.files[0]; if(!f) return;
+      rF(f,function(s){item.photo=s;ld();db("inventory?id=eq."+item.id,"PATCH",{photo:s}).then(function(){hd();rINV();toast("Photo updated!");}).catch(function(){hd();});});
+    });
+  });
+}
+
+// ── STAFF ─────────────────────────────────────────────────────────────────────
+function renderStaffModal() {
+  var h="";
+  STAFF_LIST.forEach(function(s,i){
+    h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
+    h += "<span style='font-size:13px;color:var(--mob-cream,#F0E6D3);'>"+s+"</span>";
+    h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:13px;' data-si='"+i+"'>&#128465;</button></div>";
+  });
+  if(!STAFF_LIST.length) h="<div style='font-size:12px;color:var(--mob-mut,#7A6347);padding:8px 0;'>No staff added yet.</div>";
+  document.getElementById("staff-list-el").innerHTML=h;
+  document.querySelectorAll("[data-si]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      STAFF_LIST.splice(parseInt(this.getAttribute("data-si")),1);
+      localStorage.setItem("ev_staff",JSON.stringify(STAFF_LIST));
+      renderStaffModal();
+    });
+  });
+}
+function renderStaffAssignModal() {
+  var h="";
+  STAFF_LIST.forEach(function(s){
+    var on=curStaffAssign.indexOf(s)>-1;
+    h+="<div class='echk"+(on?" on":"")+"' data-sn='"+s+"'>"+s+"</div>";
+  });
+  document.getElementById("staff-assign-list").innerHTML=h;
+  document.querySelectorAll("[data-sn]").forEach(function(el){el.addEventListener("click",function(){this.classList.toggle("on");});});
+}
+document.getElementById("staff-add-btn").addEventListener("click",function(){
+  var n=document.getElementById("staff-name-inp").value.trim(); if(!n) return;
+  STAFF_LIST.push(n); localStorage.setItem("ev_staff",JSON.stringify(STAFF_LIST));
+  document.getElementById("staff-name-inp").value=""; renderStaffModal();
+});
+document.getElementById("staff-done-btn").addEventListener("click",function(){cM("staff-modal");});
+document.getElementById("staff-assign-confirm").addEventListener("click",function(){
+  curStaffAssign=[];
+  document.querySelectorAll("#staff-assign-list .echk.on").forEach(function(el){curStaffAssign.push(el.getAttribute("data-sn"));});
+  cM("staff-assign-modal"); updateStaffDisplay(); toast("Staff assigned!");
+});
+document.getElementById("staff-assign-cancel").addEventListener("click",function(){cM("staff-assign-modal");});
+
+// ── PACKAGES ──────────────────────────────────────────────────────────────────
+function renderPkgModal() {
+  var h="";
+  PACKAGES.forEach(function(p,i){
+    h += "<div style='background:var(--mob-bm,#2C1A0E);border-radius:8px;padding:10px 12px;margin-bottom:7px;'>";
+    h += "<div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;'>";
+    h += "<span style='font-size:13px;font-weight:500;color:var(--mob-cream,#F0E6D3);'>"+p.name+"</span>";
+    h += "<div style='display:flex;gap:6px;'><button class='mbtn-a' style='padding:5px 10px;font-size:10px;' data-apply='"+i+"'>Apply</button><button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;' data-delpkg='"+i+"'>&#128465;</button></div></div>";
+    h += "<div style='font-size:10px;color:var(--mob-mut,#7A6347);'>"+p.items.length+" items</div></div>";
+  });
+  if(!PACKAGES.length) h="<div style='font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:8px;'>No packages yet. Build a cart and save it.</div>";
+  document.getElementById("pkg-list-el").innerHTML=h;
+  document.querySelectorAll("[data-apply]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var pkg=PACKAGES[parseInt(this.getAttribute("data-apply"))];
+      pkg.items.forEach(function(it){cart[it.itemId]=it.qty;});
+      cM("pkg-modal"); rCart(); updBar(); toast("Package applied!");
+    });
+  });
+  document.querySelectorAll("[data-delpkg]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      PACKAGES.splice(parseInt(this.getAttribute("data-delpkg")),1);
+      localStorage.setItem("ev_pkgs",JSON.stringify(PACKAGES)); renderPkgModal();
+    });
+  });
+}
+document.getElementById("pkg-save-btn").addEventListener("click",function(){
+  var name=document.getElementById("pkg-name-inp").value.trim(); if(!name){toast("Enter a package name.");return;}
+  var items=Object.keys(cart).map(function(id){return{itemId:id,qty:cart[id]};});
+  PACKAGES.push({name:name,items:items}); localStorage.setItem("ev_pkgs",JSON.stringify(PACKAGES));
+  cM("pkg-modal"); toast("Package saved!");
+});
+document.getElementById("pkg-cancel").addEventListener("click",function(){cM("pkg-modal");});
+
+// ── FINANCE ───────────────────────────────────────────────────────────────────
+function goFin() {
+  if(sessionStorage.getItem("fin_auth")==="1"){go("s-fin");return;}
+  document.getElementById("fin-inp").value=""; document.getElementById("fin-err").style.display="none"; oM("fin-modal");
+}
+document.getElementById("fin-confirm").addEventListener("click",function(){
+  if(document.getElementById("fin-inp").value.trim()===FP){sessionStorage.setItem("fin_auth","1");cM("fin-modal");go("s-fin");}
+  else{document.getElementById("fin-err").style.display="block";}
+});
+document.getElementById("fin-cancel").addEventListener("click",function(){cM("fin-modal");});
+document.getElementById("fin-inp").addEventListener("keyup",function(e){if(e.key==="Enter")document.getElementById("fin-confirm").click();});
+
+function rFin() {
+  var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var mBkns=BKN.filter(function(b){var d=new Date(b.date+"T00:00:00");return d.getMonth()===finM&&d.getFullYear()===finY;});
+  var rev=mBkns.reduce(function(s,b){return s+(b.total||0);},0);
+  var rec=mBkns.reduce(function(s,b){return s+(b.paid||0);},0);
+  var tc=mBkns.reduce(function(s,b){return s+COSTS.reduce(function(cs,k){return cs+(parseFloat((b.costs||{})[k])||0);},0);},0);
+  var h="";
+  h += "<div class='fin-mn'><div class='fin-nav' id='fin-p'>&#8249;</div><div class='fin-month'>"+MN[finM]+" "+finY+"</div><div class='fin-nav' id='fin-n'>&#8250;</div></div>";
+  h += "<div class='fin-tabs'><div class='fin-tab"+(finTab==="payments"?" on":"")+"' data-ft='payments'>Client Payments</div><div class='fin-tab"+(finTab==="costs"?" on":"")+"' data-ft='costs'>Internal Costs</div></div>";
+  h += "<div class='fstats'>";
+  h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR "+rev.toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Received</div><div class='fsval g'>PKR "+rec.toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Outstanding</div><div class='fsval r'>PKR "+(rev-rec).toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Total Costs</div><div class='fsval r'>PKR "+tc.toLocaleString()+"</div></div>";
+  h += "</div>";
+  if(!mBkns.length){h+="<div class='empty'><div class='empty-ic'>&#128176;</div><div class='empty-tx'>No bookings in "+MN[finM]+".</div></div>";}
+  else if(finTab==="payments"){
+    mBkns.forEach(function(b){
+      var bal=(b.total||0)-(b.paid||0);
+      h += "<div class='fcard'><div class='fc-top'><div class='fc-name'>"+b.name+" <span style='font-size:9px;color:var(--gold);'>"+b.ref+"</span></div><div class='fc-date'>"+fD(b.date)+"</div></div>";
+      h += "<div class='fc-row'><span>Total</span><span>PKR "+(b.total||0).toLocaleString()+"</span></div>";
+      h += "<div class='fc-row'><span>Received</span><span>PKR "+(b.paid||0).toLocaleString()+"</span></div>";
+      h += "<div class='fc-bal "+(bal>0?"owed":"paid")+"'><span>"+(bal>0?"Balance Due":"Fully Paid")+"</span><span>"+(bal>0?"PKR "+bal.toLocaleString():"")+"</span></div>";
+      if(bal>0) h += "<button class='fc-paybtn' data-pay='"+b.id+"'>+ Record Payment</button>";
+      h += "</div>";
+    });
+  } else {
+    mBkns.forEach(function(b){
+      var costs=b.costs||{};
+      var total=COSTS.reduce(function(s,k){return s+(parseFloat(costs[k])||0);},0);
+      var net=(b.total||0)-total;
+      h += "<div class='cost-card'><div class='cost-top'><div class='cost-name'>"+b.name+" <span style='font-size:9px;color:var(--gold);'>"+b.ref+"</span></div><div class='cost-total'>Costs: PKR "+total.toLocaleString()+"</div></div>";
+      h += "<div class='cost-grid'>";
+      COSTS.forEach(function(k){h+="<div class='cost-item'><div class='cost-lbl'>"+k+"</div><input class='cost-inp' type='number' placeholder='0' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"'></div>";});
+      h += "</div><div class='fc-row' style='margin-bottom:8px;'><span>Net Profit</span><span style='color:"+(net>=0?"var(--grn)":"var(--red)")+"'>PKR "+net.toLocaleString()+"</span></div>";
+      h += "<button class='cost-save' data-bid='"+b.id+"'>Save Costs</button></div>";
+    });
+  }
+  var fEl=document.getElementById("fin-body"); if(fEl) fEl.innerHTML=h;
+  var fpEl=document.getElementById("fin-p"); if(fpEl) fpEl.addEventListener("click",function(){finM--;if(finM<0){finM=11;finY--;}rFin();});
+  var fnEl=document.getElementById("fin-n"); if(fnEl) fnEl.addEventListener("click",function(){finM++;if(finM>11){finM=0;finY++;}rFin();});
+  document.querySelectorAll(".fin-tab[data-ft]").forEach(function(t){t.addEventListener("click",function(){finTab=this.getAttribute("data-ft");rFin();});});
+  document.querySelectorAll("[data-pay]").forEach(function(btn){btn.addEventListener("click",function(){openPay(this.getAttribute("data-pay"));});});
+  document.querySelectorAll(".cost-save[data-bid]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var bid=this.getAttribute("data-bid");
+      var b=BKN.find(function(x){return x.id===bid;}); if(!b) return;
+      var costs={};
+      document.querySelectorAll(".cost-inp[data-bid='"+bid+"']").forEach(function(inp){var v=parseFloat(inp.value)||0;if(v>0)costs[inp.getAttribute("data-k")]=v;});
+      b.costs=costs; ld(); db("bookings?id=eq."+bid,"PATCH",{costs:costs}).then(function(){hd();rFin();toast("Costs saved!");}).catch(function(){hd();});
+    });
+  });
+}
+function openPay(id) {
+  payBkgId=id;
+  var b=BKN.find(function(x){return x.id===id;});
+  document.getElementById("pay-name").textContent=b.name;
+  document.getElementById("pay-sub").textContent="Balance: PKR "+((b.total||0)-(b.paid||0)).toLocaleString();
+  document.getElementById("pay-amt").value=""; oM("pay-modal");
+}
+document.getElementById("pay-confirm").addEventListener("click",function(){
+  var amt=parseFloat(document.getElementById("pay-amt").value)||0;
+  if(!amt){alert("Enter a valid amount.");return;}
+  var b=BKN.find(function(x){return x.id===payBkgId;});
+  var np=(b.paid||0)+amt;
+  ld(); db("bookings?id=eq."+b.id,"PATCH",{paid:np}).then(function(){b.paid=np;hd();cM("pay-modal");rFin();toast("Recorded!");}).catch(function(){hd();});
+});
+document.getElementById("pay-cancel").addEventListener("click",function(){cM("pay-modal");});
+
+// ── INVOICE ────────────────────────────────────────────────────────────────────
+function openInvoice(id) {
+  invoiceBkgId=id;
+  var b=BKN.find(function(x){return x.id===id;}); if(!b) return;
+  invoiceLines=b.invoiceItems?JSON.parse(JSON.stringify(b.invoiceItems)):[];
+  renderInvoiceModal(b); oM("invoice-modal");
+}
+function renderInvoiceModal(b) {
+  var h="";
+  invoiceLines.forEach(function(line,i){
+    h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
+    h += "<span style='font-size:12px;color:var(--mob-cream,#F0E6D3);flex:1;'>"+line.desc+"</span>";
+    h += "<span style='font-size:12px;color:var(--gold);margin-left:8px;'>PKR "+parseInt(line.amt).toLocaleString()+"</span>";
+    h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;margin-left:8px;' data-deline='"+i+"'>&#10005;</button></div>";
+  });
+  if(!invoiceLines.length) h="<div style='font-size:11px;color:var(--mob-mut,#7A6347);'>Add line items below.</div>";
+  document.getElementById("invoice-items-el").innerHTML=h;
+  document.querySelectorAll("[data-deline]").forEach(function(btn){
+    btn.addEventListener("click",function(){invoiceLines.splice(parseInt(this.getAttribute("data-deline")),1);renderInvoiceModal(b);updateInvoiceTotals(b);});
+  });
+  updateInvoiceTotals(b);
+}
+function updateInvoiceTotals(b) {
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b?b.paid||0:0, bal=total-adv;
+  document.getElementById("inv-total-el").textContent="PKR "+total.toLocaleString();
+  document.getElementById("inv-advance-el").textContent="PKR "+adv.toLocaleString();
+  document.getElementById("inv-balance-el").textContent="PKR "+Math.max(0,bal).toLocaleString();
+}
+document.getElementById("inv-add-line-btn").addEventListener("click",function(){
+  var desc=document.getElementById("inv-desc").value.trim();
+  var amt=parseFloat(document.getElementById("inv-amt").value)||0;
+  if(!desc||!amt){toast("Enter description and amount.");return;}
+  invoiceLines.push({desc:desc,amt:amt});
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;});
+  document.getElementById("inv-desc").value=""; document.getElementById("inv-amt").value="";
+  renderInvoiceModal(b);
+});
+document.getElementById("inv-cancel").addEventListener("click",function(){cM("invoice-modal");});
+document.getElementById("inv-print-btn").addEventListener("click",function(){
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
+  b.invoiceItems=invoiceLines;
+  db("bookings?id=eq."+b.id,"PATCH",{invoice_items:invoiceLines});
+  printInvoice(b); cM("invoice-modal");
+});
+
+function numToWords(n) {
+  if(n===0) return "Zero";
+  var ones=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+  var tens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+  function h(num) {
+    if(num===0) return "";
+    if(num<20) return ones[num]+" ";
+    if(num<100) return tens[Math.floor(num/10)]+" "+(num%10?ones[num%10]+" ":"");
+    if(num<1000) return ones[Math.floor(num/100)]+" Hundred "+(num%100?h(num%100):"");
+    if(num<100000) return h(Math.floor(num/1000))+"Thousand "+(num%1000?h(num%1000):"");
+    if(num<10000000) return h(Math.floor(num/100000))+"Lac "+(num%100000?h(num%100000):"");
+    return h(Math.floor(num/10000000))+"Crore "+(num%10000000?h(num%10000000):"");
+  }
+  return h(n).trim()+" Rupees Only";
+}
+
+function printInvoice(b) {
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b.paid||0, bal=total-adv;
+  var today=new Date().toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"}).toUpperCase();
+  var logoSrc=BL||"";
+  var ps=document.getElementById("print-sheet");
+  var rows=invoiceLines.map(function(l,i){
+    return '<tr style="background:'+(i%2===0?"#fff":"#fdf8f0")+';"><td style="padding:6pt 8pt;font-size:9pt;font-weight:600;text-transform:uppercase;">'+l.desc+'</td><td style="padding:6pt 8pt;text-align:right;font-size:9pt;font-weight:600;">'+parseInt(l.amt).toLocaleString()+'/-</td></tr>';
+  }).join("");
+  ps.innerHTML =
+    '<div style="font-family:Arial,sans-serif;max-width:210mm;margin:0 auto;padding:10mm 14mm;color:#111;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8mm;border-bottom:2px solid #C9A84C;padding-bottom:6mm;">'
+    +'<div style="width:70px;height:70px;">'+(logoSrc?'<img src="'+logoSrc+'" style="width:100%;height:100%;object-fit:contain;">':'')+'</div>'
+    +'<div style="text-align:center;flex:1;"><div style="font-size:28pt;font-weight:700;color:#1A0F08;font-family:Georgia,serif;">Happenings.co</div><div style="font-size:11pt;color:#C9A84C;letter-spacing:2px;">\u2500\u2500 Event Organiser \u2500\u2500</div></div>'
+    +'<div style="width:70px;"></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:8mm;">'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Customer</div><div style="font-size:10pt;font-weight:600;">'+b.name.toUpperCase()+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Booking Ref</div><div style="font-size:10pt;font-weight:600;">'+b.ref+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Mobile</div><div style="font-size:10pt;">'+(b.phone||"-")+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Invoice Date</div><div style="font-size:10pt;">'+today+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Location</div><div style="font-size:10pt;">'+(b.venue||"-")+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Date</div><div style="font-size:10pt;">'+new Date(b.date+"T00:00:00").toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"}).toUpperCase()+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:10pt;margin-bottom:6mm;">Dear Client,<br><span style="color:#555;">We are pleased to submit the invoice for the following:</span></div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:4mm;">'
+    +'<thead><tr style="background:#C9A84C;color:#0F0905;"><th style="padding:7pt 8pt;text-align:left;font-size:9pt;text-transform:uppercase;">Description</th><th style="padding:7pt 8pt;text-align:right;font-size:9pt;text-transform:uppercase;">Amount</th></tr></thead>'
+    +'<tbody>'+rows
+    +'<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;border-top:1.5pt solid #C9A84C;">Total Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;border-top:1.5pt solid #C9A84C;">'+total.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Advance Paid</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;">'+adv.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#2C1A0E;color:#C9A84C;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Balance Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:10pt;">'+bal.toLocaleString()+'/-</td></tr>'
+    +'</tbody></table>'
+    +'<div style="font-size:10pt;font-weight:700;margin-bottom:8mm;padding:5pt 8pt;background:#fff3e0;border-left:3pt solid #C9A84C;">BALANCE AMOUNT RS '+bal.toLocaleString()+'/-  '+numToWords(bal).toUpperCase()+'</div>'
+    +'<div style="font-size:9pt;color:#555;margin-bottom:6mm;font-style:italic;">Thanking and assuring you for our best services all time, Insha\'Allah</div>'
+    +'<div style="margin-bottom:8mm;"><div style="font-size:9pt;">Yours Truly</div><div style="font-size:10pt;font-weight:700;margin-top:4mm;">FINANCE MANAGER</div><div style="font-size:10pt;font-weight:700;">HAPPENINGS.CO</div></div>'
+    +'<div style="font-size:8pt;color:#888;font-style:italic;margin-bottom:8mm;">** System generated bill. Signature not required **</div>'
+    +'<div style="background:#1A0F08;color:#C9A84C;padding:5mm 8mm;border-radius:4pt;display:flex;align-items:center;justify-content:space-between;">'
+    +'<div style="font-size:8pt;">\u{1F4CD} Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
+    +'<div style="font-size:8pt;display:flex;gap:12pt;"><span>\u{1F4F7} Happenings.co</span><span>\u{1F4DE} 03302894915</span></div>'
+    +'</div></div>';
+  window.print();
+  setTimeout(function(){ps.innerHTML="";},1000);
+}
+
+// ── EVENT MEDIA GALLERY ──────────────────────────────────────────────────────────
+var MEDIA_CATS=["All","Nikkah","Engagement","Bridal Shower","Birthday","Mehendi","Backdrop","Florals","Setup","Other"];
+
+function rMedia() {
+  var el=document.getElementById("media-body"); if(!el) return;
+  var filtered=mediaFilter==="All"?MEDIA:MEDIA.filter(function(m){return m.cat===mediaFilter;});
+  var h="";
+  // Upload button + filter tabs
+  h+="<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
+  h+="<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
+  h+="<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
+  h+="<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:8px 11px;'>";
+  h+="</div>";
+  h+="<div class='cattabs' style='background:transparent;border:none;margin-bottom:14px;padding:0;'>";
+  MEDIA_CATS.forEach(function(c){h+="<div class='ctab"+(mediaFilter===c?" on":"")+"' data-mcat='"+c+"'>"+c+"</div>";});
+  h+="</div>";
+  if(!filtered.length){
+    h+="<div class='empty'><div class='empty-ic'>&#128247;</div><div class='empty-tx'>No photos yet.<br>Tap + Add Photo to upload.</div></div>";
+  } else {
+    h+="<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;'>";
+    filtered.forEach(function(m,i){
+      h+="<div style='position:relative;border-radius:10px;overflow:hidden;background:var(--mob-bm,#2C1A0E);border:1px solid var(--mob-brs);'>";
+      h+="<div style='width:100%;aspect-ratio:1;overflow:hidden;cursor:pointer;' data-lightbox='"+i+"'>";
+      if(m.type==="video") {
+        h+="<video src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;' muted></video>";
+        h+="<div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;pointer-events:none;'>&#9654;</div>";
+      } else {
+        h+="<img src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;'>";
+      }
+      h+="</div>";
+      h+="<div style='padding:7px 8px;'>";
+      h+="<div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>"+m.title+"</div>";
+      h+="<div style='font-size:9px;color:var(--gold);'>"+m.cat+"</div>";
+      if(m.tags&&m.tags.length>0) h+="<div style='font-size:8px;color:var(--mob-mut,#7A6347);margin-top:2px;'>"+m.tags.join(", ")+"</div>";
+      h+="</div>";
+      h+="<button style='position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;' data-delm='"+i+"'>&#10005;</button>";
+      h+="</div>";
+    });
+    h+="</div>";
+  }
+  el.innerHTML=h;
+  // Bind upload
+  var ub=document.getElementById("media-upload-btn");
+  if(ub) ub.addEventListener("click",function(){document.getElementById("media-file").click();});
+  var mf=document.getElementById("media-file");
+  if(mf) mf.addEventListener("change",function(){
+    var files=Array.from(this.files);
+    if(!files.length) return;
+    var pending=files.length;
+    files.forEach(function(f){
+      var isVideo=f.type.indexOf("video")===0;
+      rF(f,function(src){
+        var title=f.name.replace(/\.[^.]+$/,"");
+        oM("media-add-modal");
+        document.getElementById("media-title-inp").value=title;
+        document.getElementById("media-cat-sel").value="Other";
+        document.getElementById("media-tags-inp").value="";
+        document.getElementById("media-preview").innerHTML=isVideo
+          ?"<video src='"+src+"' style='width:100%;max-height:200px;border-radius:8px;' controls></video>"
+          :"<img src='"+src+"' style='width:100%;max-height:200px;object-fit:cover;border-radius:8px;'>";
+        document.getElementById("media-save-btn").onclick=function(){
+          var title2=document.getElementById("media-title-inp").value.trim()||f.name;
+          var cat=document.getElementById("media-cat-sel").value;
+          var tags=document.getElementById("media-tags-inp").value.split(",").map(function(t){return t.trim();}).filter(Boolean);
+          MEDIA.push({src:src,type:isVideo?"video":"image",title:title2,cat:cat,tags:tags,date:new Date().toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"})});
+          localStorage.setItem("ev_media",JSON.stringify(MEDIA));
+          cM("media-add-modal"); rMedia(); toast("Photo added!");
+        };
+      });
+    });
+    this.value="";
+  });
+  // Bind filter tabs
+  el.querySelectorAll("[data-mcat]").forEach(function(t){
+    t.addEventListener("click",function(){mediaFilter=this.getAttribute("data-mcat");rMedia();});
+  });
+  // Bind search
+  var ms=document.getElementById("media-search");
+  if(ms) ms.addEventListener("input",function(){
+    var q=this.value.toLowerCase();
+    el.querySelectorAll("[data-lightbox]").forEach(function(card){
+      // show/hide based on search - simple approach
+    });
+    // re-filter
+    var filt=q?MEDIA.filter(function(m){return m.title.toLowerCase().indexOf(q)>-1||(m.tags&&m.tags.some(function(t){return t.toLowerCase().indexOf(q)>-1;}))||m.cat.toLowerCase().indexOf(q)>-1;}):MEDIA;
+    // rebuild just the grid
+    var grid=el.querySelector("div[style*='grid-template-columns']");
+    if(!grid) return;
+    var h2="";
+    filt.forEach(function(m,i){
+      h2+="<div style='position:relative;border-radius:10px;overflow:hidden;background:var(--mob-bm,#2C1A0E);border:1px solid var(--mob-brs);'>";
+      h2+="<div style='width:100%;aspect-ratio:1;overflow:hidden;' data-lightbox='"+i+"'>";
+      h2+=(m.type==="video"?"<video src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;' muted></video><div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;'>&#9654;</div>":"<img src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;'>");
+      h2+="</div><div style='padding:7px 8px;'><div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);'>"+m.title+"</div><div style='font-size:9px;color:var(--gold);'>"+m.cat+"</div></div></div>";
+    });
+    grid.innerHTML=h2;
+  });
+  // Bind delete
+  el.querySelectorAll("[data-delm]").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var me=this, idx=parseInt(me.getAttribute("data-delm"));
+      if(me.getAttribute("data-c")==="1"){
+        MEDIA.splice(idx,1); localStorage.setItem("ev_media",JSON.stringify(MEDIA)); rMedia(); toast("Removed.");
+      } else {
+        me.setAttribute("data-c","1"); me.textContent="?"; me.style.background="rgba(184,92,74,.8)";
+        setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.textContent="&#10005;";me.style.background="rgba(0,0,0,.6)";}},2000);
+      }
+    });
+  });
+  // Lightbox
+  el.querySelectorAll("[data-lightbox]").forEach(function(card){
+    card.addEventListener("click",function(){
+      var idx=parseInt(this.getAttribute("data-lightbox"));
+      var m=filtered[idx]; if(!m) return;
+      var lb=document.createElement("div");
+      lb.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;";
+      lb.innerHTML=(m.type==="video"
+        ?"<video src='"+m.src+"' style='max-width:100%;max-height:75vh;border-radius:10px;' controls autoplay></video>"
+        :"<img src='"+m.src+"' style='max-width:100%;max-height:75vh;object-fit:contain;border-radius:10px;'>")
+        +"<div style='margin-top:12px;text-align:center;'><div style='font-size:14px;font-weight:500;color:#F0E6D3;'>"+m.title+"</div><div style='font-size:11px;color:var(--gold);margin-top:3px;'>"+m.cat+(m.tags&&m.tags.length>0?" — "+m.tags.join(", "):"")+"</div></div>"
+        +"<button style='position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;' id='lb-close'>&#10005;</button>";
+      document.body.appendChild(lb);
+      document.getElementById("lb-close").addEventListener("click",function(){document.body.removeChild(lb);});
+      lb.addEventListener("click",function(e){if(e.target===lb)document.body.removeChild(lb);});
+    });
+  });
+}
+
+// ── OVERLAY CLOSE ────────────────────────────────────────────────────────────
+document.querySelectorAll(".overlay").forEach(function(el){
+  el.addEventListener("click",function(e){if(e.target===this)this.classList.remove("open");});
+});
+
+// ── SAMPLE DATA ──────────────────────────────────────────────────────────────
+(function(){
+  var inv=JSON.parse(localStorage.getItem("ev_inv")||"[]");
+  if(inv.length===0){
+    var samples=[
+      {id:"i001",name:"Gold Tiffany Chair",qty:150,cat:"Decor Rental",subcat:"Fancy",photo:null},
+      {id:"i002",name:"Round Table (5ft)",qty:30,cat:"Decor Rental",subcat:"Basic",photo:null},
+      {id:"i003",name:"Floral Backdrop",qty:5,cat:"Backdrops",subcat:"Floral",photo:null},
+      {id:"i004",name:"Fairy Light Backdrop",qty:4,cat:"Backdrops",subcat:"Fairy Lights",photo:null},
+      {id:"i005",name:"White Orchid Centerpiece",qty:20,cat:"Florals",subcat:"White",photo:null},
+      {id:"i006",name:"Rose Garland",qty:15,cat:"Florals",subcat:"Pink",photo:null},
+      {id:"i007",name:"Dinner Plate Set",qty:200,cat:"Crockery and Cutlery",subcat:null,photo:null},
+      {id:"i008",name:"Cutlery Set",qty:200,cat:"Crockery and Cutlery",subcat:null,photo:null},
+      {id:"i009",name:"LED Fairy Lights",qty:50,cat:"Lighting",subcat:"Basic",photo:null},
+      {id:"i010",name:"Spotlight",qty:10,cat:"Lighting",subcat:"Fancy",photo:null},
+      {id:"i011",name:"Stage Setup (Basic)",qty:2,cat:"Setup",subcat:null,photo:null},
+      {id:"i012",name:"Table Runner (Gold)",qty:40,cat:"Detailing",subcat:null,photo:null},
+      {id:"i013",name:"Candle Holders",qty:60,cat:"Detailing",subcat:null,photo:null}
+    ];
+    localStorage.setItem("ev_inv",JSON.stringify(samples));
+  }
+})();
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+if(sessionStorage.getItem("auth")==="1"){
+  initLayout();
+  go("s-dash");
+  loadAll();
+} else {
+  // Show login screen - keep it as mobile-style centered regardless of device
+  document.getElementById("desk-sidebar").style.display="none";
+  document.getElementById("desk-main").style.display="none";
+  document.getElementById("s-login").style.display="flex";
+  document.getElementById("s-login").classList.add("active");
+}
+</script>
 </body>
 </html>
