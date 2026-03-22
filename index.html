@@ -693,6 +693,19 @@ body {background:#0F0905;color:#F0E6D3;}
 }
 #print-sheet{display:none;}
 </style>
+
+<style>
+@media (min-width: 768px) {
+  #s-login {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #0F0905 !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -719,6 +732,8 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="desk-nav-item" data-screen="s-inv"><span class="dni-ic">&#128230;</span> Inventory</div>
     <div class="desk-nav-section">Finance</div>
     <div class="desk-nav-item" data-fin="1"><span class="dni-ic">&#128176;</span> Finance</div>
+    <div class="desk-nav-section">Content</div>
+    <div class="desk-nav-item" data-screen="s-media"><span class="dni-ic">&#128247;</span> Event Gallery</div>
   </div>
   <div class="desk-nav-footer">
     <button class="desk-footer-btn" id="desk-fin-btn" data-fin="1">&#128176; Finance</button>
@@ -773,6 +788,10 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni on" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
   </div>
@@ -784,6 +803,10 @@ body {background:#0F0905;color:#F0E6D3;}
   <div class="bnav">
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni on" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni on" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -803,6 +826,10 @@ body {background:#0F0905;color:#F0E6D3;}
   <div class="bnav">
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni on" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni on" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
@@ -975,6 +1002,10 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
   </div>
@@ -1061,6 +1092,10 @@ body {background:#0F0905;color:#F0E6D3;}
     <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni on" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni on" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
   </div>
@@ -1094,11 +1129,37 @@ body {background:#0F0905;color:#F0E6D3;}
   <div class="topbar"><div class="tb-brand"><div><div class="tb-title">Finance</div><div class="tb-sub">Payments &amp; Costs</div></div></div></div>
   <div class="fin-wrap" id="fin-body"></div>
   <div class="bnav">
-    <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
+    <div class="ni on" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
     <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
     <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
     <div class="ni" data-go="s-inv"><div class="ni-ic">&#128230;</div><div class="ni-lb">Inventory</div></div>
     <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+  </div>
+</div>
+
+<!-- EVENT DETAILS -->
+<div id="s-event-details" class="screen">
+  <div class="topbar">
+    <div class="tb-brand"><div><div class="tb-title">Event Details</div><div class="tb-sub" id="ed-sub">Discussion &amp; Inspos</div></div></div>
+    <button class="tbtn" id="skip-event-details">Skip &#8594;</button>
+  </div>
+  <div class="fbody" id="event-details-body" style="padding-bottom:80px;">
+    <div class="fg"><div class="fl">Event Discussion Notes</div>
+      <textarea class="fi" id="ed-notes" placeholder="Color palette, special requests, table setup, anything discussed with client..." style="min-height:100px;resize:vertical;"></textarea>
+    </div>
+    <div class="fg" style="margin-top:12px;">
+      <div class="fl">Inspo / Reference Photos</div>
+      <div class="inspo-box" style="margin-top:6px;">
+        <div class="inspo-thumbs" id="ed-inspo-thumbs"></div>
+        <div class="inspo-add" id="ed-inspo-add"><div style="font-size:18px;margin-bottom:3px;">+</div><div>Add inspo photo</div></div>
+        <input type="file" accept="image/*" id="ed-inspo-file" style="display:none" multiple>
+      </div>
+    </div>
+    <button class="btn-save" style="margin-top:16px;" id="save-event-details-btn">Save &amp; Reserve Inventory &#8594;</button>
   </div>
 </div>
 
@@ -1128,6 +1189,13 @@ body {background:#0F0905;color:#F0E6D3;}
 <div id="s-media" class="screen">
   <div class="topbar"><div class="tb-brand"><div><div class="tb-title">Event Gallery</div><div class="tb-sub">Photos &amp; References</div></div></div></div>
   <div style="flex:1;overflow-y:auto;padding:14px;" id="media-body"></div>
+  <div class="bnav">
+    <div class="ni" data-go="s-dash"><div class="ni-ic">&#9776;</div><div class="ni-lb">Dash</div></div>
+    <div class="ni" data-go="s-cal"><div class="ni-ic">&#128197;</div><div class="ni-lb">Calendar</div></div>
+    <div class="ni" data-go="s-bkns"><div class="ni-ic">&#128203;</div><div class="ni-lb">Bookings</div></div>
+    <div class="ni" data-go="s-dispatch-hub"><div class="ni-ic">&#128666;</div><div class="ni-lb">Dispatch</div></div>
+    <div class="ni on" data-go="s-media"><div class="ni-ic">&#128247;</div><div class="ni-lb">Gallery</div></div>
+  </div>
 </div>
 
 <!-- MODALS -->
@@ -1384,7 +1452,9 @@ function go(id) {
     else if(id==="s-cart") rCart();
     else if(id==="s-bkn-detail" && curDetailId) rDetail(curDetailId);
     else if(id==="s-invoice") rInvoiceScreen();
+    else if(id==="s-event-details") rEventDetails();
     else if(id==="s-invoice-preview") rInvoicePreview();
+    else if(id==="s-media") rMedia();
     else if(id==="s-inv-reserve") { rReserveGrid("All"); }
   }
 }
@@ -1767,7 +1837,11 @@ function doSaveBooking(goReserve) {
     b.discussionLog=[]; b.staffAssigned=[]; b.invoiceItems=[];
     BKN.push(b); BKN.sort(function(a,c){return a.date>c.date?1:-1;});
     hd(); toast("Booking saved! Ref: "+refNum);
-    if(goReserve){cart={}; curBkg=b; go("s-inv-reserve");}
+    if(goReserve){
+      cart={}; curBkg=b; curEventInspos=[]; curEventNotes="";
+      document.getElementById("ed-sub").textContent=b.name;
+      go("s-event-details");
+    }
     else go("s-bkns");
   }).catch(function(err){hd();alert("Error: "+err.message);});
 }
@@ -2048,6 +2122,36 @@ function confirmReserve() {
   toast("Inventory reserved!"); go("s-bkns");
 }
 var skipResEl=document.getElementById("skip-reserve-btn"); if(skipResEl) skipResEl.addEventListener("click",function(){go("s-bkns");});
+var skipEdEl=document.getElementById("skip-event-details"); if(skipEdEl) skipEdEl.addEventListener("click",function(){go("s-inv-reserve");});
+var saveEdEl=document.getElementById("save-event-details-btn"); if(saveEdEl) saveEdEl.addEventListener("click",function(){
+  curEventNotes=document.getElementById("ed-notes").value.trim();
+  if(curBkg){curBkg.eventNotes=curEventNotes;curBkg.eventInspos=curEventInspos;
+    db("bookings?id=eq."+curBkg.id,"PATCH",{reminder_notes:curEventNotes});
+  }
+  go("s-inv-reserve");
+});
+var edInspoAdd=document.getElementById("ed-inspo-add"); if(edInspoAdd) edInspoAdd.addEventListener("click",function(){document.getElementById("ed-inspo-file").click();});
+var edInspoFile=document.getElementById("ed-inspo-file"); if(edInspoFile) edInspoFile.addEventListener("change",function(){
+  var files=Array.from(this.files);
+  files.forEach(function(f){
+    if(curEventInspos.length>=10) return;
+    rF(f,function(s){curEventInspos.push(s);rEdInspoThumbs();});
+  });
+  this.value="";
+});
+
+function rEdInspoThumbs(){
+  var el=document.getElementById("ed-inspo-thumbs"); if(!el) return;
+  var h="";
+  curEventInspos.forEach(function(s,i){h+="<div class='inspo-thumb'><img src='"+s+"'><button class='inspo-del' data-ei='"+i+"'>x</button></div>";});
+  el.innerHTML=h;
+  el.querySelectorAll(".inspo-del").forEach(function(btn){btn.addEventListener("click",function(){curEventInspos.splice(parseInt(this.getAttribute("data-ei")),1);rEdInspoThumbs();});});
+}
+
+function rEventDetails(){
+  var notesEl=document.getElementById("ed-notes"); if(notesEl) notesEl.value=curEventNotes||"";
+  rEdInspoThumbs();
+}
 var confResEl=document.getElementById("confirm-reserve-btn"); if(confResEl) confResEl.addEventListener("click",confirmReserve);
 
 // ── INSPO ────────────────────────────────────────────────────────────────────
@@ -2144,17 +2248,26 @@ function genSheet() {
 function buildSheet() {
   var b=curBkg; if(!b) return;
   var h="";
-  h += "<div class='sh-hdr'><div class='sh-biz'>"+BN+" - Dispatch Sheet</div><div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
+  // Use event inspos from event details if available, otherwise cart inspos
+  var allInspos = (b.eventInspos&&b.eventInspos.length>0) ? b.eventInspos.concat(curInspos) : curInspos;
+  var eventNotes = b.eventNotes||b.reminder||"";
+  h += "<div class='sh-hdr'>";
+  h += "<div class='sh-biz'>"+BN+" — Dispatch Sheet</div>";
+  h += "<div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
   h += "<div class='sh-meta'>";
-  h += "<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div><div class='sh-f'>Event<span>"+b.type+"</span></div>";
-  h += "<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div><div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
-  h += "<div class='sh-f'>Ready<span>"+fT(b.ready)+"</span></div><div class='sh-f'>Pickup<span>"+fT(b.pickup)+"</span></div>";
-  if(b.notes) h += "<div class='sh-f' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
+  h += "<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div>";
+  h += "<div class='sh-f'>Event<span>"+b.type+"</span></div>";
+  h += "<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div>";
+  h += "<div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
+  h += "<div class='sh-f'>Ready Time<span>"+fT(b.ready)+"</span></div>";
+  h += "<div class='sh-f'>Pickup Time<span>"+fT(b.pickup)+"</span></div>";
+  if(b.notes) h += "<div class='sh-f' style='grid-column:1/-1'>Booking Notes<span>"+b.notes+"</span></div>";
+  if(eventNotes) h += "<div class='sh-f' style='grid-column:1/-1'>Event Details<span>"+eventNotes+"</span></div>";
   if(curStaffAssign&&curStaffAssign.length>0) h += "<div class='sh-f' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
   h += "</div>";
-  if(curInspos.length>0){
+  if(allInspos.length>0){
     h += "<div class='sh-inspo-lbl'>Setup Reference Photos</div><div class='sh-inspo-wrap'>";
-    curInspos.forEach(function(s){h+="<img src='"+s+"'>";});
+    allInspos.forEach(function(s){h+="<img src='"+s+"'>";});
     h += "</div>";
   }
   h += "</div>";
@@ -2469,30 +2582,68 @@ function rFin() {
       h += "</div>";
     });
   } else {
-    mBkns.forEach(function(b){
+    // Spreadsheet table
+    h += "<div style='overflow-x:auto;margin-top:8px;'><table style='width:100%;border-collapse:collapse;font-size:11px;min-width:900px;'>";
+    h += "<thead><tr style='background:var(--gold);color:#0F0905;'>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Ref</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Client</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Date</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Event</th>";
+    var COST_COLS=["Transport","Florist","Labour","Lighting","Balloon","Printing","Decor","Rental","Panel","Truss","Leaves","Misc","Note"];
+    COST_COLS.forEach(function(k){h+="<th style='padding:7px 6px;white-space:nowrap;'>"+k+"</th>";});
+    h += "<th style='padding:7px 8px;text-align:right;white-space:nowrap;background:#C9A84C;'>Total</th>";
+    h += "</tr></thead><tbody>";
+    mBkns.forEach(function(b,ri){
       var costs=b.costs||{};
-      var total=COSTS.reduce(function(s,k){return s+(parseFloat(costs[k])||0);},0);
-      var net=(b.total||0)-total;
-      h += "<div class='cost-card'><div class='cost-top'><div class='cost-name'>"+b.name+" <span style='font-size:9px;color:var(--gold);'>"+b.ref+"</span></div><div class='cost-total'>Costs: PKR "+total.toLocaleString()+"</div></div>";
-      h += "<div class='cost-grid'>";
-      COSTS.forEach(function(k){h+="<div class='cost-item'><div class='cost-lbl'>"+k+"</div><input class='cost-inp' type='number' placeholder='0' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"'></div>";});
-      h += "</div><div class='fc-row' style='margin-bottom:8px;'><span>Net Profit</span><span style='color:"+(net>=0?"var(--grn)":"var(--red)")+"'>PKR "+net.toLocaleString()+"</span></div>";
-      h += "<button class='cost-save' data-bid='"+b.id+"'>Save Costs</button></div>";
+      var total=COST_COLS.filter(function(k){return k!=="Note";}).reduce(function(s,k){return s+(parseFloat(costs[k])||0);},0);
+      var bg=ri%2===0?"background:rgba(255,255,255,0.03)":"background:rgba(255,255,255,0.07)";
+      h += "<tr style='"+bg+";border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.1));'>";
+      h += "<td style='padding:6px 8px;color:var(--gold);font-size:9px;white-space:nowrap;'>"+b.ref+"</td>";
+      h += "<td style='padding:6px 8px;font-weight:500;white-space:nowrap;'>"+b.name+"</td>";
+      h += "<td style='padding:6px 8px;white-space:nowrap;color:var(--mob-mut,#7A6347);'>"+fD(b.date)+"</td>";
+      h += "<td style='padding:6px 8px;white-space:nowrap;'>"+b.type+"</td>";
+      COST_COLS.forEach(function(k){
+        var isNote=k==="Note";
+        h += "<td style='padding:4px 4px;'>";
+        if(isNote){
+          h += "<input class='cost-inp' type='text' placeholder='Note' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"' style='width:80px;font-size:10px;padding:3px 5px;'>";
+        } else {
+          h += "<input class='cost-inp' type='number' placeholder='0' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"' style='width:60px;font-size:10px;padding:3px 5px;'>";
+        }
+        h += "</td>";
+      });
+      h += "<td style='padding:6px 8px;text-align:right;font-weight:600;color:var(--red,#B85C4A);white-space:nowrap;'>"+total.toLocaleString()+"</td>";
+      h += "</tr>";
     });
+    h += "</tbody></table></div>";
+    h += "<button class='btn-save' style='margin-top:12px;' id='save-all-costs'>Save All Costs</button>";
   }
   var fEl=document.getElementById("fin-body"); if(fEl) fEl.innerHTML=h;
   var fpEl=document.getElementById("fin-p"); if(fpEl) fpEl.addEventListener("click",function(){finM--;if(finM<0){finM=11;finY--;}rFin();});
   var fnEl=document.getElementById("fin-n"); if(fnEl) fnEl.addEventListener("click",function(){finM++;if(finM>11){finM=0;finY++;}rFin();});
   document.querySelectorAll(".fin-tab[data-ft]").forEach(function(t){t.addEventListener("click",function(){finTab=this.getAttribute("data-ft");rFin();});});
   document.querySelectorAll("[data-pay]").forEach(function(btn){btn.addEventListener("click",function(){openPay(this.getAttribute("data-pay"));});});
-  document.querySelectorAll(".cost-save[data-bid]").forEach(function(btn){
-    btn.addEventListener("click",function(){
-      var bid=this.getAttribute("data-bid");
-      var b=BKN.find(function(x){return x.id===bid;}); if(!b) return;
-      var costs={};
-      document.querySelectorAll(".cost-inp[data-bid='"+bid+"']").forEach(function(inp){var v=parseFloat(inp.value)||0;if(v>0)costs[inp.getAttribute("data-k")]=v;});
-      b.costs=costs; ld(); db("bookings?id=eq."+bid,"PATCH",{costs:costs}).then(function(){hd();rFin();toast("Costs saved!");}).catch(function(){hd();});
+  var saveAllBtn=document.getElementById("save-all-costs");
+  if(saveAllBtn) saveAllBtn.addEventListener("click",function(){
+    var promises=[];
+    var bids={};
+    document.querySelectorAll(".cost-inp[data-bid]").forEach(function(inp){
+      var bid=inp.getAttribute("data-bid");
+      if(!bids[bid]) bids[bid]={};
+      var v=inp.value.trim();
+      var k=inp.getAttribute("data-k");
+      if(k==="Note"){if(v) bids[bid][k]=v;}
+      else{if(parseFloat(v)>0) bids[bid][k]=parseFloat(v);}
     });
+    ld();
+    var keys=Object.keys(bids);
+    var done=0;
+    keys.forEach(function(bid){
+      var b=BKN.find(function(x){return x.id===bid;}); if(!b){done++;if(done===keys.length){hd();rFin();toast("Costs saved!");}return;}
+      b.costs=bids[bid];
+      db("bookings?id=eq."+bid,"PATCH",{costs:bids[bid]}).then(function(){done++;if(done===keys.length){hd();rFin();toast("Costs saved!");}}).catch(function(){hd();});
+    });
+    if(!keys.length){hd();toast("Nothing to save.");}
   });
 }
 function openPay(id) {
