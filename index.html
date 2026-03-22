@@ -692,6 +692,8 @@ body {background:#0F0905;color:#F0E6D3;}
   .ps-item-qty{font-size:8pt;font-weight:700;color:#C9A84C;}
 }
 #print-sheet{display:none;}
+
+@media (min-width: 768px) { .screen { display: none !important; } #s-login { display: flex !important; } }
 </style>
 </head>
 <body>
@@ -1310,25 +1312,25 @@ var mediaFilter="All";
 var PACKAGES=JSON.parse(localStorage.getItem("ev_pkgs")||"[]");
 
 // ── DB (localStorage) ──────────────────────────────────────────────────────
+var SU="https://oqxlzyimondgwbqslibw.supabase.co";
+var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
+
 function db(path, method, body) {
-  return new Promise(function(resolve) {
-    var id = path.indexOf("eq.") > -1 ? path.split("eq.")[1] : null;
-    if (method === "POST") {
-      if (path === "bookings") { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); a.push(body); localStorage.setItem("ev_bkns",JSON.stringify(a)); }
-      else if (path === "inventory") { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); a.push(body); localStorage.setItem("ev_inv",JSON.stringify(a)); }
-    } else if (method === "PATCH") {
-      if (path.indexOf("bookings") === 0) { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); a=a.map(function(x){return x.id===id?Object.assign({},x,body):x;}); localStorage.setItem("ev_bkns",JSON.stringify(a)); }
-      else if (path.indexOf("inventory") === 0) { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); a=a.map(function(x){return x.id===id?Object.assign({},x,body):x;}); localStorage.setItem("ev_inv",JSON.stringify(a)); }
-    } else if (method === "DELETE") {
-      if (path.indexOf("bookings") === 0) { var a=JSON.parse(localStorage.getItem("ev_bkns")||"[]"); localStorage.setItem("ev_bkns",JSON.stringify(a.filter(function(x){return x.id!==id;}))); }
-      else if (path.indexOf("inventory") === 0) { var a=JSON.parse(localStorage.getItem("ev_inv")||"[]"); localStorage.setItem("ev_inv",JSON.stringify(a.filter(function(x){return x.id!==id;}))); }
-    } else {
-      if (path.indexOf("inventory") === 0) resolve(JSON.parse(localStorage.getItem("ev_inv")||"[]"));
-      else if (path.indexOf("bookings") === 0) resolve(JSON.parse(localStorage.getItem("ev_bkns")||"[]"));
-      else resolve([]);
-      return;
+  var headers = {
+    "apikey": SK,
+    "Authorization": "Bearer " + SK,
+    "Content-Type": "application/json"
+  };
+  if (method === "POST" || method === "PATCH") headers["Prefer"] = "return=minimal";
+  return fetch(SU + "/rest/v1/" + path, {
+    method: method || "GET",
+    headers: headers,
+    body: body ? JSON.stringify(body) : undefined
+  }).then(function(r) {
+    if (r.status >= 200 && r.status < 300) {
+      return r.text().then(function(t) { return t ? JSON.parse(t) : {}; });
     }
-    resolve({});
+    return r.text().then(function(t) { throw new Error(t); });
   });
 }
 
@@ -1508,7 +1510,7 @@ function renderDesk(id) {
 // ── LOGIN ──────────────────────────────────────────────────────────────────
 document.getElementById("l-btn").addEventListener("click", function() {
   var v = document.getElementById("l-inp").value.trim();
-  if(v===AP) { sessionStorage.setItem("auth","1"); initLayout(); go("s-dash"); loadAll(); }
+  if(v===AP){sessionStorage.setItem("auth","1");var lx=document.getElementById("s-login");if(lx){lx.style.display="none";lx.classList.remove("active");}initLayout();go("s-dash");loadAll();}
   else { document.getElementById("l-err").style.display="block"; }
 });
 document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.key==="Enter") document.getElementById("l-btn").click(); });
@@ -2855,45 +2857,11 @@ document.querySelectorAll(".overlay").forEach(function(el){
 });
 
 // ── SAMPLE DATA ──────────────────────────────────────────────────────────────
-(function(){
-  var inv=JSON.parse(localStorage.getItem("ev_inv")||"[]");
-  if(inv.length===0){
-    var samples=[
-      {id:"i001",name:"Gold Tiffany Chair",qty:150,cat:"Decor Rental",subcat:"Fancy",photo:null},
-      {id:"i002",name:"Round Table (5ft)",qty:30,cat:"Decor Rental",subcat:"Basic",photo:null},
-      {id:"i003",name:"Floral Backdrop",qty:5,cat:"Backdrops",subcat:"Floral",photo:null},
-      {id:"i004",name:"Fairy Light Backdrop",qty:4,cat:"Backdrops",subcat:"Fairy Lights",photo:null},
-      {id:"i005",name:"White Orchid Centerpiece",qty:20,cat:"Florals",subcat:"White",photo:null},
-      {id:"i006",name:"Rose Garland",qty:15,cat:"Florals",subcat:"Pink",photo:null},
-      {id:"i007",name:"Dinner Plate Set",qty:200,cat:"Crockery and Cutlery",subcat:null,photo:null},
-      {id:"i008",name:"Cutlery Set",qty:200,cat:"Crockery and Cutlery",subcat:null,photo:null},
-      {id:"i009",name:"LED Fairy Lights",qty:50,cat:"Lighting",subcat:"Basic",photo:null},
-      {id:"i010",name:"Spotlight",qty:10,cat:"Lighting",subcat:"Fancy",photo:null},
-      {id:"i011",name:"Stage Setup",qty:2,cat:"Setup",subcat:null,photo:null},
-      {id:"i012",name:"Table Runner (Gold)",qty:40,cat:"Detailing",subcat:null,photo:null},
-      {id:"i013",name:"Candle Holders",qty:60,cat:"Detailing",subcat:null,photo:null}
-    ];
-    localStorage.setItem("ev_inv",JSON.stringify(samples));
-    INV=samples;
-  } else {
-    INV=inv;
-  }
-  BKN=JSON.parse(localStorage.getItem("ev_bkns")||"[]").map(function(b){
-    b.dispatchItems=b.dispatch_items||null;
-    b.extItems=b.pending_items||[];
-    b.costs=b.costs||{};
-    b.reminder=b.reminder_notes||"";
-    b.ref=b.ref||"";
-    b.discussionLog=b.discussion_log||[];
-    b.staffAssigned=b.staff_assigned||[];
-    b.invoiceItems=b.invoice_items||[];
-    return b;
-  });
-})();
+// Supabase connected - data loads via loadAll()
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 initLayout();
-if(sessionStorage.getItem("auth")==="1"){go("s-dash");loadAll();}
+if(sessionStorage.getItem("auth")==="1"){var lx=document.getElementById("s-login");if(lx){lx.style.display="none";lx.classList.remove("active");}initLayout();go("s-dash");loadAll();}
 
 } catch(e) { console.warn("Init:", e.message); }</script>
 </body>
