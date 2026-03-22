@@ -824,8 +824,13 @@ body {background:#0F0905;color:#F0E6D3;}
 </div>
 
 <div id="s-new-bkn" class="screen">
-  <div class="topbar"><div class="tb-brand"><div><div class="tb-title">New Booking</div><div class="tb-sub">Event Details</div></div></div>
+  <div class="topbar"><div class="tb-brand"><div><div class="tb-title" id="nb-step-title">New Booking</div><div class="tb-sub" id="nb-step-sub">Step 1 of 3 — Booking Details</div></div></div>
     <button class="tbtn" id="back-new-bkn">&#8592; Back</button>
+  </div>
+  <div style="display:flex;gap:4px;padding:10px 14px 0;background:var(--mob-bg2,#1A0F08);">
+    <div style="flex:1;height:3px;border-radius:2px;background:var(--gold);" id="step-bar-1"></div>
+    <div style="flex:1;height:3px;border-radius:2px;background:var(--mob-brs);" id="step-bar-2"></div>
+    <div style="flex:1;height:3px;border-radius:2px;background:var(--mob-brs);" id="step-bar-3"></div>
   </div>
   <div class="fbody">
     <div class="fsec">Client Information</div>
@@ -967,8 +972,53 @@ body {background:#0F0905;color:#F0E6D3;}
       <div class="fg"><div class="fl">Total (PKR)</div><input class="fi" id="nb-total" type="number" placeholder="0"></div>
       <div class="fg"><div class="fl">Advance Paid</div><input class="fi" id="nb-paid" type="number" placeholder="0"></div>
     </div>
-    <button class="btn-save" id="save-bkn-btn">Save &amp; Reserve Inventory</button>
-    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="save-bkn-later-btn">Save Only — Reserve Inventory Later</button>
+    <button class="btn-save" id="nb-next-btn">Next — Event Details &#8594;</button>
+    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="save-bkn-later-btn">Save Only (Skip Details)</button>
+  </div>
+
+  <!-- STEP 2: EVENT DETAILS -->
+  <div id="nb-step2" style="display:none;" class="fbody">
+    <div class="fsec">Event Discussion Notes</div>
+    <div class="fg">
+      <textarea class="fi" id="nb-ed-notes" placeholder="Color palette, special requests, table setup, client preferences..." style="min-height:120px;resize:vertical;"></textarea>
+    </div>
+    <div class="fsec">Inspo & Reference Photos</div>
+    <div class="inspo-box" style="margin-top:6px;">
+      <div class="inspo-thumbs" id="nb-ed-thumbs"></div>
+      <div class="inspo-add" id="nb-ed-add"><div style="font-size:18px;margin-bottom:3px;">+</div><div>Add Photo</div></div>
+      <input type="file" accept="image/*" id="nb-ed-file" style="display:none" multiple>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button style="flex:1;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;" id="nb-back-step2">&#8592; Back</button>
+      <button class="btn-save" style="flex:2;" id="nb-next-step2">Next — Select Inventory &#8594;</button>
+    </div>
+    <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="nb-skip-step2">Skip — Save Booking Only</button>
+  </div>
+
+  <!-- STEP 3: INVENTORY -->
+  <div id="nb-step3" style="display:none;">
+    <div class="cattabs" id="nb-reserve-cattabs">
+      <div class="ctab on" data-cat="All">All</div>
+      <div class="ctab" data-cat="Decor Rental">Decor</div>
+      <div class="ctab" data-cat="Backdrops">Backdrops</div>
+      <div class="ctab" data-cat="Florals">Florals</div>
+      <div class="ctab" data-cat="Crockery and Cutlery">Crockery</div>
+      <div class="ctab" data-cat="Detailing">Detailing</div>
+      <div class="ctab" data-cat="Setup">Setup</div>
+      <div class="ctab" data-cat="Lighting">Lighting</div>
+    </div>
+    <div class="inv-grid" id="nb-reserve-grid"></div>
+    <div style="padding:12px;">
+      <div class="cart-bar" id="nb-reserve-bar" style="display:none;border-radius:10px;margin-bottom:8px;">
+        <div class="cb-l"><span class="cb-cnt" id="nb-reserve-cnt">0</span><span class="cb-txt">Items Selected</span></div>
+        <div class="cb-r"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button style="flex:1;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;" id="nb-back-step3">&#8592; Back</button>
+        <button class="btn-save" style="flex:2;" id="nb-confirm-booking">Confirm &amp; Save Booking &#10003;</button>
+      </div>
+      <button style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;" id="nb-skip-step3">Save Without Inventory</button>
+    </div>
   </div>
 </div>
 
@@ -1853,36 +1903,139 @@ function clearNewBkn() {
   ["nb-name","nb-phone","nb-date","nb-venue","nb-ready","nb-pickup","nb-notes","nb-total","nb-paid"].forEach(function(id){
     var el=document.getElementById(id); if(el) el.value="";
   });
+  curEventInspos=[]; curEventNotes=""; draftCart={};
+  // Reset to step 1
+  showNbStep(1);
+}
+
+function showNbStep(step) {
+  var step1=document.getElementById("s-new-bkn"); 
+  var fbody=step1?step1.querySelector(".fbody"):null;
+  var step2=document.getElementById("nb-step2");
+  var step3=document.getElementById("nb-step3");
+  var titleEl=document.getElementById("nb-step-title");
+  var subEl=document.getElementById("nb-step-sub");
+  var bars=["step-bar-1","step-bar-2","step-bar-3"];
+  if(fbody) fbody.style.display=step===1?"block":"none";
+  if(step2) step2.style.display=step===2?"block":"none";
+  if(step3) step3.style.display=step===3?"block":"none";
+  bars.forEach(function(id,i){
+    var el=document.getElementById(id);
+    if(el) el.style.background=i<step?"var(--gold)":"var(--mob-brs)";
+  });
+  var titles=["","New Booking","Event Details","Reserve Inventory"];
+  var subs=["","Step 1 of 3 — Booking Details","Step 2 of 3 — Event Details","Step 3 of 3 — Inventory"];
+  if(titleEl) titleEl.textContent=titles[step]||"";
+  if(subEl) subEl.textContent=subs[step]||"";
+  // Refresh reserve grid on step 3
+  if(step===3) rNbReserveGrid("All");
 }
 function bindNewBkn() {
   document.querySelectorAll(".echk").forEach(function(e){e.onclick=function(){this.classList.toggle("on");};});
-  var sb=document.getElementById("save-bkn-btn"); if(sb) sb.onclick=function(){doSaveBooking(true);};
-  var sl=document.getElementById("save-bkn-later-btn"); if(sl) sl.onclick=function(){doSaveBooking(false);};
+  // Step 1 next
+  var nextBtn=document.getElementById("nb-next-btn");
+  if(nextBtn) nextBtn.onclick=function(){
+    var name=(document.getElementById("nb-name")||{}).value||"";
+    var date=(document.getElementById("nb-date")||{}).value||"";
+    if(!name.trim()||!date){alert("Please enter client name and date.");return;}
+    showNbStep(2);
+    rNbEdThumbs();
+  };
+  // Save only (skip all)
+  var saveLater=document.getElementById("save-bkn-later-btn");
+  if(saveLater) saveLater.onclick=function(){doFinalSave(false);};
+  // Step 2
+  var backStep2=document.getElementById("nb-back-step2");
+  if(backStep2) backStep2.onclick=function(){showNbStep(1);};
+  var nextStep2=document.getElementById("nb-next-step2");
+  if(nextStep2) nextStep2.onclick=function(){
+    curEventNotes=(document.getElementById("nb-ed-notes")||{}).value||"";
+    showNbStep(3);
+  };
+  var skipStep2=document.getElementById("nb-skip-step2");
+  if(skipStep2) skipStep2.onclick=function(){doFinalSave(false);};
+  // Step 3
+  var backStep3=document.getElementById("nb-back-step3");
+  if(backStep3) backStep3.onclick=function(){showNbStep(2);};
+  var confirmBtn=document.getElementById("nb-confirm-booking");
+  if(confirmBtn) confirmBtn.onclick=function(){doFinalSave(true);};
+  var skipStep3=document.getElementById("nb-skip-step3");
+  if(skipStep3) skipStep3.onclick=function(){doFinalSave(false);};
+  // Inspo photos step 2
+  var edAdd=document.getElementById("nb-ed-add");
+  if(edAdd) edAdd.onclick=function(){document.getElementById("nb-ed-file").click();};
+  var edFile=document.getElementById("nb-ed-file");
+  if(edFile) edFile.onchange=function(){
+    Array.from(this.files).forEach(function(f){
+      if(curEventInspos.length>=10)return;
+      rF(f,function(s){curEventInspos.push(s);rNbEdThumbs();});
+    });
+    this.value="";
+  };
+  // Step 3 cattabs
+  var nbCattabs=document.getElementById("nb-reserve-cattabs");
+  if(nbCattabs) nbCattabs.onclick=function(e){
+    var t=e.target.closest(".ctab"); if(!t) return;
+    nbCattabs.querySelectorAll(".ctab").forEach(function(x){x.classList.remove("on");});
+    t.classList.add("on"); rNbReserveGrid(t.getAttribute("data-cat"));
+  };
+}
+
+function rNbEdThumbs(){
+  var el=document.getElementById("nb-ed-thumbs"); if(!el) return;
+  var h="";
+  curEventInspos.forEach(function(s,i){h+="<div class='inspo-thumb'><img src='"+s+"'><button class='inspo-del' data-ni='"+i+"'>x</button></div>";});
+  el.innerHTML=h;
+  el.querySelectorAll("[data-ni]").forEach(function(btn){btn.onclick=function(){curEventInspos.splice(parseInt(this.getAttribute("data-ni")),1);rNbEdThumbs();};});
+}
+
+function rNbReserveGrid(cat){
+  var grid=document.getElementById("nb-reserve-grid"); if(!grid) return;
+  var items=(cat==="All")?INV:INV.filter(function(i){return i.cat===cat;});
+  if(!items.length){grid.innerHTML="<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>";updNbBar();return;}
+  var h="";
+  items.forEach(function(item){
+    var inC=draftCart[item.id]||0;
+    var imgH=item.photo?"<img src='"+item.photo+"' alt=''>":"&#128230;";
+    h+="<div class='icard"+(inC>0?" incart":"")+"' data-nbid='"+item.id+"'>";
+    h+="<div class='ithumb'>"+imgH+"</div><div class='ibody'><div class='iname'>"+item.name+"</div>";
+    h+="<div class='istock'>"+item.qty+" total</div></div><div class='ibadge'>"+inC+"</div></div>";
+  });
+  grid.innerHTML=h; updNbBar();
+  grid.querySelectorAll("[data-nbid]").forEach(function(c){
+    c.onclick=function(){
+      var id=this.getAttribute("data-nbid");
+      var item=INV.find(function(i){return i.id===id;});
+      if(!item) return;
+      var cur=draftCart[id]||0;
+      draftCart[id]=cur<item.qty?cur+1:0;
+      if(draftCart[id]===0) delete draftCart[id];
+      rNbReserveGrid(cat);
+    };
+  });
+}
+
+function updNbBar(){
+  var n=Object.keys(draftCart).length;
+  var cb=document.getElementById("nb-reserve-bar"), cc=document.getElementById("nb-reserve-cnt");
+  if(cb) cb.style.display=n>0?"flex":"none";
+  if(cc) cc.textContent=n;
 }
 var newBknEl=document.getElementById("new-bkn-btn"); if(newBknEl) newBknEl.addEventListener("click", function(){clearNewBkn();go("s-new-bkn");});
 var backNewEl=document.getElementById("back-new-bkn"); if(backNewEl) backNewEl.addEventListener("click", function(){go("s-bkns");});
 document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click",function(){this.classList.toggle("on");});});
 // save buttons bound in bindNewBkn() only
 
-function doSaveBooking(goReserve) {
-  var sb=document.getElementById("save-bkn-btn");
-  var sl=document.getElementById("save-bkn-later-btn");
-  if(sb) sb.onclick=null;
-  if(sl) sl.onclick=null;
+function doFinalSave(withInventory) {
   var nameEl=document.getElementById("nb-name"), dateEl=document.getElementById("nb-date");
   var name=nameEl?nameEl.value.trim():"", date=dateEl?dateEl.value:"";
-  if(!name||!date){
-    alert("Please enter client name and date.");
-    if(sb) sb.onclick=function(){doSaveBooking(true);};
-    if(sl) sl.onclick=function(){doSaveBooking(false);};
-    return;
-  }
+  if(!name||!date){alert("Please enter client name and date.");showNbStep(1);return;}
   var ext=[];
   document.querySelectorAll(".echk.on").forEach(function(e){ext.push(e.getAttribute("data-v"));});
   bknCounter++;
-  localStorage.setItem("ev_bkn_counter",bknCounter);
-  var refNum = "HAP-2026-"+String(bknCounter).padStart(3,"0");
-  var b = {
+  var refNum="HAP-2026-"+String(bknCounter).padStart(3,"0");
+  var di=withInventory?Object.keys(draftCart).map(function(id){return{itemId:id,qty:draftCart[id]};}) : null;
+  var b={
     id:"b"+Date.now(), name:name, date:date, ref:refNum,
     phone:(document.getElementById("nb-phone")||{value:""}).value||"",
     type:(document.getElementById("nb-type")||{value:"Other"}).value||"Other",
@@ -1893,34 +2046,20 @@ function doSaveBooking(goReserve) {
     notes:(document.getElementById("nb-notes")||{value:""}).value||"",
     total:parseFloat((document.getElementById("nb-total")||{value:"0"}).value)||0,
     paid:parseFloat((document.getElementById("nb-paid")||{value:"0"}).value)||0,
-    dispatch_items:null, pending_items:ext, costs:{}, reminder_notes:"",
-    discussion_log:[], staff_assigned:[], invoice_items:[]
+    dispatch_items:di, pending_items:ext, costs:{}, reminder_notes:curEventNotes||"",
+    discussion_log:[], staff_assigned:[], invoice_items:[],
+    event_inspos:curEventInspos||[]
   };
   ld();
   db("bookings","POST",b).then(function(){
-    b.dispatchItems=null; b.extItems=ext; b.costs={}; b.reminder="";
+    b.dispatchItems=di; b.extItems=ext; b.costs={}; b.reminder=curEventNotes||"";
     b.discussionLog=[]; b.staffAssigned=[]; b.invoiceItems=[];
+    b.eventInspos=curEventInspos||[]; b.eventNotes=curEventNotes||"";
     BKN.push(b); BKN.sort(function(a,c){return a.date>c.date?1:-1;});
     hd(); toast("Booking saved! Ref: "+refNum);
-    if(goReserve){
-      cart={}; curBkg=b; curEventInspos=[]; curEventNotes="";
-      var edSub=document.getElementById("ed-sub");
-      if(edSub) edSub.textContent=b.name;
-      // Show event details screen
-      document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");s.style.display="none";});
-      var edScreen=document.getElementById("s-event-details");
-      if(edScreen){edScreen.style.display="flex";edScreen.classList.add("active");}
-      rEventDetails();
-    } else {
-      go("s-bkns");
-    }
-  }).catch(function(err){
-    hd();alert("Error: "+err.message);
-    var sb2=document.getElementById("save-bkn-btn");
-    var sl2=document.getElementById("save-bkn-later-btn");
-    if(sb2) sb2.onclick=function(){doSaveBooking(true);};
-    if(sl2) sl2.onclick=function(){doSaveBooking(false);};
-  });
+    clearNewBkn();
+    go("s-bkns");
+  }).catch(function(err){hd();alert("Error: "+err.message);});
 }
 
 function delBkn(id) {
