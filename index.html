@@ -693,20 +693,11 @@ body {background:#0F0905;color:#F0E6D3;}
 }
 #print-sheet{display:none;}
 </style>
-
 <style>
 @media (min-width: 768px) {
-  #s-login {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #0F0905 !important;
-  }
+  #s-login { position: fixed !important; inset: 0 !important; z-index: 9999 !important; width: 100vw !important; height: 100vh !important; background: #0F0905 !important; }
 }
-</style>
-</head>
+</style></head>
 <body>
 
 <!-- DESKTOP SIDEBAR (hidden on mobile) -->
@@ -1452,7 +1443,7 @@ function go(id) {
     else if(id==="s-cart") rCart();
     else if(id==="s-bkn-detail" && curDetailId) rDetail(curDetailId);
     else if(id==="s-invoice") rInvoiceScreen();
-    else if(id==="s-event-details") rEventDetails();
+    else if(id==="s-event-details") { rEventDetails(); }
     else if(id==="s-invoice-preview") rInvoicePreview();
     else if(id==="s-media") rMedia();
     else if(id==="s-inv-reserve") { rReserveGrid("All"); }
@@ -1798,15 +1789,14 @@ function clearNewBkn() {
   });
 }
 function bindNewBkn() {
-  document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click",function(){this.classList.toggle("on");});});
-  var sb=document.getElementById("save-bkn-btn"); if(sb) sb.addEventListener("click",function(){doSaveBooking(true);});
-  var sl=document.getElementById("save-bkn-later-btn"); if(sl) sl.addEventListener("click",function(){doSaveBooking(false);});
+  document.querySelectorAll(".echk").forEach(function(e){e.onclick=function(){this.classList.toggle("on");};});
+  var sb=document.getElementById("save-bkn-btn"); if(sb) sb.onclick=function(){doSaveBooking(true);};
+  var sl=document.getElementById("save-bkn-later-btn"); if(sl) sl.onclick=function(){doSaveBooking(false);};
 }
 var newBknEl=document.getElementById("new-bkn-btn"); if(newBknEl) newBknEl.addEventListener("click", function(){clearNewBkn();go("s-new-bkn");});
 var backNewEl=document.getElementById("back-new-bkn"); if(backNewEl) backNewEl.addEventListener("click", function(){go("s-bkns");});
 document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click",function(){this.classList.toggle("on");});});
-var saveBknEl=document.getElementById("save-bkn-btn"); if(saveBknEl) saveBknEl.addEventListener("click", function(){doSaveBooking(true);});
-var saveLaterEl=document.getElementById("save-bkn-later-btn"); if(saveLaterEl) saveLaterEl.addEventListener("click", function(){doSaveBooking(false);});
+// save buttons bound in bindNewBkn() only
 
 function doSaveBooking(goReserve) {
   var nameEl=document.getElementById("nb-name"), dateEl=document.getElementById("nb-date");
