@@ -693,11 +693,7 @@ body {background:#0F0905;color:#F0E6D3;}
 }
 #print-sheet{display:none;}
 </style>
-<style>
-@media (min-width: 768px) {
-  #s-login { position: fixed !important; inset: 0 !important; z-index: 9999 !important; width: 100vw !important; height: 100vh !important; background: #0F0905 !important; }
-}
-</style></head>
+<style>@media (min-width: 768px) { #s-login { position: fixed !important; inset: 0 !important; z-index: 9999 !important; width: 100vw !important; height: 100vh !important; background: #0F0905 !important; } }</style></head>
 <body>
 
 <!-- DESKTOP SIDEBAR (hidden on mobile) -->
@@ -1799,9 +1795,18 @@ document.querySelectorAll(".echk").forEach(function(e){e.addEventListener("click
 // save buttons bound in bindNewBkn() only
 
 function doSaveBooking(goReserve) {
+  var sb=document.getElementById("save-bkn-btn");
+  var sl=document.getElementById("save-bkn-later-btn");
+  if(sb) sb.onclick=null;
+  if(sl) sl.onclick=null;
   var nameEl=document.getElementById("nb-name"), dateEl=document.getElementById("nb-date");
   var name=nameEl?nameEl.value.trim():"", date=dateEl?dateEl.value:"";
-  if(!name||!date){alert("Please enter client name and date.");return;}
+  if(!name||!date){
+    alert("Please enter client name and date.");
+    if(sb) sb.onclick=function(){doSaveBooking(true);};
+    if(sl) sl.onclick=function(){doSaveBooking(false);};
+    return;
+  }
   var ext=[];
   document.querySelectorAll(".echk.on").forEach(function(e){ext.push(e.getAttribute("data-v"));});
   bknCounter++;
@@ -1829,11 +1834,23 @@ function doSaveBooking(goReserve) {
     hd(); toast("Booking saved! Ref: "+refNum);
     if(goReserve){
       cart={}; curBkg=b; curEventInspos=[]; curEventNotes="";
-      document.getElementById("ed-sub").textContent=b.name;
-      go("s-event-details");
+      var edSub=document.getElementById("ed-sub");
+      if(edSub) edSub.textContent=b.name;
+      // Show event details screen
+      document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");s.style.display="none";});
+      var edScreen=document.getElementById("s-event-details");
+      if(edScreen){edScreen.style.display="flex";edScreen.classList.add("active");}
+      rEventDetails();
+    } else {
+      go("s-bkns");
     }
-    else go("s-bkns");
-  }).catch(function(err){hd();alert("Error: "+err.message);});
+  }).catch(function(err){
+    hd();alert("Error: "+err.message);
+    var sb2=document.getElementById("save-bkn-btn");
+    var sl2=document.getElementById("save-bkn-later-btn");
+    if(sb2) sb2.onclick=function(){doSaveBooking(true);};
+    if(sl2) sl2.onclick=function(){doSaveBooking(false);};
+  });
 }
 
 function delBkn(id) {
