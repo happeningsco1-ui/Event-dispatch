@@ -692,8 +692,6 @@ body {background:#0F0905;color:#F0E6D3;}
   .ps-item-qty{font-size:8pt;font-weight:700;color:#C9A84C;}
 }
 #print-sheet{display:none;}
-
-@media (min-width: 768px) { .screen { display: none !important; } #s-login { display: flex !important; } }
 </style>
 </head>
 <body>
@@ -1510,7 +1508,7 @@ function renderDesk(id) {
 // ── LOGIN ──────────────────────────────────────────────────────────────────
 document.getElementById("l-btn").addEventListener("click", function() {
   var v = document.getElementById("l-inp").value.trim();
-  if(v===AP){sessionStorage.setItem("auth","1");var lx=document.getElementById("s-login");if(lx){lx.style.display="none";lx.classList.remove("active");}initLayout();go("s-dash");loadAll();}
+  if(v===AP) { sessionStorage.setItem("auth","1"); initLayout(); go("s-dash"); loadAll(); }
   else { document.getElementById("l-err").style.display="block"; }
 });
 document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.key==="Enter") document.getElementById("l-btn").click(); });
@@ -2861,7 +2859,7 @@ document.querySelectorAll(".overlay").forEach(function(el){
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 initLayout();
-if(sessionStorage.getItem("auth")==="1"){var lx=document.getElementById("s-login");if(lx){lx.style.display="none";lx.classList.remove("active");}initLayout();go("s-dash");loadAll();}
+if(sessionStorage.getItem("auth")==="1"){go("s-dash");loadAll();}
 
 } catch(e) { console.warn("Init:", e.message); }</script>
 </body>
