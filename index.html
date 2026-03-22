@@ -693,7 +693,18 @@ body {background:#0F0905;color:#F0E6D3;}
 }
 #print-sheet{display:none;}
 </style>
-<style>@media (min-width: 768px) { #s-login { position: fixed !important; inset: 0 !important; z-index: 9999 !important; width: 100vw !important; height: 100vh !important; background: #0F0905 !important; } }</style></head>
+<style>
+@media (min-width: 768px) {
+  #s-login {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: radial-gradient(ellipse at 50% 30%, rgba(201,168,76,.1) 0%, transparent 60%), #0F0905 !important;
+  }
+}
+</style></head>
 <body>
 
 <!-- DESKTOP SIDEBAR (hidden on mobile) -->
@@ -2017,7 +2028,6 @@ function rBkns() {
     if(bal>0) h += "<div class='bc-mi' style='color:var(--red)'>PKR <b>"+bal.toLocaleString()+"</b> due</div>";
     h += "</div><div class='bc-btns'>";
     h += "<div class='bcbtn hi' data-detail='"+b.id+"'>&#128065; View</div>";
-    h += "<div class='bcbtn' data-dispatch='"+b.id+"'>&#128666; Dispatch</div>";
     h += "<div class='bcbtn' data-invoice='"+b.id+"'>&#128203; Invoice</div>";
     h += "<div class='bcbtn' data-del='"+b.id+"'>&#128465;</div>";
     h += "</div></div>";
