@@ -2856,7 +2856,12 @@ document.querySelectorAll(".overlay").forEach(function(el){
 // Supabase connected - data loads via loadAll()
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-initLayout();
+sessionStorage.removeItem("auth");
+document.getElementById("desk-sidebar").style.display="none";
+document.getElementById("desk-main").style.display="none";
+document.querySelectorAll(".screen").forEach(function(s){s.style.display="none";});
+var loginEl=document.getElementById("s-login");
+if(loginEl){loginEl.style.cssText="display:flex !important;";}
 
 } catch(e) { console.warn("Init:", e.message); }</script>
 </body>
