@@ -694,18 +694,7 @@ body {background:#0F0905;color:#F0E6D3;}
 }
 #print-sheet{display:none;}
 </style>
-<style>
-@media (min-width: 768px) {
-  #s-login {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: radial-gradient(ellipse at 50% 30%, rgba(201,168,76,.1) 0%, transparent 60%), #0F0905 !important;
-  }
-}
-</style></head>
+</head>
 <body>
 
 <!-- DESKTOP SIDEBAR (hidden on mobile) -->
@@ -1260,26 +1249,13 @@ var invoiceLines=[], bknCounter=parseInt(localStorage.getItem("ev_bkn_counter")|
 var CATS=["Decor Rental","Backdrops","Florals","Crockery and Cutlery","Detailing","Setup","Lighting"];
 var CAT_SUBS={"Decor Rental":["Basic","Fancy","Premium"],"Florals":["White","Pink","Mixed","Leaves","Other"],"Lighting":["Basic","Fancy","Outdoor"],"Backdrops":["Floral","Fairy Lights","Custom","Printed"]};
 var COSTS=["Transport","Labour","Night","Light","Printing","Balloons","Rental","Fresh Floral","Misc"];
-var STAFF_ROLES=["Florist","Labour","Supervisor","Driver","Other"];
-var STAFF_LIST=JSON.parse(localStorage.getItem("ev_staff")||"[]");
-var invoiceLines=[], invoiceBkgId=null;
 var STAFF_LIST=JSON.parse(localStorage.getItem("ev_staff")||"[]");
 var MEDIA=JSON.parse(localStorage.getItem("ev_media")||"[]");
 var mediaFilter="All";
 var PACKAGES=JSON.parse(localStorage.getItem("ev_pkgs")||"[]");
 
 // ── DB (localStorage) ──────────────────────────────────────────────────────
-var SU="https://oqxlzyimondgwbqslibw.supabase.co";
-var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
-
 function db(path, method, body) {
-  var headers={"apikey":SK,"Authorization":"Bearer "+SK,"Content-Type":"application/json"};
-  if(method==="POST"||method==="PATCH") headers["Prefer"]="return=minimal";
-  return fetch(SU+"/rest/v1/"+path,{method:method||"GET",headers:headers,body:body?JSON.stringify(body):undefined})
-    .then(function(r){return r.text().then(function(t){if(r.ok)return t?JSON.parse(t):{};throw new Error(t);});});
-}
-
-function db_ls(path, method, body) {
   return new Promise(function(resolve) {
     var id = path.indexOf("eq.") > -1 ? path.split("eq.")[1] : null;
     if (method === "POST") {
@@ -1663,6 +1639,7 @@ function rBkns() {
   });
   el.innerHTML = h;
   el.querySelectorAll("[data-detail]").forEach(function(btn){btn.addEventListener("click",function(){curDetailId=this.getAttribute("data-detail");go("s-bkn-detail");});});
+  el.querySelectorAll("[data-dispatch]").forEach(function(btn){btn.addEventListener("click",function(){openDispatch(this.getAttribute("data-dispatch"));});});
   el.querySelectorAll("[data-invoice]").forEach(function(btn){btn.addEventListener("click",function(){openInvoice(this.getAttribute("data-invoice"));});});
   el.querySelectorAll("[data-del]").forEach(function(btn){
     btn.addEventListener("click",function(e){
