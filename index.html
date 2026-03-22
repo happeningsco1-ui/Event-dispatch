@@ -1775,6 +1775,37 @@ function renderDesk(id) {
     document.getElementById("confirm-reserve-btn2").addEventListener("click",confirmReserve);
   }
   else if(id==="s-fin") { dc.innerHTML='<div class="fin-wrap" id="fin-body" style="padding:0;overflow:visible;flex:none;"></div>'; rFin(); }
+  else if(id==="s-invoice") {
+    document.getElementById("desk-page-title").textContent="Invoice";
+    document.getElementById("desk-page-sub").textContent="Add Line Items";
+    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-back-invoice">&#8592; Back</button>';
+    setTimeout(function(){var b=document.getElementById("d-back-invoice");if(b)b.onclick=function(){go("s-bkns");};},50);
+    var dc2=document.getElementById("desk-content");
+    dc2.innerHTML='<div style="max-width:600px;"><div id="invoice-screen-body"></div></div>';
+    rInvoiceScreen();
+  }
+  else if(id==="s-invoice-preview") {
+    document.getElementById("desk-page-title").textContent="Invoice Preview";
+    document.getElementById("desk-page-sub").textContent="Ready to Print";
+    document.getElementById("desk-topbar-acts").innerHTML='<button class="desk-btn" id="d-inv-print">&#128424; Print</button><button class="desk-btn" id="d-inv-wa">&#128172; WhatsApp</button><button class="desk-btn" id="d-back-inv-prev">&#8592; Edit</button>';
+    setTimeout(function(){
+      var bp=document.getElementById("d-back-inv-prev");if(bp)bp.onclick=function(){go("s-invoice");};
+      var pp=document.getElementById("d-inv-print");if(pp)pp.onclick=function(){window.print();};
+      var wa=document.getElementById("d-inv-wa");if(wa)wa.onclick=function(){
+        var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
+        var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+        var bal=total-(b.paid||0);
+        var msg="Assalam o Alaikum *"+b.name+"*,%0A%0APlease find your invoice:%0A%0A";
+        invoiceLines.forEach(function(l){msg+="• "+l.desc+": PKR "+parseInt(l.amt).toLocaleString()+"/%0A";});
+        msg+="%0A*Total: PKR "+total.toLocaleString()+"*%0AAdvance: PKR "+(b.paid||0).toLocaleString()+"%0A*Balance: PKR "+bal.toLocaleString()+"*%0A%0AJazakAllah";
+        var phone=b.phone?b.phone.replace(/[^0-9]/g,""):"";
+        window.open(phone?"https://wa.me/92"+phone.replace(/^0/,"")+"?text="+msg:"https://wa.me/?text="+msg,"_blank");
+      };
+    },50);
+    var dc3=document.getElementById("desk-content");
+    dc3.innerHTML='<div id="invoice-preview-body"></div><div style="margin-top:16px;display:none;" id="print-sheet"></div>';
+    rInvoicePreview();
+  }
   else if(id==="s-media") { dc.innerHTML='<div id="media-body" style="padding:0;"></div>'; rMedia(); }
 }
 
@@ -1805,6 +1836,42 @@ function loadAll() {
       hd(); initBiz(); go("s-dash");
     }).catch(function() { hd(); toast("Error loading data."); });
 }
+
+// Global invoice button handler - works on any render
+document.addEventListener("click", function(e){
+  var inv = e.target.closest("[data-invoice]");
+  if(inv){
+    e.stopPropagation();
+    e.preventDefault();
+    openInvoice(inv.getAttribute("data-invoice"));
+    return;
+  }
+  var det = e.target.closest("[data-detail]");
+  if(det){
+    e.stopPropagation();
+    curDetailId=det.getAttribute("data-detail");
+    go("s-bkn-detail");
+    return;
+  }
+  var del = e.target.closest("[data-del]");
+  if(del){
+    e.stopPropagation();
+    var me=del, id=me.getAttribute("data-del");
+    if(me.getAttribute("data-c")==="1"){
+      ld(); db("bookings?id=eq."+id,"DELETE").then(function(){BKN=BKN.filter(function(b){return b.id!==id;});hd();rBkns();toast("Deleted.");}).catch(function(){hd();});
+    } else {
+      me.setAttribute("data-c","1"); me.textContent="Sure?"; me.style.color="var(--red)";
+      setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.innerHTML="&#128465;";me.style.color="";}},2000);
+    }
+    return;
+  }
+});
+
+// Global delegated invoice click handler
+document.addEventListener("click", function(e){
+  var btn=e.target.closest("[data-invoice]");
+  if(btn){e.stopPropagation();e.preventDefault();openInvoice(btn.getAttribute("data-invoice"));}
+});
 
 function initBiz() {
   var els = [document.getElementById("tb-biz"), document.getElementById("desk-biz-txt")];
@@ -2172,8 +2239,7 @@ function doFinalSave(withInventory) {
     total:parseFloat((document.getElementById("nb-total")||{value:"0"}).value)||0,
     paid:parseFloat((document.getElementById("nb-paid")||{value:"0"}).value)||0,
     dispatch_items:di, pending_items:ext, costs:{}, reminder_notes:curEventNotes||"",
-    discussion_log:[], staff_assigned:[], invoice_items:[],
-    event_inspos:curEventInspos||[]
+    discussion_log:[], staff_assigned:[], invoice_items:[]
   };
   ld();
   db("bookings","POST",b).then(function(){
@@ -3012,7 +3078,14 @@ function openInvoice(id) {
   if(invoiceLines.length===0 && b.total && b.total>0){
     invoiceLines=[{desc:b.type+" — "+b.name,amt:b.total}];
   }
-  go("s-invoice");
+  if(isDesk){
+    renderDesk("s-invoice");
+  } else {
+    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");s.style.display="none";});
+    var el=document.getElementById("s-invoice");
+    if(el){el.style.display="flex";el.classList.add("active");}
+    rInvoiceScreen();
+  }
 }
 function renderInvoiceModal(b) {
   var h="";
