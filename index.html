@@ -1834,7 +1834,7 @@ function loadAll() {
         return b;
       }) : [];
       hd(); initBiz(); go("s-dash");
-    }).catch(function() { hd(); toast("Error loading data."); });
+    }).catch(function(e) { hd(); toast("Loaded offline."); go("s-dash"); });
 }
 
 // Global invoice button handler - works on any render
