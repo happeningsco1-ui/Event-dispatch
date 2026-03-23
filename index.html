@@ -1812,7 +1812,7 @@ function renderDesk(id) {
 // ── LOGIN ──────────────────────────────────────────────────────────────────
 document.getElementById("l-btn").addEventListener("click", function() {
   var v = document.getElementById("l-inp").value.trim();
-  if(v===AP) { sessionStorage.setItem("auth","1"); var lx=document.getElementById("s-login"); if(lx){lx.style.cssText="";lx.style.display="none";} initLayout(); go("s-dash"); loadAll(); } else { document.getElementById("l-err").style.display="block"; }
+  if(v===AP) { sessionStorage.setItem("auth","1"); var lx=document.getElementById("s-login"); if(lx){lx.style.cssText="";lx.style.display="none";} initLayout(); loadAll(); } else { document.getElementById("l-err").style.display="block"; }
 });
 document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.key==="Enter") document.getElementById("l-btn").click(); });
 
