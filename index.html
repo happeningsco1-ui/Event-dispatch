@@ -1867,16 +1867,10 @@ document.addEventListener("click", function(e){
   }
 });
 
-// Global delegated click handlers
+// Global delegated invoice click handler
 document.addEventListener("click", function(e){
-  var invBtn=e.target.closest("[data-invoice]");
-  if(invBtn){e.stopPropagation();e.preventDefault();openInvoice(invBtn.getAttribute("data-invoice"));return;}
-  var dispBtn=e.target.closest("[data-dispatch-id]");
-  if(dispBtn){e.stopPropagation();openDispatch(dispBtn.getAttribute("data-dispatch-id"));return;}
-  var detBtn=e.target.closest("[data-detail]");
-  if(detBtn && !e.target.closest("[data-invoice],[data-dispatch-id],[data-del]")){
-    curDetailId=detBtn.getAttribute("data-detail");go("s-bkn-detail");return;
-  }
+  var btn=e.target.closest("[data-invoice]");
+  if(btn){e.stopPropagation();e.preventDefault();openInvoice(btn.getAttribute("data-invoice"));}
 });
 
 function initBiz() {
@@ -2391,7 +2385,7 @@ function rDispatchHub() {
     h += "<div class='bc-btns'><div class='bcbtn hi' data-dispatch-id='"+b.id+"'>&#128666; Open Dispatch</div></div></div></div>";
   });
   el.innerHTML = h;
-  el.querySelectorAll("[data-dispatch-id]").forEach(function(btn){btn.onclick=function(e){e.stopPropagation();openDispatch(this.getAttribute("data-dispatch-id"));};});
+  el.querySelectorAll("[data-dispatch-id]").forEach(function(btn){btn.addEventListener("click",function(){openDispatch(this.getAttribute("data-dispatch-id"));});});
 }
 
 // ── DISPATCH ────────────────────────────────────────────────────────────────
@@ -2660,94 +2654,785 @@ function genSheet() {
 }
 function buildSheet() {
   var b=curBkg; if(!b) return;
-  var allInspos=(b.eventInspos&&b.eventInspos.length>0)?b.eventInspos.concat(curInspos):curInspos;
-  var eventNotes=b.eventNotes||b.reminder||"";
-  var logoSrc=BL||"";
-
-  // ── SCREEN VIEW ──
   var h="";
-  h+="<div class='sh-hdr'>";
-  h+="<div class='sh-biz'>"+BN+" — Dispatch Sheet</div>";
-  h+="<div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
-  h+="<div class='sh-meta'>";
-  h+="<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div>";
-  h+="<div class='sh-f'>Event<span>"+b.type+"</span></div>";
-  h+="<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div>";
-  h+="<div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
-  h+="<div class='sh-f'>Ready<span>"+fT(b.ready)+"</span></div>";
-  h+="<div class='sh-f'>Pickup<span>"+fT(b.pickup)+"</span></div>";
-  if(b.notes) h+="<div class='sh-f' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
-  if(eventNotes) h+="<div class='sh-f' style='grid-column:1/-1'>Event Details<span>"+eventNotes+"</span></div>";
-  if(curStaffAssign&&curStaffAssign.length>0) h+="<div class='sh-f' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
-  h+="</div>";
+  // Use event inspos from event details if available, otherwise cart inspos
+  var allInspos = (b.eventInspos&&b.eventInspos.length>0) ? b.eventInspos.concat(curInspos) : curInspos;
+  var eventNotes = b.eventNotes||b.reminder||"";
+  h += "<div class='sh-hdr'>";
+  h += "<div class='sh-biz'>"+BN+" — Dispatch Sheet</div>";
+  h += "<div class='sh-name'>"+b.name+" <span style='font-size:12px;color:var(--gold);'>"+b.ref+"</span></div>";
+  h += "<div class='sh-meta'>";
+  h += "<div class='sh-f'>Date<span>"+fD(b.date)+"</span></div>";
+  h += "<div class='sh-f'>Event<span>"+b.type+"</span></div>";
+  h += "<div class='sh-f'>Venue<span>"+(b.venue||"-")+"</span></div>";
+  h += "<div class='sh-f'>Contact<span>"+(b.phone||"-")+"</span></div>";
+  h += "<div class='sh-f'>Ready Time<span>"+fT(b.ready)+"</span></div>";
+  h += "<div class='sh-f'>Pickup Time<span>"+fT(b.pickup)+"</span></div>";
+  if(b.notes) h += "<div class='sh-f' style='grid-column:1/-1'>Booking Notes<span>"+b.notes+"</span></div>";
+  if(eventNotes) h += "<div class='sh-f' style='grid-column:1/-1'>Event Details<span>"+eventNotes+"</span></div>";
+  if(curStaffAssign&&curStaffAssign.length>0) h += "<div class='sh-f' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
+  h += "</div>";
   if(allInspos.length>0){
-    h+="<div class='sh-inspo-lbl'>Reference Photos</div><div class='sh-inspo-wrap'>";
+    h += "<div class='sh-inspo-lbl'>Setup Reference Photos</div><div class='sh-inspo-wrap'>";
     allInspos.forEach(function(s){h+="<img src='"+s+"'>";});
-    h+="</div>";
+    h += "</div>";
   }
-  h+="</div>";
+  h += "</div>";
   CATS.forEach(function(cat){
     var items=Object.keys(cart).map(function(id){return INV.find(function(i){return i.id===id;});}).filter(function(i){return i&&i.cat===cat;});
     if(!items.length) return;
-    h+="<div class='sheet-cat'><div class='sheet-cat-hdr'>"+cat+"<span class='sheet-cat-cnt'>"+items.length+"</span></div><div class='sheet-items-grid'>";
+    h += "<div class='sheet-cat'><div class='sheet-cat-hdr'>"+cat+"<span class='sheet-cat-cnt'>"+items.length+"</span></div><div class='sheet-items-grid'>";
     items.forEach(function(item){
-      h+="<div class='scard'><div class='scard-img'>"+(item.photo?"<img src='"+item.photo+"'>":"&#128230;")+"</div>";
-      h+="<div class='scard-body'><div class='scard-name'>"+item.name+"</div><div class='scard-qty'>Qty: "+cart[item.id]+"</div></div></div>";
+      h += "<div class='scard'><div class='scard-img'>"+(item.photo?"<img src='"+item.photo+"'>":"&#128230;")+"</div>";
+      h += "<div class='scard-body'><div class='scard-name'>"+item.name+"</div><div class='scard-qty'>Qty: "+cart[item.id]+"</div></div></div>";
     });
-    h+="</div></div>";
+    h += "</div></div>";
   });
   var el=document.getElementById("sheet-body"); if(el) el.innerHTML=h;
-
-  // ── PRINT VERSION ──
-  var ps="";
-  // Page 1 header
-  ps+='<div style="font-family:Arial,sans-serif;padding:20px;color:#111;max-width:210mm;">';
-  // Logo + title
-  ps+='<div style="display:flex;align-items:center;gap:16px;border-bottom:3px solid #C9A84C;padding-bottom:12px;margin-bottom:16px;">';
-  ps+=(logoSrc?'<img src="'+logoSrc+'" style="width:60px;height:60px;object-fit:contain;">':'');
-  ps+='<div><div style="font-size:22pt;font-weight:700;color:#1A0F08;font-family:Georgia,serif;">'+BN+'</div>';
-  ps+='<div style="font-size:10pt;color:#C9A84C;letter-spacing:2px;">DISPATCH SHEET</div></div></div>';
-  // Client details grid
-  ps+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:10pt;">';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Client</span><div style="font-weight:700;font-size:12pt;">'+b.name.toUpperCase()+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Reference</span><div style="font-weight:600;color:#C9A84C;">'+b.ref+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Date</span><div style="font-weight:600;">'+fD(b.date)+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Event Type</span><div style="font-weight:600;">'+b.type+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Venue</span><div>'+(b.venue||"-")+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Contact</span><div>'+(b.phone||"-")+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Ready Time</span><div style="font-weight:600;">'+fT(b.ready)+'</div></div>';
-  ps+='<div><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Pickup Time</span><div style="font-weight:600;">'+fT(b.pickup)+'</div></div>';
-  if(b.notes) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Booking Notes</span><div>'+b.notes+'</div></div>';
-  if(eventNotes) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Event Details</span><div style="white-space:pre-wrap;">'+eventNotes+'</div></div>';
-  if(curStaffAssign&&curStaffAssign.length>0) ps+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:8pt;text-transform:uppercase;letter-spacing:1px;">Team</span><div style="font-weight:600;">'+curStaffAssign.join(", ")+'</div></div>';
-  ps+='</div>';
-  // Inspo photos
-  if(allInspos.length>0){
-    ps+='<div style="margin-bottom:14px;"><div style="font-size:9pt;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Reference Photos</div>';
-    ps+='<div style="display:flex;flex-wrap:wrap;gap:8px;">';
-    allInspos.forEach(function(s){ps+='<img src="'+s+'" style="width:120px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #ddd;">';});
-    ps+='</div></div>';
+  // Print version
+  var ps="<div class='ps-biz'>"+BN+" — Dispatch Sheet</div><div class='ps-name'>"+b.name+"</div>";
+  ps += "<div class='ps-meta'>";
+  ps += "<div class='ps-field'>Date<span>"+fD(b.date)+"</span></div><div class='ps-field'>Event<span>"+b.type+"</span></div>";
+  ps += "<div class='ps-field'>Venue<span>"+(b.venue||"-")+"</span></div><div class='ps-field'>Contact<span>"+(b.phone||"-")+"</span></div>";
+  ps += "<div class='ps-field'>Ready<span>"+fT(b.ready)+"</span></div><div class='ps-field'>Pickup<span>"+fT(b.pickup)+"</span></div>";
+  if(b.notes) ps += "<div class='ps-field' style='grid-column:1/-1'>Notes<span>"+b.notes+"</span></div>";
+  if(curStaffAssign&&curStaffAssign.length>0) ps += "<div class='ps-field' style='grid-column:1/-1'>Team<span>"+curStaffAssign.join(", ")+"</span></div>";
+  ps += "</div>";
+  if(curInspos.length>0){
+    ps += "<div class='ps-inspo-title'>Setup Reference Photos</div><div class='ps-inspo-wrap'>";
+    curInspos.forEach(function(s){ps+="<img src='"+s+"'>";});
+    ps += "</div>";
   }
-  // Page break before inventory
-  ps+='<div style="page-break-before:always;"></div>';
-  // Inventory pages
-  ps+='<div style="font-size:14pt;font-weight:700;color:#1A0F08;border-bottom:2px solid #C9A84C;padding-bottom:8px;margin-bottom:16px;">'+b.name+' — Inventory</div>';
   CATS.forEach(function(cat){
     var items=Object.keys(cart).map(function(id){return INV.find(function(i){return i.id===id;});}).filter(function(i){return i&&i.cat===cat;});
     if(!items.length) return;
-    ps+='<div style="margin-bottom:16px;"><div style="font-size:11pt;font-weight:700;color:#C9A84C;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #eee;padding-bottom:5px;margin-bottom:10px;">'+cat+' ('+items.length+')</div>';
-    ps+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">';
+    ps += "<div class='ps-cat-block'><div class='ps-cat-title'>"+cat+" ("+items.length+")</div><div class='ps-items'>";
     items.forEach(function(item){
-      ps+='<div style="border:1px solid #eee;border-radius:8px;overflow:hidden;text-align:center;">';
-      ps+=(item.photo?'<img src="'+item.photo+'" style="width:100%;height:80px;object-fit:cover;">':'<div style="width:100%;height:80px;background:#f5f0e8;display:flex;align-items:center;justify-content:center;font-size:24px;">&#128230;</div>');
-      ps+='<div style="padding:6px;"><div style="font-size:9pt;font-weight:600;">'+item.name+'</div><div style="font-size:8pt;color:#888;">Qty: '+cart[item.id]+'</div></div></div>';
+      ps += "<div class='ps-item'>"+(item.photo?"<img class='ps-item-img' src='"+item.photo+"'>":"<div class='ps-item-emoji'>&#128230;</div>");
+      ps += "<div class='ps-item-body'><div class='ps-item-name'>"+item.name+"</div><div class='ps-item-qty'>Qty: "+cart[item.id]+"</div></div></div>";
     });
-    ps+='</div></div>';
+    ps += "</div></div>";
   });
-  ps+='</div>';
-  document.getElementById("print-sheet").innerHTML=ps;
+  document.getElementById("print-sheet").innerHTML = ps;
+}
+var doneSheetEl=document.getElementById("done-sheet"); if(doneSheetEl) doneSheetEl.addEventListener("click",function(){go("s-bkns");});
+var editSheetEl=document.getElementById("edit-sheet"); if(editSheetEl) editSheetEl.addEventListener("click",function(){go("s-cart");});
+var printBtnEl=document.getElementById("print-btn"); if(printBtnEl) printBtnEl.addEventListener("click",function(){window.print();});
+
+// ── INVENTORY ────────────────────────────────────────────────────────────────
+function bindInvSearch() {
+  var el=document.getElementById("inv-search"); if(!el) return;
+  el.addEventListener("input",function(){curInvSearch=this.value.toLowerCase().trim();rINV();});
+}
+function bindInvCattabs() {
+  var el=document.getElementById("inv-cattabs"); if(!el) return;
+  el.addEventListener("click",function(e){
+    var t=e.target.closest(".ctab[data-icat]"); if(!t) return;
+    el.querySelectorAll(".ctab[data-icat]").forEach(function(x){x.classList.remove("on");});
+    t.classList.add("on"); curInvCat=t.getAttribute("data-icat"); rINV();
+  });
 }
 
+// Mobile inv bindings
+var mobInvSearch=document.getElementById("inv-search");
+if(mobInvSearch) mobInvSearch.addEventListener("input",function(){curInvSearch=this.value.toLowerCase().trim();rINV();});
+var mobInvCattabs=document.getElementById("inv-cattabs");
+if(mobInvCattabs) mobInvCattabs.addEventListener("click",function(e){
+  var t=e.target.closest(".ctab[data-icat]"); if(!t) return;
+  mobInvCattabs.querySelectorAll(".ctab[data-icat]").forEach(function(x){x.classList.remove("on");});
+  t.classList.add("on"); curInvCat=t.getAttribute("data-icat"); rINV();
+});
+
+function openAddItem() {
+  curItemPhoto=null;
+  document.getElementById("ai-name").value="";
+  document.getElementById("ai-qty").value="";
+  document.getElementById("ai-photo-icon").innerHTML="&#128247;";
+  document.getElementById("ai-photo-lbl").textContent="Tap to upload photo";
+  updateSubcatOptions();
+  oM("add-modal");
+}
+function updateSubcatOptions() {
+  var cat=document.getElementById("ai-cat"); if(!cat) return;
+  var wrap=document.getElementById("ai-subcat-wrap");
+  var sel=document.getElementById("ai-subcat");
+  if(!wrap||!sel) return;
+  var subs=CAT_SUBS[cat.value];
+  if(subs) {
+    wrap.style.display="block";
+    sel.innerHTML='<option value="">None</option>';
+    subs.forEach(function(s){sel.innerHTML+='<option>'+s+'</option>';});
+  } else {
+    wrap.style.display="none";
+    sel.value="";
+  }
+}
+var addItemEl=document.getElementById("add-item-btn"); if(addItemEl) addItemEl.addEventListener("click",openAddItem);
+var staffMgmtBtn=document.getElementById("staff-mgmt-btn");
+if(staffMgmtBtn) staffMgmtBtn.addEventListener("click",function(){renderStaffModal();oM("staff-modal");});
+document.getElementById("ai-cat").addEventListener("change",updateSubcatOptions);
+document.getElementById("ai-photo-box").addEventListener("click",function(){document.getElementById("ai-photo").click();});
+document.getElementById("ai-photo").addEventListener("change",function(){
+  var f=this.files[0]; if(!f) return;
+  rF(f,function(s){
+    curItemPhoto=s;
+    document.getElementById("ai-photo-icon").innerHTML="<img src='"+s+"' style='width:40px;height:40px;object-fit:cover;border-radius:6px;'>";
+    document.getElementById("ai-photo-lbl").textContent="Photo added";
+  });
+});
+document.getElementById("add-cancel").addEventListener("click",function(){cM("add-modal");});
+document.getElementById("add-confirm").addEventListener("click",function(){
+  var name=document.getElementById("ai-name").value.trim();
+  var qty=parseInt(document.getElementById("ai-qty").value)||0;
+  if(!name){alert("Please enter item name.");return;}
+  var subcatEl=document.getElementById("ai-subcat");
+  var subcat=subcatEl?subcatEl.value:"";
+  var item={id:"i"+Date.now(),name:name,qty:qty,cat:document.getElementById("ai-cat").value,subcat:subcat||null,photo:curItemPhoto};
+  ld();
+  db("inventory","POST",item).then(function(){INV.push(item);hd();cM("add-modal");rINV();toast("Item saved!");}).catch(function(err){hd();alert("Error: "+err.message);});
+});
+
+function rINV() {
+  var el=document.getElementById("imlist"); if(!el) return;
+  if(!INV.length){el.innerHTML="<div class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items yet.</div></div>";return;}
+  var catsToShow=(curInvCat==="All")?CATS:[curInvCat];
+  var h="";
+  catsToShow.forEach(function(cat){
+    var items=INV.filter(function(i){
+      if(i.cat!==cat) return false;
+      if(!curInvSearch) return true;
+      return (i.name.toLowerCase().indexOf(curInvSearch)>-1)||(i.subcat&&i.subcat.toLowerCase().indexOf(curInvSearch)>-1);
+    });
+    if(!items.length) return;
+    var sid="s"+cat.replace(/[^a-zA-Z0-9]/g,"");
+    h += "<div class='inv-section'><div class='sec-hdr open' data-sid='"+sid+"'>";
+    h += "<div class='sec-hdr-l'><span>"+cat+"</span><span class='sec-cnt'>"+items.length+"</span></div><span class='sec-arr'>&#8250;</span></div>";
+    h += "<div class='sec-body' id='bdy"+sid+"'>";
+    items.forEach(function(item){
+      var imgH=item.photo?"<img src='"+item.photo+"'>":"&#128230;";
+      h += "<div class='imcard'><div class='imimg' data-uid='"+item.id+"'>"+imgH+"<div class='uh'>&#128247;</div><input type='file' accept='image/*' id='upd"+item.id+"' style='display:none'></div>";
+      h += "<div class='iminfo'><div class='imname'>"+item.name+"</div>";
+      h += "<div class='imqty'>"+(item.subcat?"<span style='font-size:8px;padding:1px 6px;border-radius:10px;background:var(--gdim);color:var(--gold);margin-right:4px;'>"+item.subcat+"</span>":"")+"Total: "+item.qty+"</div></div>";
+      h += "<button class='imdel' data-did='"+item.id+"'>&#128465;</button></div>";
+    });
+    h += "</div></div>";
+  });
+  el.innerHTML = h;
+  el.querySelectorAll(".sec-hdr").forEach(function(hdr){
+    hdr.addEventListener("click",function(){
+      var sid=this.getAttribute("data-sid"); this.classList.toggle("open");
+      var bd=document.getElementById("bdy"+sid); if(bd) bd.style.display=this.classList.contains("open")?"block":"none";
+    });
+  });
+  el.querySelectorAll("[data-uid]").forEach(function(img){img.addEventListener("click",function(){document.getElementById("upd"+this.getAttribute("data-uid")).click();});});
+  el.querySelectorAll("[data-did]").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var me=this, id=me.getAttribute("data-did");
+      if(me.getAttribute("data-c")==="1"){
+        ld(); db("inventory?id=eq."+id,"DELETE").then(function(){INV=INV.filter(function(i){return i.id!==id;});hd();rINV();toast("Item removed.");}).catch(function(){hd();});
+      } else {
+        me.setAttribute("data-c","1"); me.textContent="Sure?"; me.style.color="var(--red)"; me.style.fontSize="10px";
+        setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.innerHTML="&#128465;";me.style.color="";me.style.fontSize="";}},2000);
+      }
+    });
+  });
+  INV.forEach(function(item){
+    var inp=document.getElementById("upd"+item.id);
+    if(inp) inp.addEventListener("change",function(){
+      var f=this.files[0]; if(!f) return;
+      rF(f,function(s){item.photo=s;ld();db("inventory?id=eq."+item.id,"PATCH",{photo:s}).then(function(){hd();rINV();toast("Photo updated!");}).catch(function(){hd();});});
+    });
+  });
+}
+
+// ── STAFF ─────────────────────────────────────────────────────────────────────
+function renderStaffModal() {
+  var h="";
+  // Group by role
+  STAFF_ROLES.forEach(function(role){
+    var members=STAFF_LIST.filter(function(s){return (s.role||"Other")===role;});
+    if(!members.length) return;
+    h+="<div style='font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;padding:8px 0 4px;'>"+role+"</div>";
+    members.forEach(function(s){
+      var i=STAFF_LIST.indexOf(s);
+      h+="<div style='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
+      h+="<span style='font-size:13px;color:var(--mob-cream,#F0E6D3);'>"+s.name+"</span>";
+      h+="<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:13px;' data-si='"+i+"'>&#128465;</button></div>";
+    });
+  });
+  if(!STAFF_LIST.length) h="<div style='font-size:12px;color:var(--mob-mut,#7A6347);padding:8px 0;'>No staff added yet.</div>";
+  document.getElementById("staff-list-el").innerHTML=h;
+  // Add form
+  h="<div style='margin-bottom:10px;'><select class='fs' id='staff-role-sel' style='margin-bottom:8px;'>";
+  STAFF_ROLES.forEach(function(r){h+="<option>"+r+"</option>";});
+  h+="</select></div>";
+  var formEl=document.getElementById("staff-form-area");
+  if(formEl){
+    formEl.innerHTML=h;
+    // Re-render role select
+    var sel=document.createElement("select");
+    sel.className="fs"; sel.id="staff-role-sel"; sel.style.marginBottom="8px";
+    STAFF_ROLES.forEach(function(r){var o=document.createElement("option");o.value=r;o.textContent=r;sel.appendChild(o);});
+    formEl.innerHTML="";
+    formEl.appendChild(sel);
+  }
+  document.querySelectorAll("[data-si]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      STAFF_LIST.splice(parseInt(this.getAttribute("data-si")),1);
+      localStorage.setItem("ev_staff",JSON.stringify(STAFF_LIST));
+      renderStaffModal();
+    });
+  });
+}
+function renderStaffAssignModal() {
+  var h="";
+  STAFF_ROLES.forEach(function(role){
+    var members=STAFF_LIST.filter(function(s){return (s.role||"Other")===role;});
+    if(!members.length) return;
+    h+="<div style='font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;width:100%;padding:6px 0 3px;'>"+role+"</div>";
+    members.forEach(function(s){
+      var nm=s.name||s;
+      var on=curStaffAssign.indexOf(nm)>-1;
+      h+="<div class='echk"+(on?" on":"")+"' data-sn='"+nm+"'>"+nm+"</div>";
+    });
+  });
+  document.getElementById("staff-assign-list").innerHTML=h;
+  document.querySelectorAll("[data-sn]").forEach(function(el){el.addEventListener("click",function(){this.classList.toggle("on");});});
+}
+document.getElementById("staff-add-btn").addEventListener("click",function(){
+  var n=document.getElementById("staff-name-inp").value.trim(); if(!n) return;
+  var roleEl=document.getElementById("staff-role-sel");
+  var role=roleEl?roleEl.value:"Labour";
+  STAFF_LIST.push({name:n,role:role});
+  localStorage.setItem("ev_staff",JSON.stringify(STAFF_LIST));
+  document.getElementById("staff-name-inp").value="";
+  renderStaffModal();
+});
+document.getElementById("staff-done-btn").addEventListener("click",function(){cM("staff-modal");});
+document.getElementById("staff-assign-confirm").addEventListener("click",function(){
+  curStaffAssign=[];
+  document.querySelectorAll("#staff-assign-list .echk.on").forEach(function(el){curStaffAssign.push(el.getAttribute("data-sn"));});
+  cM("staff-assign-modal"); updateStaffDisplay(); toast("Staff assigned: "+curStaffAssign.join(", "));
+});
+document.getElementById("staff-assign-cancel").addEventListener("click",function(){cM("staff-assign-modal");});
+
+// ── PACKAGES ──────────────────────────────────────────────────────────────────
+function renderPkgModal() {
+  var h="";
+  PACKAGES.forEach(function(p,i){
+    h += "<div style='background:var(--mob-bm,#2C1A0E);border-radius:8px;padding:10px 12px;margin-bottom:7px;'>";
+    h += "<div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;'>";
+    h += "<span style='font-size:13px;font-weight:500;color:var(--mob-cream,#F0E6D3);'>"+p.name+"</span>";
+    h += "<div style='display:flex;gap:6px;'><button class='mbtn-a' style='padding:5px 10px;font-size:10px;' data-apply='"+i+"'>Apply</button><button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;' data-delpkg='"+i+"'>&#128465;</button></div></div>";
+    h += "<div style='font-size:10px;color:var(--mob-mut,#7A6347);'>"+p.items.length+" items</div></div>";
+  });
+  if(!PACKAGES.length) h="<div style='font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:8px;'>No packages yet. Build a cart and save it.</div>";
+  document.getElementById("pkg-list-el").innerHTML=h;
+  document.querySelectorAll("[data-apply]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var pkg=PACKAGES[parseInt(this.getAttribute("data-apply"))];
+      pkg.items.forEach(function(it){cart[it.itemId]=it.qty;});
+      cM("pkg-modal"); rCart(); updBar(); toast("Package applied!");
+    });
+  });
+  document.querySelectorAll("[data-delpkg]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      PACKAGES.splice(parseInt(this.getAttribute("data-delpkg")),1);
+      localStorage.setItem("ev_pkgs",JSON.stringify(PACKAGES)); renderPkgModal();
+    });
+  });
+}
+document.getElementById("pkg-save-btn").addEventListener("click",function(){
+  var name=document.getElementById("pkg-name-inp").value.trim(); if(!name){toast("Enter a package name.");return;}
+  var items=Object.keys(cart).map(function(id){return{itemId:id,qty:cart[id]};});
+  PACKAGES.push({name:name,items:items}); localStorage.setItem("ev_pkgs",JSON.stringify(PACKAGES));
+  cM("pkg-modal"); toast("Package saved!");
+});
+document.getElementById("pkg-cancel").addEventListener("click",function(){cM("pkg-modal");});
+
+// ── FINANCE ───────────────────────────────────────────────────────────────────
+function goFin() {
+  document.getElementById("fin-inp").value=""; document.getElementById("fin-err").style.display="none"; oM("fin-modal");
+}
+document.getElementById("fin-confirm").addEventListener("click",function(){
+  if(document.getElementById("fin-inp").value.trim()===FP){cM("fin-modal");go("s-fin");}
+  else{document.getElementById("fin-err").style.display="block";}
+});
+document.getElementById("fin-cancel").addEventListener("click",function(){cM("fin-modal");});
+document.getElementById("fin-inp").addEventListener("keyup",function(e){if(e.key==="Enter")document.getElementById("fin-confirm").click();});
+
+function rFin() {
+  var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var mBkns=BKN.filter(function(b){var d=new Date(b.date+"T00:00:00");return d.getMonth()===finM&&d.getFullYear()===finY;});
+  var rev=mBkns.reduce(function(s,b){return s+(b.total||0);},0);
+  var rec=mBkns.reduce(function(s,b){return s+(b.paid||0);},0);
+  var tc=mBkns.reduce(function(s,b){return s+COSTS.reduce(function(cs,k){return cs+(parseFloat((b.costs||{})[k])||0);},0);},0);
+  var h="";
+  h += "<div class='fin-mn'><div class='fin-nav' id='fin-p'>&#8249;</div><div class='fin-month'>"+MN[finM]+" "+finY+"</div><div class='fin-nav' id='fin-n'>&#8250;</div></div>";
+  h += "<div class='fin-tabs'><div class='fin-tab"+(finTab==="payments"?" on":"")+"' data-ft='payments'>Client Payments</div><div class='fin-tab"+(finTab==="costs"?" on":"")+"' data-ft='costs'>Internal Costs</div></div>";
+  h += "<div class='fstats'>";
+  h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR "+rev.toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Received</div><div class='fsval g'>PKR "+rec.toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Outstanding</div><div class='fsval r'>PKR "+(rev-rec).toLocaleString()+"</div></div>";
+  h += "<div class='fstat'><div class='fslbl'>Total Costs</div><div class='fsval r'>PKR "+tc.toLocaleString()+"</div></div>";
+  h += "</div>";
+  if(!mBkns.length){h+="<div class='empty'><div class='empty-ic'>&#128176;</div><div class='empty-tx'>No bookings in "+MN[finM]+".</div></div>";}
+  else if(finTab==="payments"){
+    mBkns.forEach(function(b){
+      var bal=(b.total||0)-(b.paid||0);
+      h += "<div class='fcard'><div class='fc-top'><div class='fc-name'>"+b.name+" <span style='font-size:9px;color:var(--gold);'>"+b.ref+"</span></div><div class='fc-date'>"+fD(b.date)+"</div></div>";
+      h += "<div class='fc-row'><span>Total</span><span>PKR "+(b.total||0).toLocaleString()+"</span></div>";
+      h += "<div class='fc-row'><span>Received</span><span>PKR "+(b.paid||0).toLocaleString()+"</span></div>";
+      h += "<div class='fc-bal "+(bal>0?"owed":"paid")+"'><span>"+(bal>0?"Balance Due":"Fully Paid")+"</span><span>"+(bal>0?"PKR "+bal.toLocaleString():"")+"</span></div>";
+      if(bal>0) h += "<button class='fc-paybtn' data-pay='"+b.id+"'>+ Record Payment</button>";
+      h += "</div>";
+    });
+  } else {
+    // Spreadsheet table
+    h += "<div style='overflow-x:auto;margin-top:8px;'><table style='width:100%;border-collapse:collapse;font-size:11px;min-width:900px;'>";
+    h += "<thead><tr style='background:var(--gold);color:#0F0905;'>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Ref</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Client</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Date</th>";
+    h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Event</th>";
+    var COST_COLS=["Transport","Florist","Labour","Lighting","Balloon","Printing","Decor","Rental","Panel","Truss","Leaves","Misc","Note"];
+    COST_COLS.forEach(function(k){h+="<th style='padding:7px 6px;white-space:nowrap;'>"+k+"</th>";});
+    h += "<th style='padding:7px 8px;text-align:right;white-space:nowrap;background:#C9A84C;'>Total</th>";
+    h += "</tr></thead><tbody>";
+    mBkns.forEach(function(b,ri){
+      var costs=b.costs||{};
+      var total=COST_COLS.filter(function(k){return k!=="Note";}).reduce(function(s,k){return s+(parseFloat(costs[k])||0);},0);
+      var bg=ri%2===0?"background:rgba(255,255,255,0.03)":"background:rgba(255,255,255,0.07)";
+      h += "<tr style='"+bg+";border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.1));'>";
+      h += "<td style='padding:6px 8px;color:var(--gold);font-size:9px;white-space:nowrap;'>"+b.ref+"</td>";
+      h += "<td style='padding:6px 8px;font-weight:500;white-space:nowrap;'>"+b.name+"</td>";
+      h += "<td style='padding:6px 8px;white-space:nowrap;color:var(--mob-mut,#7A6347);'>"+fD(b.date)+"</td>";
+      h += "<td style='padding:6px 8px;white-space:nowrap;'>"+b.type+"</td>";
+      COST_COLS.forEach(function(k){
+        var isNote=k==="Note";
+        h += "<td style='padding:4px 4px;'>";
+        if(isNote){
+          h += "<input class='cost-inp' type='text' placeholder='Note' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"' style='width:80px;font-size:10px;padding:3px 5px;'>";
+        } else {
+          h += "<input class='cost-inp' type='number' placeholder='0' value='"+(costs[k]||"")+"' data-bid='"+b.id+"' data-k='"+k+"' style='width:60px;font-size:10px;padding:3px 5px;'>";
+        }
+        h += "</td>";
+      });
+      h += "<td style='padding:6px 8px;text-align:right;font-weight:600;color:var(--red,#B85C4A);white-space:nowrap;'>"+total.toLocaleString()+"</td>";
+      h += "</tr>";
+    });
+    h += "</tbody></table></div>";
+    h += "<button class='btn-save' style='margin-top:12px;' id='save-all-costs'>Save All Costs</button>";
+  }
+  var fEl=document.getElementById("fin-body"); if(fEl) fEl.innerHTML=h;
+  var fpEl=document.getElementById("fin-p"); if(fpEl) fpEl.addEventListener("click",function(){finM--;if(finM<0){finM=11;finY--;}rFin();});
+  var fnEl=document.getElementById("fin-n"); if(fnEl) fnEl.addEventListener("click",function(){finM++;if(finM>11){finM=0;finY++;}rFin();});
+  document.querySelectorAll(".fin-tab[data-ft]").forEach(function(t){t.addEventListener("click",function(){finTab=this.getAttribute("data-ft");rFin();});});
+  document.querySelectorAll("[data-pay]").forEach(function(btn){btn.addEventListener("click",function(){openPay(this.getAttribute("data-pay"));});});
+  var saveAllBtn=document.getElementById("save-all-costs");
+  if(saveAllBtn) saveAllBtn.addEventListener("click",function(){
+    var promises=[];
+    var bids={};
+    document.querySelectorAll(".cost-inp[data-bid]").forEach(function(inp){
+      var bid=inp.getAttribute("data-bid");
+      if(!bids[bid]) bids[bid]={};
+      var v=inp.value.trim();
+      var k=inp.getAttribute("data-k");
+      if(k==="Note"){if(v) bids[bid][k]=v;}
+      else{if(parseFloat(v)>0) bids[bid][k]=parseFloat(v);}
+    });
+    ld();
+    var keys=Object.keys(bids);
+    var done=0;
+    keys.forEach(function(bid){
+      var b=BKN.find(function(x){return x.id===bid;}); if(!b){done++;if(done===keys.length){hd();rFin();toast("Costs saved!");}return;}
+      b.costs=bids[bid];
+      db("bookings?id=eq."+bid,"PATCH",{costs:bids[bid]}).then(function(){done++;if(done===keys.length){hd();rFin();toast("Costs saved!");}}).catch(function(){hd();});
+    });
+    if(!keys.length){hd();toast("Nothing to save.");}
+  });
+}
+function openPay(id) {
+  payBkgId=id;
+  var b=BKN.find(function(x){return x.id===id;});
+  document.getElementById("pay-name").textContent=b.name;
+  document.getElementById("pay-sub").textContent="Balance: PKR "+((b.total||0)-(b.paid||0)).toLocaleString();
+  document.getElementById("pay-amt").value=""; oM("pay-modal");
+}
+document.getElementById("pay-confirm").addEventListener("click",function(){
+  var amt=parseFloat(document.getElementById("pay-amt").value)||0;
+  if(!amt){alert("Enter a valid amount.");return;}
+  var b=BKN.find(function(x){return x.id===payBkgId;});
+  var np=(b.paid||0)+amt;
+  ld(); db("bookings?id=eq."+b.id,"PATCH",{paid:np}).then(function(){b.paid=np;hd();cM("pay-modal");rFin();toast("Recorded!");}).catch(function(){hd();});
+});
+document.getElementById("pay-cancel").addEventListener("click",function(){cM("pay-modal");});
+
+// ── INVOICE ────────────────────────────────────────────────────────────────────
+function openInvoice(id) {
+  invoiceBkgId=id;
+  var b=BKN.find(function(x){return x.id===id;});
+  if(!b){toast("Booking not found.");return;}
+  invoiceLines=b.invoiceItems?JSON.parse(JSON.stringify(b.invoiceItems)):[];
+  if(invoiceLines.length===0 && b.total && b.total>0){
+    invoiceLines=[{desc:b.type+" — "+b.name,amt:b.total}];
+  }
+  if(isDesk){
+    renderDesk("s-invoice");
+  } else {
+    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");s.style.display="none";});
+    var el=document.getElementById("s-invoice");
+    if(el){el.style.display="flex";el.classList.add("active");}
+    rInvoiceScreen();
+  }
+}
+function renderInvoiceModal(b) {
+  var h="";
+  invoiceLines.forEach(function(line,i){
+    h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
+    h += "<span style='font-size:12px;color:var(--mob-cream,#F0E6D3);flex:1;'>"+line.desc+"</span>";
+    h += "<span style='font-size:12px;color:var(--gold);margin-left:8px;'>PKR "+parseInt(line.amt).toLocaleString()+"</span>";
+    h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;margin-left:8px;' data-deline='"+i+"'>&#10005;</button></div>";
+  });
+  if(!invoiceLines.length) h="<div style='font-size:11px;color:var(--mob-mut,#7A6347);'>Add line items below.</div>";
+  document.getElementById("invoice-items-el").innerHTML=h;
+  document.querySelectorAll("[data-deline]").forEach(function(btn){
+    btn.addEventListener("click",function(){invoiceLines.splice(parseInt(this.getAttribute("data-deline")),1);renderInvoiceModal(b);updateInvoiceTotals(b);});
+  });
+  updateInvoiceTotals(b);
+}
+function updateInvoiceTotals(b) {
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b?b.paid||0:0, bal=total-adv;
+  document.getElementById("inv-total-el").textContent="PKR "+total.toLocaleString();
+  document.getElementById("inv-advance-el").textContent="PKR "+adv.toLocaleString();
+  document.getElementById("inv-balance-el").textContent="PKR "+Math.max(0,bal).toLocaleString();
+}
+document.getElementById("inv-add-line-btn").addEventListener("click",function(){
+  var desc=document.getElementById("inv-desc").value.trim();
+  var amt=parseFloat(document.getElementById("inv-amt").value)||0;
+  if(!desc||!amt){toast("Enter description and amount.");return;}
+  invoiceLines.push({desc:desc,amt:amt});
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;});
+  document.getElementById("inv-desc").value=""; document.getElementById("inv-amt").value="";
+  renderInvoiceModal(b);
+});
+document.getElementById("inv-cancel").addEventListener("click",function(){cM("invoice-modal");});
+document.getElementById("inv-print-btn").addEventListener("click",function(){
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
+  b.invoiceItems=invoiceLines;
+  db("bookings?id=eq."+b.id,"PATCH",{invoice_items:invoiceLines});
+  printInvoice(b); cM("invoice-modal");
+});
+
+function numToWords(n) {
+  if(n===0) return "Zero";
+  var ones=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+  var tens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+  function h(num) {
+    if(num===0) return "";
+    if(num<20) return ones[num]+" ";
+    if(num<100) return tens[Math.floor(num/10)]+" "+(num%10?ones[num%10]+" ":"");
+    if(num<1000) return ones[Math.floor(num/100)]+" Hundred "+(num%100?h(num%100):"");
+    if(num<100000) return h(Math.floor(num/1000))+"Thousand "+(num%1000?h(num%1000):"");
+    if(num<10000000) return h(Math.floor(num/100000))+"Lac "+(num%100000?h(num%100000):"");
+    return h(Math.floor(num/10000000))+"Crore "+(num%10000000?h(num%10000000):"");
+  }
+  return h(n).trim()+" Rupees Only";
+}
+
+function rInvoiceScreen() {
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
+  var el=document.getElementById("invoice-screen-body"); if(!el) return;
+  var h="";
+  h+="<div style='background:var(--mob-bd2,#1A0F08);border:1px solid var(--mob-brd);border-radius:11px;padding:14px;margin-bottom:14px;'>";
+  h+="<div style='font-size:11px;color:var(--mob-mut,#7A6347);margin-bottom:10px;'>"+b.name+" &nbsp;·&nbsp; <span style='color:var(--gold);'>"+b.ref+"</span></div>";
+  h+="<div id='invoice-line-list'></div>";
+  h+="<div style='display:flex;gap:8px;margin-top:10px;align-items:center;'>";
+  h+="<input class='fi' id='inv-desc2' placeholder='Description e.g. Nikkah Decor' style='flex:1;font-size:12px;'>";
+  h+="<input class='fi' id='inv-amt2' type='number' placeholder='Amount' style='width:110px;font-size:12px;'>";
+  h+="<button class='tbtn gold' id='inv-add-line2' style='white-space:nowrap;padding:8px 12px;'>+ Add</button>";
+  h+="</div></div>";
+  h+="<div style='background:var(--mob-bd2,#1A0F08);border-radius:10px;padding:12px;margin-bottom:14px;'>";
+  h+="<div style='display:flex;justify-content:space-between;font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:4px;'><span>Total Amount</span><span id='inv-total2' style='color:var(--mob-cream,#F0E6D3);'>PKR 0</span></div>";
+  h+="<div style='display:flex;justify-content:space-between;font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:4px;'><span>Advance Paid</span><span style='color:var(--grn,#6B9E63);'>PKR "+(b.paid||0).toLocaleString()+"</span></div>";
+  h+="<div style='display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--red,#B85C4A);'><span>Balance Due</span><span id='inv-bal2'>PKR 0</span></div>";
+  h+="</div>";
+  h+="<button class='btn-save' id='gen-invoice-btn'>Generate Invoice</button>";
+  el.innerHTML=h;
+  renderInvoiceLines2(b);
+  document.getElementById("inv-add-line2").addEventListener("click",function(){
+    var desc=document.getElementById("inv-desc2").value.trim();
+    var amt=parseFloat(document.getElementById("inv-amt2").value)||0;
+    if(!desc||!amt){toast("Enter description and amount.");return;}
+    invoiceLines.push({desc:desc,amt:amt});
+    document.getElementById("inv-desc2").value="";
+    document.getElementById("inv-amt2").value="";
+    renderInvoiceLines2(b);
+  });
+  document.getElementById("gen-invoice-btn").addEventListener("click",function(){
+    var bx=BKN.find(function(x){return x.id===invoiceBkgId;});
+    if(bx){bx.invoiceItems=invoiceLines;db("bookings?id=eq."+bx.id,"PATCH",{invoice_items:invoiceLines});}
+    go("s-invoice-preview");
+  });
+}
+function renderInvoiceLines2(b){
+  var el=document.getElementById("invoice-line-list"); if(!el) return;
+  var h="";
+  invoiceLines.forEach(function(line,i){
+    h+="<div style='display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
+    h+="<span style='font-size:12px;color:var(--mob-cream,#F0E6D3);flex:1;'>"+line.desc+"</span>";
+    h+="<span style='font-size:12px;color:var(--gold);margin:0 8px;'>PKR "+parseInt(line.amt).toLocaleString()+"</span>";
+    h+="<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;' data-dline='"+i+"'>&#10005;</button></div>";
+  });
+  if(!invoiceLines.length) h="<div style='font-size:11px;color:var(--mob-mut,#7A6347);padding:6px 0;'>Add items below.</div>";
+  el.innerHTML=h;
+  el.querySelectorAll("[data-dline]").forEach(function(btn){
+    btn.addEventListener("click",function(){invoiceLines.splice(parseInt(this.getAttribute("data-dline")),1);renderInvoiceLines2(b);updateInvoiceTotals2(b);});
+  });
+  updateInvoiceTotals2(b);
+}
+function updateInvoiceTotals2(b){
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b?b.paid||0:0;
+  var el1=document.getElementById("inv-total2"), el2=document.getElementById("inv-bal2");
+  if(el1) el1.textContent="PKR "+total.toLocaleString();
+  if(el2) el2.textContent="PKR "+Math.max(0,total-adv).toLocaleString();
+}
+
+function rInvoicePreview() {
+  var b=BKN.find(function(x){return x.id===invoiceBkgId;}); if(!b) return;
+  var el=document.getElementById("invoice-preview-body"); if(!el) return;
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b.paid||0, bal=total-adv;
+  var today=new Date().toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"}).toUpperCase();
+  var logoSrc=BL||"";
+  var rows=invoiceLines.map(function(l,i){
+    return '<tr style="background:'+(i%2===0?"#fff":"#fdf8f0")+';"><td style="padding:6pt 8pt;font-size:9pt;font-weight:600;text-transform:uppercase;border-bottom:0.5pt solid #eee;">'+l.desc+'</td><td style="padding:6pt 8pt;text-align:right;font-size:9pt;font-weight:600;border-bottom:0.5pt solid #eee;">'+parseInt(l.amt).toLocaleString()+'/-</td></tr>';
+  }).join("");
+  var inv=
+    '<div style="font-family:Georgia,Arial,sans-serif;max-width:680px;margin:0 auto;background:#fff;padding:20px;color:#111;border:1px solid #ddd;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #C9A84C;margin-bottom:14px;">'
+    +(logoSrc?'<img src="'+logoSrc+'" style="width:70px;height:70px;object-fit:contain;">':'<div style="width:70px;"></div>')
+    +'<div style="text-align:center;flex:1;"><div style="font-size:26pt;font-weight:700;color:#1A0F08;letter-spacing:1px;">Happenings.co</div><div style="font-size:10pt;color:#C9A84C;letter-spacing:3px;">── Event Organiser ──</div></div>'
+    +'<div style="width:70px;"></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:9pt;">'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Customer</div><div style="font-weight:700;font-size:11pt;">'+b.name.toUpperCase()+'</div></div>'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Booking Ref</div><div style="font-weight:700;">'+b.ref+'</div></div>'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Mobile</div><div>'+(b.phone||"-")+'</div></div>'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Invoice Date</div><div>'+today+'</div></div>'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Event Location</div><div>'+(b.venue||"-")+'</div></div>'
+    +'<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Event Date</div><div>'+fD(b.date)+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:10pt;margin-bottom:12px;color:#555;">Dear Client,<br>We are pleased to submit the invoice for the following:</div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">'
+    +'<thead><tr style="background:#C9A84C;color:#0F0905;"><th style="padding:7pt 8pt;text-align:left;font-size:9pt;text-transform:uppercase;letter-spacing:1px;">Description</th><th style="padding:7pt 8pt;text-align:right;font-size:9pt;text-transform:uppercase;letter-spacing:1px;">Amount</th></tr></thead>'
+    +'<tbody>'+rows
+    +'<tr style="background:#f5f0e8;"><td style="padding:7pt 8pt;font-size:9pt;font-weight:700;text-transform:uppercase;border-top:2pt solid #C9A84C;">Total Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;font-weight:700;border-top:2pt solid #C9A84C;">'+total.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#f5f0e8;"><td style="padding:7pt 8pt;font-size:9pt;font-weight:700;text-transform:uppercase;">Advance Paid</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;font-weight:700;">'+adv.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#1A0F08;color:#C9A84C;"><td style="padding:8pt 8pt;font-size:10pt;font-weight:700;text-transform:uppercase;">Balance Amount</td><td style="padding:8pt 8pt;text-align:right;font-size:11pt;font-weight:700;">'+bal.toLocaleString()+'/-</td></tr>'
+    +'</tbody></table>'
+    +'<div style="font-size:10pt;font-weight:700;padding:8pt;background:#fff8ee;border-left:4pt solid #C9A84C;margin-bottom:14px;">BALANCE AMOUNT RS '+bal.toLocaleString()+'/-&nbsp;&nbsp;'+numToWords(bal).toUpperCase()+'</div>'
+    +'<div style="font-size:9pt;color:#555;font-style:italic;margin-bottom:12px;">Thanking and assuring you for our best services all time, InshaAllah</div>'
+    +'<div style="margin-bottom:14px;"><div style="font-size:9pt;">Yours Truly</div><div style="font-size:10pt;font-weight:700;margin-top:8px;">FINANCE MANAGER</div><div style="font-size:10pt;font-weight:700;">HAPPENINGS.CO</div></div>'
+    +'<div style="font-size:8pt;color:#888;font-style:italic;margin-bottom:14px;">** System generated bill. Signature not required **</div>'
+    +'<div style="background:#1A0F08;color:#C9A84C;padding:10px 14px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
+    +'<div style="font-size:8pt;">&#128205; Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
+    +'<div style="font-size:8pt;display:flex;gap:14px;"><span>&#128247; Happenings.co</span><span>&#128222; 03302894915</span></div>'
+    +'</div></div>';
+  el.innerHTML=inv;
+  // Store for print
+  document.getElementById("print-sheet").innerHTML=inv;
+}
+
+function printInvoice(b) {
+  var total=invoiceLines.reduce(function(s,l){return s+(parseFloat(l.amt)||0);},0);
+  var adv=b.paid||0, bal=total-adv;
+  var today=new Date().toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"}).toUpperCase();
+  var logoSrc=BL||"";
+  var ps=document.getElementById("print-sheet");
+  var rows=invoiceLines.map(function(l,i){
+    return '<tr style="background:'+(i%2===0?"#fff":"#fdf8f0")+';"><td style="padding:6pt 8pt;font-size:9pt;font-weight:600;text-transform:uppercase;">'+l.desc+'</td><td style="padding:6pt 8pt;text-align:right;font-size:9pt;font-weight:600;">'+parseInt(l.amt).toLocaleString()+'/-</td></tr>';
+  }).join("");
+  ps.innerHTML =
+    '<div style="font-family:Arial,sans-serif;max-width:210mm;margin:0 auto;padding:10mm 14mm;color:#111;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8mm;border-bottom:2px solid #C9A84C;padding-bottom:6mm;">'
+    +'<div style="width:70px;height:70px;">'+(logoSrc?'<img src="'+logoSrc+'" style="width:100%;height:100%;object-fit:contain;">':'')+'</div>'
+    +'<div style="text-align:center;flex:1;"><div style="font-size:28pt;font-weight:700;color:#1A0F08;font-family:Georgia,serif;">Happenings.co</div><div style="font-size:11pt;color:#C9A84C;letter-spacing:2px;">\u2500\u2500 Event Organiser \u2500\u2500</div></div>'
+    +'<div style="width:70px;"></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:8mm;">'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Customer</div><div style="font-size:10pt;font-weight:600;">'+b.name.toUpperCase()+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Booking Ref</div><div style="font-size:10pt;font-weight:600;">'+b.ref+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Mobile</div><div style="font-size:10pt;">'+(b.phone||"-")+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Invoice Date</div><div style="font-size:10pt;">'+today+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Location</div><div style="font-size:10pt;">'+(b.venue||"-")+'</div></div>'
+    +'<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Date</div><div style="font-size:10pt;">'+new Date(b.date+"T00:00:00").toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"}).toUpperCase()+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:10pt;margin-bottom:6mm;">Dear Client,<br><span style="color:#555;">We are pleased to submit the invoice for the following:</span></div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:4mm;">'
+    +'<thead><tr style="background:#C9A84C;color:#0F0905;"><th style="padding:7pt 8pt;text-align:left;font-size:9pt;text-transform:uppercase;">Description</th><th style="padding:7pt 8pt;text-align:right;font-size:9pt;text-transform:uppercase;">Amount</th></tr></thead>'
+    +'<tbody>'+rows
+    +'<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;border-top:1.5pt solid #C9A84C;">Total Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;border-top:1.5pt solid #C9A84C;">'+total.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Advance Paid</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;">'+adv.toLocaleString()+'/-</td></tr>'
+    +'<tr style="background:#2C1A0E;color:#C9A84C;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Balance Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:10pt;">'+bal.toLocaleString()+'/-</td></tr>'
+    +'</tbody></table>'
+    +'<div style="font-size:10pt;font-weight:700;margin-bottom:8mm;padding:5pt 8pt;background:#fff3e0;border-left:3pt solid #C9A84C;">BALANCE AMOUNT RS '+bal.toLocaleString()+'/-  '+numToWords(bal).toUpperCase()+'</div>'
+    +'<div style="font-size:9pt;color:#555;margin-bottom:6mm;font-style:italic;">Thanking and assuring you for our best services all time, InshaAllah</div>'
+    +'<div style="margin-bottom:8mm;"><div style="font-size:9pt;">Yours Truly</div><div style="font-size:10pt;font-weight:700;margin-top:4mm;">FINANCE MANAGER</div><div style="font-size:10pt;font-weight:700;">HAPPENINGS.CO</div></div>'
+    +'<div style="font-size:8pt;color:#888;font-style:italic;margin-bottom:8mm;">** System generated bill. Signature not required **</div>'
+    +'<div style="background:#1A0F08;color:#C9A84C;padding:5mm 8mm;border-radius:4pt;display:flex;align-items:center;justify-content:space-between;">'
+    +'<div style="font-size:8pt;">\u{1F4CD} Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
+    +'<div style="font-size:8pt;display:flex;gap:12pt;"><span>\u{1F4F7} Happenings.co</span><span>\u{1F4DE} 03302894915</span></div>'
+    +'</div></div>';
+  window.print();
+  setTimeout(function(){ps.innerHTML="";},1000);
+}
+
+// ── EVENT MEDIA GALLERY ──────────────────────────────────────────────────────────
+var MEDIA_CATS=["All","Nikkah","Engagement","Bridal Shower","Birthday","Mehendi","Backdrop","Florals","Setup","Other"];
+
+function rMedia() {
+  var el=document.getElementById("media-body"); if(!el) return;
+  var filtered=mediaFilter==="All"?MEDIA:MEDIA.filter(function(m){return m.cat===mediaFilter;});
+  var h="";
+  // Upload button + filter tabs
+  h+="<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
+  h+="<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
+  h+="<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
+  h+="<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:8px 11px;'>";
+  h+="</div>";
+  h+="<div class='cattabs' style='background:transparent;border:none;margin-bottom:14px;padding:0;'>";
+  MEDIA_CATS.forEach(function(c){h+="<div class='ctab"+(mediaFilter===c?" on":"")+"' data-mcat='"+c+"'>"+c+"</div>";});
+  h+="</div>";
+  if(!filtered.length){
+    h+="<div class='empty'><div class='empty-ic'>&#128247;</div><div class='empty-tx'>No photos yet.<br>Tap + Add Photo to upload.</div></div>";
+  } else {
+    h+="<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;'>";
+    filtered.forEach(function(m,i){
+      h+="<div style='position:relative;border-radius:10px;overflow:hidden;background:var(--mob-bm,#2C1A0E);border:1px solid var(--mob-brs);'>";
+      h+="<div style='width:100%;aspect-ratio:1;overflow:hidden;cursor:pointer;' data-lightbox='"+i+"'>";
+      if(m.type==="video") {
+        h+="<video src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;' muted></video>";
+        h+="<div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;pointer-events:none;'>&#9654;</div>";
+      } else {
+        h+="<img src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;'>";
+      }
+      h+="</div>";
+      h+="<div style='padding:7px 8px;'>";
+      h+="<div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>"+m.title+"</div>";
+      h+="<div style='font-size:9px;color:var(--gold);'>"+m.cat+"</div>";
+      if(m.tags&&m.tags.length>0) h+="<div style='font-size:8px;color:var(--mob-mut,#7A6347);margin-top:2px;'>"+m.tags.join(", ")+"</div>";
+      h+="</div>";
+      h+="<button style='position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;' data-delm='"+i+"'>&#10005;</button>";
+      h+="</div>";
+    });
+    h+="</div>";
+  }
+  el.innerHTML=h;
+  // Bind upload
+  var ub=document.getElementById("media-upload-btn");
+  if(ub) ub.addEventListener("click",function(){document.getElementById("media-file").click();});
+  var mf=document.getElementById("media-file");
+  if(mf) mf.addEventListener("change",function(){
+    var files=Array.from(this.files);
+    if(!files.length) return;
+    var pending=files.length;
+    files.forEach(function(f){
+      var isVideo=f.type.indexOf("video")===0;
+      rF(f,function(src){
+        var title=f.name.replace(/\.[^.]+$/,"");
+        oM("media-add-modal");
+        document.getElementById("media-title-inp").value=title;
+        document.getElementById("media-cat-sel").value="Other";
+        document.getElementById("media-tags-inp").value="";
+        document.getElementById("media-preview").innerHTML=isVideo
+          ?"<video src='"+src+"' style='width:100%;max-height:200px;border-radius:8px;' controls></video>"
+          :"<img src='"+src+"' style='width:100%;max-height:200px;object-fit:cover;border-radius:8px;'>";
+        document.getElementById("media-save-btn").onclick=function(){
+          var title2=document.getElementById("media-title-inp").value.trim()||f.name;
+          var cat=document.getElementById("media-cat-sel").value;
+          var tags=document.getElementById("media-tags-inp").value.split(",").map(function(t){return t.trim();}).filter(Boolean);
+          MEDIA.push({src:src,type:isVideo?"video":"image",title:title2,cat:cat,tags:tags,date:new Date().toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"})});
+          localStorage.setItem("ev_media",JSON.stringify(MEDIA));
+          cM("media-add-modal"); rMedia(); toast("Photo added!");
+        };
+      });
+    });
+    this.value="";
+  });
+  // Bind filter tabs
+  el.querySelectorAll("[data-mcat]").forEach(function(t){
+    t.addEventListener("click",function(){mediaFilter=this.getAttribute("data-mcat");rMedia();});
+  });
+  // Bind search
+  var ms=document.getElementById("media-search");
+  if(ms) ms.addEventListener("input",function(){
+    var q=this.value.toLowerCase();
+    el.querySelectorAll("[data-lightbox]").forEach(function(card){
+      // show/hide based on search - simple approach
+    });
+    // re-filter
+    var filt=q?MEDIA.filter(function(m){return m.title.toLowerCase().indexOf(q)>-1||(m.tags&&m.tags.some(function(t){return t.toLowerCase().indexOf(q)>-1;}))||m.cat.toLowerCase().indexOf(q)>-1;}):MEDIA;
+    // rebuild just the grid
+    var grid=el.querySelector("div[style*='grid-template-columns']");
+    if(!grid) return;
+    var h2="";
+    filt.forEach(function(m,i){
+      h2+="<div style='position:relative;border-radius:10px;overflow:hidden;background:var(--mob-bm,#2C1A0E);border:1px solid var(--mob-brs);'>";
+      h2+="<div style='width:100%;aspect-ratio:1;overflow:hidden;' data-lightbox='"+i+"'>";
+      h2+=(m.type==="video"?"<video src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;' muted></video><div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;'>&#9654;</div>":"<img src='"+m.src+"' style='width:100%;height:100%;object-fit:cover;'>");
+      h2+="</div><div style='padding:7px 8px;'><div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);'>"+m.title+"</div><div style='font-size:9px;color:var(--gold);'>"+m.cat+"</div></div></div>";
+    });
+    grid.innerHTML=h2;
+  });
+  // Bind delete
+  el.querySelectorAll("[data-delm]").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var me=this, idx=parseInt(me.getAttribute("data-delm"));
+      if(me.getAttribute("data-c")==="1"){
+        MEDIA.splice(idx,1); localStorage.setItem("ev_media",JSON.stringify(MEDIA)); rMedia(); toast("Removed.");
+      } else {
+        me.setAttribute("data-c","1"); me.textContent="?"; me.style.background="rgba(184,92,74,.8)";
+        setTimeout(function(){if(me.getAttribute("data-c")==="1"){me.removeAttribute("data-c");me.textContent="&#10005;";me.style.background="rgba(0,0,0,.6)";}},2000);
+      }
+    });
+  });
+  // Lightbox
+  el.querySelectorAll("[data-lightbox]").forEach(function(card){
+    card.addEventListener("click",function(){
+      var idx=parseInt(this.getAttribute("data-lightbox"));
+      var m=filtered[idx]; if(!m) return;
+      var lb=document.createElement("div");
+      lb.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;";
+      lb.innerHTML=(m.type==="video"
+        ?"<video src='"+m.src+"' style='max-width:100%;max-height:75vh;border-radius:10px;' controls autoplay></video>"
+        :"<img src='"+m.src+"' style='max-width:100%;max-height:75vh;object-fit:contain;border-radius:10px;'>")
+        +"<div style='margin-top:12px;text-align:center;'><div style='font-size:14px;font-weight:500;color:#F0E6D3;'>"+m.title+"</div><div style='font-size:11px;color:var(--gold);margin-top:3px;'>"+m.cat+(m.tags&&m.tags.length>0?" — "+m.tags.join(", "):"")+"</div></div>"
+        +"<button style='position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;' id='lb-close'>&#10005;</button>";
+      document.body.appendChild(lb);
+      document.getElementById("lb-close").addEventListener("click",function(){document.body.removeChild(lb);});
+      lb.addEventListener("click",function(e){if(e.target===lb)document.body.removeChild(lb);});
+    });
+  });
+}
+
+// ── OVERLAY CLOSE ────────────────────────────────────────────────────────────
+document.querySelectorAll(".overlay").forEach(function(el){
+  el.addEventListener("click",function(e){if(e.target===this)this.classList.remove("open");});
+});
+
+// ── SAMPLE DATA ──────────────────────────────────────────────────────────────
+// Supabase connected - data loads via loadAll()
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+sessionStorage.removeItem("auth");
+document.getElementById("desk-sidebar").style.display="none";
+document.getElementById("desk-main").style.display="none";
+document.querySelectorAll(".screen").forEach(function(s){s.style.display="none";});
+var loginEl=document.getElementById("s-login");
+if(loginEl){loginEl.style.cssText="display:flex !important;";}
 
 } catch(e) { console.warn("Init:", e.message); }</script>
 </body>
