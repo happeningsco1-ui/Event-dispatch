@@ -1819,8 +1819,13 @@ document.getElementById("l-inp").addEventListener("keyup", function(e) { if(e.ke
 // ── LOAD DATA ──────────────────────────────────────────────────────────────
 function loadAll() {
   ld();
+  // Timeout fallback - if Supabase hangs for 8 seconds, show dashboard anyway
+  var timeout = setTimeout(function() {
+    hd(); go("s-dash"); toast("Connection slow - showing cached data.");
+  }, 8000);
   Promise.all([db("inventory?order=created_at.asc"), db("bookings?order=date.asc")])
     .then(function(r) {
+      clearTimeout(timeout);
       INV = Array.isArray(r[0]) ? r[0] : [];
       BKN = Array.isArray(r[1]) ? r[1].map(function(b) {
         b.dispatchItems = b.dispatch_items || null;
@@ -1834,7 +1839,7 @@ function loadAll() {
         return b;
       }) : [];
       hd(); initBiz(); go("s-dash");
-    }).catch(function(e) { hd(); toast("Loaded offline."); go("s-dash"); });
+    }).catch(function(e) { clearTimeout(timeout); hd(); go("s-dash"); toast("Loaded offline."); });
 }
 
 // Global invoice button handler - works on any render
