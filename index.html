@@ -1315,11 +1315,19 @@ function $(id){return document.getElementById(id);}
 function initLayout(){
   isDesk=window.innerWidth>=768;
   if(isDesk){
+    // Hide ALL mobile screens explicitly
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.style.setProperty("display","none","important");
+    });
     $("desk-sidebar").style.display="flex";
     $("desk-main").style.display="flex";
   } else {
     $("desk-sidebar").style.display="none";
     $("desk-main").style.display="none";
+    // Restore screens for mobile
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.style.removeProperty("display");
+    });
   }
 }
 
@@ -1330,8 +1338,15 @@ function go(id){
   curScreen=id;
   if(isDesk){renderDesk(id);}
   else{
-    document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
-    var el=$(id);if(el)el.classList.add("active");
+    document.querySelectorAll(".screen").forEach(function(s){
+      s.classList.remove("active");
+      s.style.setProperty("display","none","important");
+    });
+    var el=$(id);
+    if(el){
+      el.style.setProperty("display","flex","important");
+      el.classList.add("active");
+    }
     if(id==="s-dash")rDash();
     else if(id==="s-cal")rCal();
     else if(id==="s-bkns")rBkns();
@@ -2464,9 +2479,14 @@ var mLogoFile=$("logo-file");if(mLogoFile)mLogoFile.onchange=function(){var f=th
 sessionStorage.removeItem("auth");
 document.getElementById("desk-sidebar").style.display="none";
 document.getElementById("desk-main").style.display="none";
-document.querySelectorAll(".screen").forEach(function(s){s.style.display="none";});
+// Hide ALL screens with inline style so CSS can't be overridden
+document.querySelectorAll(".screen").forEach(function(s){
+  s.style.setProperty("display","none","important");
+  s.classList.remove("active");
+});
+// Show login
 var loginEl=document.getElementById("s-login");
-if(loginEl)loginEl.style.cssText="display:flex !important;";
+if(loginEl){loginEl.style.setProperty("display","flex","important");}
 
 </script>
 </body>
