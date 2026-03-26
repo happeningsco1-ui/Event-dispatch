@@ -5894,9 +5894,12 @@
                 var title2 = document.getElementById("media-title-inp").value.trim() || f.name;
                 var cat = document.getElementById("media-cat-sel").value;
                 var tags = document.getElementById("media-tags-inp").value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
-                MEDIA.push({ src: src, type: isVideo ? "video" : "image", title: title2, cat: cat, tags: tags, date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }) });
-                localStorage.setItem("ev_media", JSON.stringify(MEDIA));
-                cM("media-add-modal"); rMedia(); toast("Photo added!");
+                var payload = { src: src, type: isVideo ? "video" : "image", title: title2, cat: cat, tags: tags, date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }) };
+                ld();
+                db("media", "POST", payload).then(function(newM) {
+                  MEDIA.unshift(payload); 
+                  cM("media-add-modal"); rMedia(); hd(); toast("Photo added!");
+                }).catch(function() { hd(); toast("Upload failed."); });
               };
             });
           });
