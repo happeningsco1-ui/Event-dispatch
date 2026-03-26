@@ -3871,6 +3871,40 @@
     </div>
   </div>
 
+  <!-- MEDIA ADD MODAL -->
+  <div class="overlay" id="media-add-modal">
+    <div class="modal">
+      <div class="mname">Add to Gallery</div>
+      <div id="media-preview" style="margin-bottom:12px;"></div>
+      <div class="fg" style="margin-bottom:10px;">
+        <div class="fl">Title</div>
+        <input class="fi" id="media-title-inp" placeholder="Event name or detail">
+      </div>
+      <div class="fg" style="margin-bottom:10px;">
+        <div class="fl">Category</div>
+        <select class="fs" id="media-cat-sel">
+          <option>Nikkah</option>
+          <option>Engagement</option>
+          <option>Bridal Shower</option>
+          <option>Birthday</option>
+          <option>Mehendi</option>
+          <option>Backdrop</option>
+          <option>Florals</option>
+          <option>Setup</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:16px;">
+        <div class="fl">Tags (comma separated)</div>
+        <input class="fi" id="media-tags-inp" placeholder="gold, floral, elegant">
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-c" onclick="cM('media-add-modal')">Cancel</button>
+        <button class="mbtn-a" id="media-save-btn">Save to Gallery</button>
+      </div>
+    </div>
+  </div>
+
   <div class="loading" id="loading">
     <div class="spinner"></div>
   </div>
