@@ -3886,7 +3886,7 @@
       var INV = [], BKN = [];
       var BN = localStorage.getItem("biz_n") || "Happenings.co";
       var BL = localStorage.getItem("biz_l") || null;
-      var cart = {}, curBkg = null, curInspos = [], curItemPhoto = null, mItemId = null, payBkgId = null;
+      var cart = {}, curBkg = null, curInspos = [], curEventInspos = [], curEventNotes = "", curItemPhoto = null, mItemId = null, payBkgId = null;
       var calY = new Date().getFullYear(), calM = new Date().getMonth();
       var finM = new Date().getMonth(), finY = new Date().getFullYear(), finTab = "payments";
       var curFilter = "upcoming", curDetailId = null, curScreen = "s-dash";
@@ -3977,7 +3977,13 @@
           else if (id === "s-cart") rCart();
           else if (id === "s-bkn-detail" && curDetailId) rDetail(curDetailId);
           else if (id === "s-invoice") rInvoiceScreen();
-          else if (id === "s-event-details") { rEventDetails(); }
+          else if (id === "s-event-details") {
+            if (curBkg) { 
+              curEventNotes = curBkg.reminder || ""; 
+              curEventInspos = curBkg.eventInspos || []; 
+            }
+            rEventDetails(); 
+          }
           else if (id === "s-invoice-preview") rInvoicePreview();
           else if (id === "s-media") rMedia();
           else if (id === "s-event-details") {
@@ -4327,6 +4333,7 @@
               b.extItems = b.pending_items || [];
               b.costs = b.costs || {};
               b.reminder = b.reminder_notes || "";
+              b.eventInspos = b.event_inspos || [];
               b.ref = b.ref || "";
               b.discussionLog = b.discussion_log || [];
               b.staffAssigned = b.staff_assigned || [];
@@ -4758,7 +4765,7 @@
 
       // ── BOOKING DETAIL ──────────────────────────────────────────────────────────
       function rDetail(id) {
-        var b = BKN.find(function (x) { return x.id === id; }); if (!b) return;
+        var b = BKN.find(function (x) { return x.id === id; }); if (!b) return; curBkg = b;
         var di = b.dispatchItems || [], ext = b.extItems || [];
         var el = document.getElementById("bdetail-body"); if (!el) return;
         var h = "";
@@ -5033,7 +5040,7 @@
         curEventNotes = document.getElementById("ed-notes").value.trim();
         if (curBkg) {
           curBkg.eventNotes = curEventNotes; curBkg.eventInspos = curEventInspos;
-          db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes });
+          db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos });
         }
         go("s-inv-reserve");
       });
