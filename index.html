@@ -3940,22 +3940,24 @@
       var SU = "https://oqxlzyimondgwbqslibw.supabase.co";
       var SK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
 
-      function db(path, method, body) {
+            function db(path, method, body) {
         var headers = {
           "apikey": SK,
           "Authorization": "Bearer " + SK,
           "Content-Type": "application/json"
         };
-        if (method === "POST" || method === "PATCH") headers["Prefer"] = "return=minimal";
+        if (method === "POST" || method === "PATCH") headers["Prefer"] = "return=representation";
         return fetch(SU + "/rest/v1/" + path, {
           method: method || "GET",
           headers: headers,
           body: body ? JSON.stringify(body) : undefined
         }).then(function (r) {
-          if (r.status >= 200 && r.status < 300) {
-            return r.text().then(function (t) { return t ? JSON.parse(t) : {}; });
-          }
-          return r.text().then(function (t) { throw new Error(t); });
+          return r.text().then(function (t) {
+            var data = t ? JSON.parse(t) : {};
+            if (r.status >= 200 && r.status < 300) return data;
+            var err = data.message || data.error || t || "Unknown database error";
+            throw new Error(err);
+          });
         });
       }
 
@@ -4385,13 +4387,16 @@
       document.getElementById("l-inp").addEventListener("keyup", function (e) { if (e.key === "Enter") document.getElementById("l-btn").click(); });
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
-      function loadAll() {
+            function loadAll() {
         ld();
-        // Timeout fallback - if Supabase hangs for 8 seconds, show dashboard anyway
         var timeout = setTimeout(function () {
           hd(); go("s-dash"); toast("Connection slow - showing cached data.");
-        }, 8000);
-        Promise.all([db("inventory?order=created_at.asc"), db("bookings?order=date.asc")])
+        }, 12000);
+        Promise.all([
+          db("inventory?order=created_at.asc"),
+          db("bookings?order=date.asc"),
+          db("media?order=created_at.desc")
+        ])
           .then(function (r) {
             clearTimeout(timeout);
             INV = Array.isArray(r[0]) ? r[0] : [];
@@ -4407,8 +4412,12 @@
               b.invoiceItems = b.invoice_items || [];
               return b;
             }) : [];
+            MEDIA = Array.isArray(r[2]) ? r[2] : [];
             hd(); initBiz(); go("s-dash");
-          }).catch(function (e) { clearTimeout(timeout); hd(); go("s-dash"); toast("Loaded offline."); });
+          }).catch(function (e) { 
+            clearTimeout(timeout); hd(); go("s-dash"); 
+                        toast("Load error: " + e.message);
+          });
       }
 
       // Global invoice button handler - works on any render
@@ -5404,7 +5413,7 @@
             e.stopPropagation();
             var me = this, id = me.getAttribute("data-did");
             if (me.getAttribute("data-c") === "1") {
-              ld(); db("inventory?id=eq." + id, "DELETE").then(function () { INV = INV.filter(function (i) { return i.id !== id; }); hd(); rINV(); toast("Item removed."); }).catch(function () { hd(); });
+                            ld(); db("inventory?id=eq." + id, "DELETE").then(function () { INV = INV.filter(function (i) { return i.id !== id; }); hd(); rINV(); toast("Item removed."); }).catch(function (err) { hd(); toast("Delete failed: " + err.message); });
             } else {
               me.setAttribute("data-c", "1"); me.textContent = "Sure?"; me.style.color = "var(--red)"; me.style.fontSize = "10px";
               setTimeout(function () { if (me.getAttribute("data-c") === "1") { me.removeAttribute("data-c"); me.innerHTML = "&#128465;"; me.style.color = ""; me.style.fontSize = ""; } }, 2000);
@@ -5415,7 +5424,7 @@
           var inp = document.getElementById("upd" + item.id);
           if (inp) inp.addEventListener("change", function () {
             var f = this.files[0]; if (!f) return;
-            rF(f, function (s) { item.photo = s; ld(); db("inventory?id=eq." + item.id, "PATCH", { photo: s }).then(function () { hd(); rINV(); toast("Photo updated!"); }).catch(function () { hd(); }); });
+                        rF(f, function (s) { item.photo = s; ld(); db("inventory?id=eq." + item.id, "PATCH", { photo: s }).then(function () { hd(); rINV(); toast("Photo updated!"); }).catch(function (err) { hd(); toast("Update failed: " + err.message); }); });
           });
         });
       }
@@ -5927,14 +5936,22 @@
                 var title2 = document.getElementById("media-title-inp").value.trim() || f.name;
                 var cat = document.getElementById("media-cat-sel").value;
                 var tags = document.getElementById("media-tags-inp").value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
-                var payload = { src: src, type: isVideo ? "video" : "image", title: title2, cat: cat, tags: tags, date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }) };
+                                var payload = { 
+                  src: src, 
+                  type: isVideo ? "video" : "image", 
+                  title: title2, 
+                  cat: cat, 
+                  tags: tags, 
+                  date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }),
+                  created_at: new Date().toISOString()
+                };
                 ld();
                 db("media", "POST", payload).then(function(newM) {
-                  MEDIA.unshift(payload); 
+                  MEDIA.unshift(newM[0] || payload); 
                   cM("media-add-modal"); rMedia(); hd(); toast("Photo added!");
-                                }).catch(function(err) { 
+                }).catch(function(err) { 
                   hd(); 
-                  toast("Upload failed: Item too large or connection error.");
+                  toast("Upload failed: " + err.message);
                   console.error("Upload Error:", err);
                 });
               };
@@ -5972,8 +5989,12 @@
           btn.addEventListener("click", function (e) {
             e.stopPropagation();
             var me = this, idx = parseInt(me.getAttribute("data-delm"));
-            if (me.getAttribute("data-c") === "1") {
-              MEDIA.splice(idx, 1); localStorage.setItem("ev_media", JSON.stringify(MEDIA)); rMedia(); toast("Removed.");
+                        if (me.getAttribute("data-c") === "1") {
+              var mid = MEDIA[idx].id;
+              ld();
+              db("media?id=eq." + mid, "DELETE").then(function() {
+                MEDIA.splice(idx, 1); hd(); rMedia(); toast("Removed.");
+              }).catch(function(err) { hd(); toast("Delete failed: " + err.message); });
             } else {
               me.setAttribute("data-c", "1"); me.textContent = "?"; me.style.background = "rgba(184,92,74,.8)";
               setTimeout(function () { if (me.getAttribute("data-c") === "1") { me.removeAttribute("data-c"); me.textContent = "&#10005;"; me.style.background = "rgba(0,0,0,.6)"; } }, 2000);
