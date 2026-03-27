@@ -1429,24 +1429,59 @@
 
     .fin-tab {
       flex: 1;
-      padding: 9px;
+      padding: 10px;
+      background: #1A0F08;
+      border: 1px solid var(--mob-brs);
       border-radius: 8px;
+      text-align: center;
       font-size: 11px;
-      font-weight: 500;
+      color: #7A6347;
       cursor: pointer;
       font-family: Jost, sans-serif;
-      border: 1px solid var(--mob-brs);
-      background: #2C1A0E;
-      color: #7A6347;
-      text-align: center;
     }
 
     .fin-tab.on {
-      background: var(--gdim);
       border-color: var(--gold);
       color: var(--gold);
+      background: var(--gdim);
     }
 
+    .fin-month-row {
+      background: #1A0F08;
+      border: 1px solid var(--mob-brs);
+      border-radius: 11px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .fin-month-hdr {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .fin-month-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #F0E6D3;
+    }
+    .fin-month-arrow {
+      font-size: 12px;
+      color: var(--gold);
+      transition: transform 0.3s;
+    }
+    .fin-month-row.open .fin-month-arrow {
+      transform: rotate(90deg);
+    }
+    .fin-month-body {
+      display: none;
+      padding: 12px 14px;
+      background: rgba(0,0,0,0.2);
+    }
+    .fin-month-row.open .fin-month-body {
+      display: block;
+    }
     .fstats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -5753,94 +5788,138 @@
 
       function rFin() {
         var MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        var mBkns = BKN.filter(function (b) { var d = new Date(b.date + "T00:00:00"); return d.getMonth() === finM && d.getFullYear() === finY; });
-        var rev = mBkns.reduce(function (s, b) { return s + (b.total || 0); }, 0);
-        var rec = mBkns.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
-        var tc = mBkns.reduce(function (s, b) { return s + COSTS.reduce(function (cs, k) { return cs + (parseFloat((b.costs || {})[k]) || 0); }, 0); }, 0);
+        var currY = new Date().getFullYear();
         var h = "";
-        h += "<div class='fin-mn'><div class='fin-nav' id='fin-p'>&#8249;</div><div class='fin-month'>" + MN[finM] + " " + finY + "</div><div class='fin-nav' id='fin-n'>&#8250;</div></div>";
-        h += "<div class='fin-tabs'><div class='fin-tab" + (finTab === "payments" ? " on" : "") + "' data-ft='payments'>Client Payments</div><div class='fin-tab" + (finTab === "costs" ? " on" : "") + "' data-ft='costs'>Internal Costs</div></div>";
-        h += "<div class='fstats'>";
-        h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR " + rev.toLocaleString() + "</div></div>";
-        h += "<div class='fstat'><div class='fslbl'>Received</div><div class='fsval g'>PKR " + rec.toLocaleString() + "</div></div>";
-        h += "<div class='fstat'><div class='fslbl'>Outstanding</div><div class='fsval r'>PKR " + (rev - rec).toLocaleString() + "</div></div>";
-        h += "<div class='fstat'><div class='fslbl'>Total Costs</div><div class='fsval r'>PKR " + tc.toLocaleString() + "</div></div>";
-        h += "</div>";
-        if (!mBkns.length) { h += "<div class='empty'><div class='empty-ic'>&#128176;</div><div class='empty-tx'>No bookings in " + MN[finM] + ".</div></div>"; }
-        else if (finTab === "payments") {
-          mBkns.forEach(function (b) {
-            var bal = (b.total || 0) - (b.paid || 0);
-            h += "<div class='fcard'><div class='fc-top'><div class='fc-name'>" + b.name + " <span style='font-size:9px;color:var(--gold);'>" + b.ref + "</span></div><div class='fc-date'>" + fD(b.date) + "</div></div>";
-            h += "<div class='fc-row'><span>Total</span><span>PKR " + (b.total || 0).toLocaleString() + "</span></div>";
-            h += "<div class='fc-row'><span>Received</span><span>PKR " + (b.paid || 0).toLocaleString() + "</span></div>";
-            h += "<div class='fc-bal " + (bal > 0 ? "owed" : "paid") + "'><span>" + (bal > 0 ? "Balance Due" : "Fully Paid") + "</span><span>" + (bal > 0 ? "PKR " + bal.toLocaleString() : "") + "</span></div>";
-            if (bal > 0) h += "<button class='fc-paybtn' data-pay='" + b.id + "'>+ Record Payment</button>";
-            h += "</div>";
-          });
-        } else {
-          // Spreadsheet table
-          h += "<div style='overflow-x:auto;margin-top:8px;'><table style='width:100%;border-collapse:collapse;font-size:11px;min-width:900px;'>";
-          h += "<thead><tr style='background:var(--gold);color:#0F0905;'>";
-          h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Ref</th>";
-          h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Client</th>";
-          h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Date</th>";
-          h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Event</th>";
-          var COST_COLS = ["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"];
-          COST_COLS.forEach(function (k) { h += "<th style='padding:7px 6px;white-space:nowrap;'>" + k + "</th>"; });
-          h += "<th style='padding:7px 8px;text-align:right;white-space:nowrap;background:#C9A84C;'>Total</th>";
-          h += "</tr></thead><tbody>";
-          mBkns.forEach(function (b, ri) {
-            var costs = b.costs || {};
-            var total = COST_COLS.filter(function (k) { return k !== "Note"; }).reduce(function (s, k) { return s + (parseFloat(costs[k]) || 0); }, 0);
-            var bg = ri % 2 === 0 ? "background:rgba(255,255,255,0.03)" : "background:rgba(255,255,255,0.07)";
-            h += "<tr style='" + bg + ";border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.1));'>";
-            h += "<td style='padding:6px 8px;color:var(--gold);font-size:9px;white-space:nowrap;'>" + b.ref + "</td>";
-            h += "<td style='padding:6px 8px;font-weight:500;white-space:nowrap;'>" + b.name + "</td>";
-            h += "<td style='padding:6px 8px;white-space:nowrap;color:var(--mob-mut,#7A6347);'>" + fD(b.date) + "</td>";
-            h += "<td style='padding:6px 8px;white-space:nowrap;'>" + b.type + "</td>";
-            COST_COLS.forEach(function (k) {
-              var isNote = k === "Note";
-              h += "<td style='padding:4px 4px;'>";
-              if (isNote) {
-                h += "<input class='cost-inp' type='text' placeholder='Note' value='" + (costs[k] || "") + "' data-bid='" + b.id + "' data-k='" + k + "' style='width:80px;font-size:10px;padding:3px 5px;'>";
-              } else {
-                h += "<input class='cost-inp' type='number' placeholder='0' value='" + (costs[k] || "") + "' data-bid='" + b.id + "' data-k='" + k + "' style='width:60px;font-size:10px;padding:3px 5px;'>";
-              }
-              h += "</td>";
+
+        h += "<div class='fin-tabs' style='margin-bottom:15px;'><div class='fin-tab" + (finTab === "payments" ? " on" : "") + "' data-ft='payments'>Client Payments</div><div class='fin-tab" + (finTab === "costs" ? " on" : "") + "' data-ft='costs'>Internal Costs</div></div>";
+
+        // Show current year months
+        for (var m = 0; m < 12; m++) {
+          var mBkns = BKN.filter(function (b) { var d = new Date(b.date + "T00:00:00"); return d.getMonth() === m && d.getFullYear() === currY; });
+          var rev = mBkns.reduce(function (s, b) { return s + (b.total || 0); }, 0);
+          var rec = mBkns.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
+          var tc = mBkns.reduce(function (s, b) { return s + COSTS.reduce(function (cs, k) { return cs + (parseFloat((b.costs || {})[k]) || 0); }, 0); }, 0);
+          
+          var isOpen = (m === finM && currY === finY);
+
+          h += "<div class='fin-month-row" + (isOpen ? " open" : "") + "' data-m='" + m + "' data-y='" + currY + "'>";
+          h += "<div class='fin-month-hdr'><div class='fin-month-title'>" + MN[m] + " " + currY + "</div><div class='fin-month-arrow'>&#9654;</div></div>";
+          h += "<div class='fin-month-body' " + (isOpen ? "style='display:block;'" : "") + ">";
+
+          h += "<div class='fstats'>";
+          h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR " + rev.toLocaleString() + "</div></div>";
+          h += "<div class='fstat'><div class='fslbl'>Received</div><div class='fsval g'>PKR " + rec.toLocaleString() + "</div></div>";
+          h += "<div class='fstat'><div class='fslbl'>Outstanding</div><div class='fsval r'>PKR " + (rev - rec).toLocaleString() + "</div></div>";
+          h += "<div class='fstat'><div class='fslbl'>Total Costs</div><div class='fsval r'>PKR " + tc.toLocaleString() + "</div></div>";
+          h += "</div>";
+
+          if (!mBkns.length) { h += "<div class='empty' style='padding:20px;'><div class='empty-tx' style='font-size:11px;'>No activity this month.</div></div>"; }
+          else if (finTab === "payments") {
+            mBkns.forEach(function (b) {
+              var bal = (b.total || 0) - (b.paid || 0);
+              h += "<div class='fcard'><div class='fc-top'><div class='fc-name'>" + b.name + " <span style='font-size:9px;color:var(--gold);'>" + b.ref + "</span></div><div class='fc-date'>" + fD(b.date) + "</div></div>";
+              h += "<div class='fc-row'><span>Total</span><span>PKR " + (b.total || 0).toLocaleString() + "</span></div>";
+              h += "<div class='fc-row'><span>Received</span><span>PKR " + (b.paid || 0).toLocaleString() + "</span></div>";
+              h += "<div class='fc-bal " + (bal > 0 ? "owed" : "paid") + "'><span>" + (bal > 0 ? "Balance Due" : "Fully Paid") + "</span><span>" + (bal > 0 ? "PKR " + bal.toLocaleString() : "") + "</span></div>";
+              if (bal > 0) h += "<button class='fc-paybtn' data-pay='" + b.id + "'>+ Record Payment</button>";
+              h += "</div>";
             });
-            h += "<td style='padding:6px 8px;text-align:right;font-weight:600;color:var(--red,#B85C4A);white-space:nowrap;'>" + total.toLocaleString() + "</td>";
-            h += "</tr>";
-          });
-          h += "</tbody></table></div>";
-          h += "<button class='btn-save' style='margin-top:12px;' id='save-all-costs'>Save All Costs</button>";
+          } else {
+            // Spreadsheet table
+            h += "<div style='overflow-x:auto;margin-top:8px;'><table style='width:100%;border-collapse:collapse;font-size:11px;min-width:900px;'>";
+            h += "<thead><tr style='background:var(--gold);color:#0F0905;'>";
+            h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Ref</th>";
+            h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Client</th>";
+            h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Date</th>";
+            h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Event</th>";
+            var COST_COLS = ["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"];
+            COST_COLS.forEach(function (k) { h += "<th style='padding:7px 6px;white-space:nowrap;'>" + k + "</th>"; });
+            h += "<th style='padding:7px 8px;text-align:right;white-space:nowrap;background:#C9A84C;'>Total</th>";
+            h += "</tr></thead><tbody>";
+            mBkns.forEach(function (b, ri) {
+              var costs = b.costs || {};
+              var total = COST_COLS.filter(function (k) { return k !== "Note"; }).reduce(function (s, k) { return s + (parseFloat(costs[k]) || 0); }, 0);
+              var bg = ri % 2 === 0 ? "background:rgba(255,255,255,0.03)" : "background:rgba(255,255,255,0.07)";
+              h += "<tr style='" + bg + ";border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.1));'>";
+              h += "<td style='padding:6px 8px;color:var(--gold);font-size:9px;white-space:nowrap;'>" + b.ref + "</td>";
+              h += "<td style='padding:6px 8px;font-weight:500;white-space:nowrap;'>" + b.name + "</td>";
+              h += "<td style='padding:6px 8px;white-space:nowrap;color:var(--mob-mut,#7A6347);'>" + fD(b.date) + "</td>";
+              h += "<td style='padding:6px 8px;white-space:nowrap;'>" + b.type + "</td>";
+              COST_COLS.forEach(function (k) {
+                var isNote = k === "Note";
+                h += "<td style='padding:4px 4px;'>";
+                if (isNote) {
+                  h += "<input class='cost-inp' type='text' placeholder='Note' value='" + (costs[k] || "") + "' data-bid='" + b.id + "' data-k='" + k + "' style='width:80px;font-size:10px;padding:3px 5px;'>";
+                } else {
+                  h += "<input class='cost-inp' type='number' placeholder='0' value='" + (costs[k] || "") + "' data-bid='" + b.id + "' data-k='" + k + "' style='width:60px;font-size:10px;padding:3px 5px;'>";
+                }
+                h += "</td>";
+              });
+              h += "<td style='padding:6px 8px;text-align:right;font-weight:600;color:var(--red,#B85C4A);white-space:nowrap;'>" + total.toLocaleString() + "</td>";
+              h += "</tr>";
+            });
+            h += "</tbody></table></div>";
+            h += "<button class='btn-save' style='margin-top:12px;' data-m='" + m + "' id='save-costs-" + m + "'>Save " + MN[m] + " Costs</button>";
+          }
+          h += "</div></div>"; // end body, end row
         }
+
         var fEl = document.getElementById("fin-body"); if (fEl) fEl.innerHTML = h;
-        var fpEl = document.getElementById("fin-p"); if (fpEl) fpEl.addEventListener("click", function () { finM--; if (finM < 0) { finM = 11; finY--; } rFin(); });
-        var fnEl = document.getElementById("fin-n"); if (fnEl) fnEl.addEventListener("click", function () { finM++; if (finM > 11) { finM = 0; finY++; } rFin(); });
+
         document.querySelectorAll(".fin-tab[data-ft]").forEach(function (t) { t.addEventListener("click", function () { finTab = this.getAttribute("data-ft"); rFin(); }); });
         document.querySelectorAll("[data-pay]").forEach(function (btn) { btn.addEventListener("click", function () { openPay(this.getAttribute("data-pay")); }); });
-        var saveAllBtn = document.getElementById("save-all-costs");
-        if (saveAllBtn) saveAllBtn.addEventListener("click", function () {
-          var promises = [];
-          var bids = {};
-          document.querySelectorAll(".cost-inp[data-bid]").forEach(function (inp) {
-            var bid = inp.getAttribute("data-bid");
-            if (!bids[bid]) bids[bid] = {};
-            var v = inp.value.trim();
-            var k = inp.getAttribute("data-k");
-            if (k === "Note") { if (v) bids[bid][k] = v; }
-            else { if (parseFloat(v) > 0) bids[bid][k] = parseFloat(v); }
+        
+        // Accordion click
+        document.querySelectorAll(".fin-month-hdr").forEach(function (hdr) {
+          hdr.addEventListener("click", function () {
+            var row = this.parentElement;
+            var wasOpen = row.classList.contains("open");
+            // Close all others (optional, but requested "drop open each" might mean single or multi. I'll allow multi but user said "drop open each")
+            // Actually, "drop open each" usually implies accordion behavior.
+            document.querySelectorAll(".fin-month-row").forEach(function(r) { r.classList.remove("open"); r.querySelector(".fin-month-body").style.display = "none"; });
+            
+            if (!wasOpen) {
+              row.classList.add("open");
+              row.querySelector(".fin-month-body").style.display = "block";
+              finM = parseInt(row.getAttribute("data-m"));
+              finY = parseInt(row.getAttribute("data-y"));
+            }
           });
-          ld();
-          var keys = Object.keys(bids);
-          var done = 0;
-          keys.forEach(function (bid) {
-            var b = BKN.find(function (x) { return x.id === bid; }); if (!b) { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } return; }
-            b.costs = bids[bid];
-            db("bookings?id=eq." + bid, "PATCH", { costs: bids[bid] }).then(function () { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } }).catch(function () { hd(); });
-          });
-          if (!keys.length) { hd(); toast("Nothing to save."); }
         });
+
+        // Save handles for each month
+        for (var m = 0; m < 12; m++) {
+          var btn = document.getElementById("save-costs-" + m);
+          if (btn) btn.addEventListener("click", function() {
+            var monthIdx = parseInt(this.getAttribute("data-m"));
+            saveCosts(monthIdx);
+          });
+        }
+      }
+
+      function saveCosts(mIdx) {
+        var bids = {};
+        // Get only inputs from the expanded body or globally? Better to target the specific month row.
+        var row = document.querySelector(".fin-month-row[data-m='" + mIdx + "']");
+        if (!row) return;
+
+        row.querySelectorAll(".cost-inp[data-bid]").forEach(function (inp) {
+          var bid = inp.getAttribute("data-bid");
+          if (!bids[bid]) bids[bid] = {};
+          var v = inp.value.trim();
+          var k = inp.getAttribute("data-k");
+          if (k === "Note") { if (v) bids[bid][k] = v; }
+          else { if (parseFloat(v) > 0) bids[bid][k] = parseFloat(v); }
+        });
+        ld();
+        var keys = Object.keys(bids);
+        var done = 0;
+        keys.forEach(function (bid) {
+          var b = BKN.find(function (x) { return x.id === bid; }); if (!b) { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } return; }
+          b.costs = bids[bid];
+          db("bookings?id=eq." + bid, "PATCH", { costs: bids[bid] }).then(function () { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } }).catch(function () { hd(); });
+        });
+        if (!keys.length) { hd(); toast("Nothing to save."); }
       }
       function openPay(id) {
         payBkgId = id;
