@@ -50,8 +50,9 @@ export default async function handler(req, res) {
 
     await r2Client.send(new PutObjectCommand(uploadParams));
 
-    // Construct the public URL
-    const publicUrl = `${process.env.R2_PUBLIC_URL}/${fileName}`;
+    // Construct the public URL (ensuring no double slashes)
+    const baseUrl = process.env.R2_PUBLIC_URL.replace(/\/$/, ""); 
+    const publicUrl = `${baseUrl}/${fileName}`;
 
     // Update Supabase Database
     const supabase = createClient(
