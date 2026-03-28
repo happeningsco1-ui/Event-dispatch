@@ -6554,7 +6554,11 @@
       document.getElementById("desk-main").style.display = "none";
       document.querySelectorAll(".screen").forEach(function (s) { s.style.display = "none"; });
       var loginEl = document.getElementById("s-login");
-      if (loginEl) { loginEl.style.cssText = "display:flex !important;"; }
+      if (loginEl) loginEl.style.cssText = "display:flex !important;";
+
+      const logo = document.getElementById('tl-img');
+      const authLogo = document.getElementById('auth-logo-img');
+      if (logo && authLogo) authLogo.src = logo.src;
 
     } catch (e) { console.warn("Init:", e.message); }</script>
 </body>
