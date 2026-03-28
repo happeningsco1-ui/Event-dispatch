@@ -6188,6 +6188,17 @@
         h += "<div class='cattabs' style='background:transparent;border:none;margin-bottom:14px;padding:0;'>";
         MEDIA_CATS.forEach(function (c) { h += "<div class='ctab" + (mediaFilter === c ? " on" : "") + "' data-mcat='" + c + "'>" + c + "</div>"; });
         h += "</div>";
+        // Tag Pills
+        var allTags = [];
+        MEDIA.forEach(function(m){ if(m.tags) m.tags.forEach(function(t){ if(t && allTags.indexOf(t) === -1) allTags.push(t); }); });
+        if (allTags.length > 0) {
+          h += "<div style='display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:10px;scrollbar-width:none;-ms-overflow-style:none;'>";
+          allTags.sort().forEach(function(t) {
+            var isSel = document.getElementById("media-search") && document.getElementById("media-search").value.toLowerCase() === t.toLowerCase();
+            h += "<div class='ctab" + (isSel ? " on" : "") + "' style='font-size:9px;padding:4px 10px;white-space:nowrap;border-radius:12px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);cursor:pointer;' data-pill='" + t + "'>#" + t + "</div>";
+          });
+          h += "</div>";
+        }
         if (!filtered.length) {
           h += "<div class='empty'><div class='empty-ic'>&#128247;</div><div class='empty-tx'>No photos yet.<br>Tap + Add Photo to upload.</div></div>";
         } else {
@@ -6274,24 +6285,32 @@
         el.querySelectorAll("[data-mcat]").forEach(function (t) {
           t.addEventListener("click", function () { mediaFilter = this.getAttribute("data-mcat"); rMedia(); });
         });
+        // Bind pills
+        el.querySelectorAll("[data-pill]").forEach(function (p) {
+          p.addEventListener("click", function () {
+            var q = this.getAttribute("data-pill");
+            var ms = document.getElementById("media-search");
+            if(ms){ ms.value = q; ms.dispatchEvent(new Event('input')); }
+          });
+        });
         // Bind search
         var ms = document.getElementById("media-search");
         if (ms) ms.addEventListener("input", function () {
           var q = this.value.toLowerCase();
-          el.querySelectorAll("[data-lightbox]").forEach(function (card) {
-            // show/hide based on search - simple approach
-          });
           // re-filter
-          var filt = q ? MEDIA.filter(function (m) { return m.title.toLowerCase().indexOf(q) > -1 || (m.tags && m.tags.some(function (t) { return t.toLowerCase().indexOf(q) > -1; })) || m.cat.toLowerCase().indexOf(q) > -1; }) : MEDIA;
+          var filt = q ? MEDIA.filter(function (m) { return m.title.toLowerCase().indexOf(q) > -1 || (m.tags && m.tags.some(function (t) { return t.toLowerCase().indexOf(q) > -1; })) || m.cat.toLowerCase().indexOf(q) > -1; }) : (mediaFilter === "All" ? MEDIA : MEDIA.filter(function (m) { return m.cat === mediaFilter; }));
           // rebuild just the grid
           var grid = el.querySelector("div[style*='grid-template-columns']");
           if (!grid) return;
           var h2 = "";
           filt.forEach(function (m, i) {
             h2 += "<div style='position:relative;border-radius:10px;overflow:hidden;background:var(--mob-bm,#2C1A0E);border:1px solid var(--mob-brs);'>";
-            h2 += "<div style='width:100%;aspect-ratio:1;overflow:hidden;' data-lightbox='" + i + "'>";
-            h2 += (m.type === "video" ? "<video src='" + m.src + "' style='width:100%;height:100%;object-fit:cover;' muted></video><div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;'>&#9654;</div>" : "<img src='" + m.src + "' style='width:100%;height:100%;object-fit:cover;'>");
-            h2 += "</div><div style='padding:7px 8px;'><div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);'>" + m.title + "</div><div style='font-size:9px;color:var(--gold);'>" + m.cat + "</div></div></div>";
+            h2 += "<div style='width:100%;aspect-ratio:1;overflow:hidden;cursor:pointer;' data-lightbox='" + i + "'>";
+            if (m.type === "video") h2 += "<video src='" + m.src + "' style='width:100%;height:100%;object-fit:cover;' muted></video><div style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;pointer-events:none;'>&#9654;</div>";
+            else h2 += "<img src='" + m.src + "' style='width:100%;height:100%;object-fit:cover;'>";
+            h2 += "</div><div style='padding:7px 8px;'><div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + m.title + "</div><div style='font-size:9px;color:var(--gold);'>" + m.cat + "</div>";
+            if (m.tags && m.tags.length > 0) h2 += "<div style='font-size:8px;color:var(--mob-mut,#7A6347);margin-top:2px;'>" + m.tags.join(", ") + "</div>";
+            h2 += "</div><button style='position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;' data-delm='" + i + "'>&#10005;</button></div>";
           });
           grid.innerHTML = h2;
         });
