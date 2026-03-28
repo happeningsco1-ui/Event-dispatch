@@ -1,0 +1,16 @@
+{
+  "name": "event-dispatch",
+  "version": "1.0.0",
+  "description": "Event management system with Cloudflare R2 storage",
+  "main": "index.html",
+  "scripts": {
+    "start": "next start",
+    "dev": "next dev",
+    "build": "next build"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
+    "@supabase/supabase-js": "^2.40.0",
+    "formidable": "^3.5.1"
+  }
+}
