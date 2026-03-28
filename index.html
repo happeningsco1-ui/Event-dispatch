@@ -1966,6 +1966,23 @@
       margin-bottom: 7px;
     }
 
+    /* Task Management System */
+    .task-card { background: var(--mob-bm); border: 1px solid var(--mob-brs); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
+    .task-card.completed { background: rgba(46, 125, 50, 0.15); border-color: #2e7d32; }
+    .task-check { width: 22px; height: 22px; border: 2px solid var(--gold); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .task-card.completed .task-check { background: #2e7d32; border-color: #2e7d32; color: white; }
+    .task-info { flex: 1; }
+    .task-title { font-size: 13px; font-weight: 500; color: var(--mob-cream); margin-bottom: 2px; }
+    .task-time { font-size: 10px; color: var(--gold); }
+    .task-urgent { color: #f44336 !important; font-weight: 700; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    .task-remove { font-size: 14px; color: var(--mob-mut); cursor: pointer; padding: 4px; display: none; }
+    .task-card.completed .task-remove { display: block; }
+    
+    .schedule-toggle { display: flex; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 4px; margin-bottom: 16px; }
+    .st-btn { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 11px; cursor: pointer; color: var(--mob-mut); transition: 0.2s; }
+    .st-btn.on { background: var(--gold); color: #000; font-weight: 600; }
+
     .empty-tx {
       font-size: 12px;
       line-height: 1.6;
@@ -4118,10 +4135,45 @@
   <input type="file" accept="image/*" id="desk-logo-file" style="display:none">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- TASK MODAL -->
+  <div class="overlay" id="task-modal">
+    <div class="modal">
+      <div class="mname">Add Pending Task</div>
+      <div class="schedule-toggle">
+        <div class="st-btn on" id="task-today-btn">Today</div>
+        <div class="st-btn" id="task-future-btn">Future</div>
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <div class="fl">Task Name</div>
+        <input class="fi" id="task-title-inp" placeholder="e.g. Call client for backdrop">
+      </div>
+      <div class="fg" style="margin-bottom:12px;" id="task-date-group">
+        <div class="fl">Due Date</div>
+        <input class="fi" type="date" id="task-date-inp">
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <div class="fl">Due Time</div>
+        <input class="fi" type="time" id="task-time-inp">
+      </div>
+      <div class="fg" style="margin-bottom:20px;">
+        <div class="fl">Priority</div>
+        <select class="fs" id="task-pri-sel">
+          <option>Medium</option>
+          <option>High</option>
+          <option>Low</option>
+        </select>
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-c" onclick="cM('task-modal')">Cancel</button>
+        <button class="mbtn-a" id="task-save-btn">Save Task</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     try {
       var AP = null, FP = "12345678"; // AP is now null, legacy PIN access is handled separately
-      var INV = [], BKN = [];
+      var INV = [], BKN = [], TASKS = [];
       var BN = localStorage.getItem("biz_n") || "Happenings.co";
       var BL = localStorage.getItem("biz_l") || null;
       var cart = {}, curBkg = null, curInspos = [], curEventInspos = [], curEventNotes = "", curItemPhoto = null, mItemId = null, payBkgId = null;
@@ -4651,7 +4703,8 @@
         Promise.all([
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
-          db("media?order=created_at.desc")
+          db("media?order=created_at.desc"),
+          db("tasks?order=due_at.asc")
         ])
           .then(function (r) {
             clearTimeout(timeout);
@@ -4669,6 +4722,7 @@
               return b;
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
+            TASKS = Array.isArray(r[3]) ? r[3] : [];
             hd(); initBiz(); go("s-dash");
           }).catch(function (e) { 
             clearTimeout(timeout); hd(); go("s-dash"); 
@@ -4758,32 +4812,141 @@
         var today = new Date().toISOString().split("T")[0];
         var todayB = BKN.filter(function (b) { return b.date === today; });
         var upB = BKN.filter(function (b) { return b.date >= today; }).slice(0, 5);
-        var rev = BKN.reduce(function (s, b) { return s + (b.total || 0); }, 0);
-        var rec = BKN.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
+        var pendingTasks = TASKS.filter(function(t){ return t.status === "pending"; });
         var ds = new Date().toLocaleDateString("en-PK", { weekday: "long", day: "numeric", month: "long" });
         var hr = new Date().getHours();
         var h = "";
         h += "<div style='margin-bottom:14px;'><div class='dg'>" + ds + "</div><div class='dt'>Good " + (hr < 12 ? "Morning" : "Afternoon") + ", <span>" + BN + "</span></div></div>";
-        h += "<div class='sg'>";
-        h += "<div class='sc'><div class='sl'>Upcoming</div><div class='sv gold'>" + upB.length + "</div><div class='ss'>events ahead</div></div>";
+        h += "<div class='sg' style='grid-template-columns: repeat(3, 1fr);'>";
+        h += "<div class='sc'><div class='sl'>Upcoming</div><div class='sv gold'>" + upB.length + "</div><div class='ss'>events</div></div>";
         h += "<div class='sc'><div class='sl'>Today</div><div class='sv'>" + todayB.length + "</div><div class='ss'>event" + (todayB.length !== 1 ? "s" : "") + "</div></div>";
-        h += "<div class='sc'><div class='sl'>Outstanding</div><div class='sv r'>PKR " + (rev - rec).toLocaleString() + "</div><div class='ss'>to collect</div></div>";
-        h += "<div class='sc'><div class='sl'>Revenue</div><div class='sv g'>PKR " + rev.toLocaleString() + "</div><div class='ss'>" + rec.toLocaleString() + " received</div></div>";
+        h += "<div class='sc' id='dash-task-stat'><div class='sl'>Tasks</div><div class='sv r'>" + pendingTasks.length + "</div><div class='ss'>pending</div></div>";
         h += "</div>";
+
+        // Add Task Button
+        h += "<button class='mbtn-a' id='add-task-btn' style='margin-bottom:20px; font-weight:600;'>+ New Pending Task</button>";
+
+        // Pending Tasks List
+        if (TASKS.length > 0) {
+          h += "<div class='dsec'><div class='dsec-hdr'>Pending Tasks</div>";
+          var sortedTasks = TASKS.slice().sort(function(a,b){ 
+            if(a.status === "completed" && b.status === "pending") return 1;
+            if(a.status === "pending" && b.status === "completed") return -1;
+            return new Date(a.due_at) - new Date(b.due_at);
+          });
+          sortedTasks.forEach(function(t) {
+             var now = new Date();
+             var due = new Date(t.due_at);
+             var diff = (due - now) / 1000 / 60 / 60; // in hours
+             var dueTxt = "";
+             var isUrgent = false;
+
+             if (diff < 0) dueTxt = "Overdue";
+             else if (diff < 1) { dueTxt = "URGENT"; isUrgent = true; }
+             else if (diff < 24) dueTxt = "Due in " + Math.round(diff) + "h";
+             else dueTxt = "Due in " + Math.round(diff/24) + "d";
+
+             h += "<div class='task-card " + (t.status === "completed" ? "completed" : "") + "' data-tid='" + t.id + "'>";
+             h += "<div class='task-check' data-action='complete'>" + (t.status === "completed" ? "&#10003;" : "") + "</div>";
+             h += "<div class='task-info'><div class='task-title'>" + t.title + "</div>";
+             if (t.status === "pending") h += "<div class='task-time " + (isUrgent ? "task-urgent" : "") + "'>" + (isUrgent ? "&#9888; " : "") + dueTxt + "</div>";
+             else h += "<div class='task-time'>Marked as Completed</div>";
+             h += "</div>";
+             h += "<div class='task-remove' data-action='delete'>&#128465;</div>";
+             h += "</div>";
+          });
+          h += "</div>";
+        }
+
         if (todayB.length > 0) {
-          h += "<div class='dsec'><div class='dsec-hdr'>Today</div>";
+          h += "<div class='dsec'><div class='dsec-hdr'>Today's Events</div>";
           todayB.forEach(function (b) {
             h += "<div class='dc' data-id='" + b.id + "'><div class='dcn'>" + b.name + "</div><div class='dcm'>" + b.type + (b.venue ? " &middot; " + b.venue : "") + (b.ready ? " &middot; Ready <b>" + fT(b.ready) + "</b>" : "") + "</div></div>";
           });
           h += "</div>";
         }
-        h += "<div class='dsec'><div class='dsec-hdr'>Upcoming</div>";
+
+        h += "<div class='dsec'><div class='dsec-hdr'>Upcoming Events</div>";
         if (!upB.length) h += "<div class='empty'><div class='empty-ic'>&#128197;</div><div class='empty-tx'>No upcoming events.</div></div>";
         upB.forEach(function (b) {
           h += "<div class='dc' data-id='" + b.id + "'><div class='dcn'>" + b.name + " <span style='font-size:9px;color:var(--gold);'>" + b.ref + "</span></div><div class='dcm'>" + fD(b.date) + " &middot; " + b.type + (b.venue ? " &middot; " + b.venue : "") + "</div></div>";
         });
         h += "</div>";
+        
         var el = document.getElementById("dash-body"); if (el) el.innerHTML = h;
+        
+        // Modal Logic
+        var atb = document.getElementById("add-task-btn");
+        if(atb) atb.onclick = function() {
+            oM('task-modal');
+            document.getElementById('task-date-group').style.display = 'none';
+            document.getElementById('task-today-btn').className = 'st-btn on';
+            document.getElementById('task-future-btn').className = 'st-btn';
+            var now = new Date();
+            document.getElementById('task-date-inp').value = now.toISOString().split('T')[0];
+            document.getElementById('task-time-inp').value = String(now.getHours()+1).padStart(2,'0') + ":00";
+        };
+
+        document.getElementById('task-today-btn').onclick = function() {
+            this.className = 'st-btn on';
+            document.getElementById('task-future-btn').className = 'st-btn';
+            document.getElementById('task-date-group').style.display = 'none';
+            document.getElementById('task-date-inp').value = new Date().toISOString().split('T')[0];
+        };
+        document.getElementById('task-future-btn').onclick = function() {
+            this.className = 'st-btn on';
+            document.getElementById('task-today-btn').className = 'st-btn';
+            document.getElementById('task-date-group').style.display = 'block';
+        };
+
+        document.getElementById('task-save-btn').onclick = async function() {
+            var title = document.getElementById('task-title-inp').value.trim();
+            if(!title) return;
+            var date = document.getElementById('task-date-inp').value;
+            var time = document.getElementById('task-time-inp').value || "12:00";
+            var pri = document.getElementById('task-pri-sel').value;
+            var due = new Date(date + "T" + time).toISOString();
+            
+            ld();
+            try {
+                const { data, error } = await _sb.from('tasks').insert([{ title: title, due_at: due, priority: pri, status: 'pending' }]).select();
+                if(error) throw error;
+                TASKS.unshift(data[0]);
+                cM('task-modal');
+                rDash();
+                toast("Task added.");
+            } catch(e) { toast(e.message); }
+            finally { hd(); }
+        };
+
+        // Complete/Delete Logic
+        document.querySelectorAll('.task-card').forEach(function(card) {
+            var tid = card.getAttribute('data-tid');
+            card.querySelector('.task-check').onclick = async function() {
+                ld();
+                try {
+                    const { error } = await _sb.from('tasks').update({ status: 'completed' }).eq('id', tid);
+                    if(error) throw error;
+                    var t = TASKS.find(function(x){ return x.id == tid; });
+                    if(t) t.status = 'completed';
+                    rDash();
+                    toast("Task completed!");
+                } catch(e) { toast(e.message); }
+                finally { hd(); }
+            };
+            card.querySelector('.task-remove').onclick = async function() {
+                ld();
+                try {
+                    const { error } = await _sb.from('tasks').delete().eq('id', tid);
+                    if(error) throw error;
+                    TASKS = TASKS.filter(function(x){ return x.id != tid; });
+                    rDash();
+                    toast("Task removed.");
+                } catch(e) { toast(e.message); }
+                finally { hd(); }
+            };
+        });
+
         document.querySelectorAll("#dash-body .dc[data-id]").forEach(function (c) {
           c.addEventListener("click", function () { curDetailId = this.getAttribute("data-id"); go("s-bkn-detail"); });
         });
