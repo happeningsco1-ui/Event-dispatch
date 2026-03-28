@@ -1979,7 +1979,8 @@
         background: var(--desk-bg);
         color: var(--desk-text);
         display: flex;
-        min-height: 100vh;
+        height: 100vh !important;
+        overflow: hidden !important;
       }
 
       /* Hide mobile elements */
@@ -2134,7 +2135,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        height: 100vh;
         overflow: hidden;
       }
 
@@ -3122,7 +3123,7 @@
       <div class="desk-nav-item logout" id="desk-logout-btn"><span class="dni-ic">&#128682;</span> Log Out</div>
     </div>
     <div style="padding:16px 16px 12px;border-top:1px solid rgba(201,168,76,0.08);text-align:center;">
-      <div style="font-size:9px;color:rgba(201,168,76,0.35);letter-spacing:.8px;line-height:1.6;">
+      <div style="font-size:10px;color:rgba(201,168,76,0.6);letter-spacing:.8px;line-height:1.6;">
         &copy; 2026 Happenings.co<br>All Rights Reserved
       </div>
     </div>
