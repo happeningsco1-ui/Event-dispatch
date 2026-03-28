@@ -6239,23 +6239,34 @@
               document.getElementById("media-save-btn").onclick = function () {
                 var title2 = document.getElementById("media-title-inp").value.trim() || f.name;
                 var cat = document.getElementById("media-cat-sel").value;
-                var tags = document.getElementById("media-tags-inp").value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
-                                var payload = { 
-                  src: src, 
-                  type: isVideo ? "video" : "image", 
-                  title: title2, 
-                  cat: cat, 
-                  tags: tags, 
-                  date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }),
-                  created_at: new Date().toISOString()
-                };
-                ld();
-                db("media", "POST", payload).then(function(newM) {
-                  MEDIA.unshift(newM[0] || payload); 
-                  cM("media-add-modal"); rMedia(); hd(); toast("Photo added!");
-                }).catch(function(err) { 
-                  hd(); 
-                  toast("Upload failed: " + err.message);
+                var tags = document.getElementById("media-tags-inp").value;
+                
+                ld(); // Loading state ON
+                
+                var formData = new FormData();
+                formData.append("file", f);
+                formData.append("title", title2);
+                formData.append("cat", cat);
+                formData.append("tags", tags);
+
+                fetch("/api/upload", {
+                  method: "POST",
+                  body: formData
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(result) {
+                  if (result.error) throw new Error(result.error);
+                  if (result.success && result.data) {
+                    MEDIA.unshift(result.data);
+                    cM("media-add-modal");
+                    rMedia();
+                    hd(); // Loading state OFF
+                    toast("Photo added to Cloudflare!");
+                  }
+                })
+                .catch(function(err) {
+                  hd();
+                  toast("R2 Upload failed: " + err.message);
                   console.error("Upload Error:", err);
                 });
               };
