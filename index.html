@@ -3120,7 +3120,7 @@
       <div class="desk-nav-item" data-fin="1"><span class="dni-ic">&#128176;</span> Finance</div>
       <div class="desk-nav-section">Content</div>
       <div class="desk-nav-item" data-screen="s-media"><span class="dni-ic">&#128247;</span> Event Gallery</div>
-      <div class="desk-nav-item logout" id="desk-logout-btn"><span class="dni-ic">&#128682;</span> Log Out</div>
+
     </div>
     <div style="padding:16px 16px 12px;border-top:1px solid rgba(201,168,76,0.08);text-align:center;">
       <div style="font-size:10px;color:rgba(201,168,76,0.6);letter-spacing:.8px;line-height:1.6;">
@@ -3189,7 +3189,7 @@
         </div>
       </div>
       <div class="tb-acts">
-        <button class="tbtn" id="mob-logout-btn" style="margin-right:8px;">&#128682;</button>
+
         <button class="tbtn" id="fin-dash-btn">&#128176;</button>
       </div>
     </div>
@@ -4640,11 +4640,7 @@
           toast("Invalid legacy PIN");
         }
       });
-      // Logout buttons
-      const mobLogout = document.getElementById("mob-logout-btn");
-      if (mobLogout) mobLogout.onclick = logout;
-      const deskLogout = document.getElementById("desk-logout-btn");
-      if (deskLogout) deskLogout.onclick = logout;
+
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
             function loadAll() {
