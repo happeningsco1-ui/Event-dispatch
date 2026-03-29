@@ -3694,6 +3694,7 @@
     <div class="sheet-body" id="sheet-body"></div>
     <div class="sheet-acts noprint">
       <button class="btn-back2" id="edit-sheet">&#8592; Edit</button>
+      <button class="btn-print" id="sheet-wa-btn" style="background:rgba(37,211,102,.15);color:#25d366;border:1px solid rgba(37,211,102,.3);">&#128172; WhatsApp</button>
       <button class="btn-print" id="print-btn">Print Sheet</button>
     </div>
   </div>
@@ -4464,7 +4465,7 @@
         else if (id === "s-new-bkn") acts = '<button class="desk-btn" id="d-back-new">&#8592; Back</button>';
         else if (id === "s-dispatch") acts = '<button class="desk-btn" id="d-back-dispatch">&#8592; Back</button>';
         else if (id === "s-cart") acts = '<button class="desk-btn" id="d-back-cart">&#8592; Edit</button>';
-        else if (id === "s-sheet") acts = '<button class="desk-btn" id="d-print">&#128424; Print</button><button class="desk-btn" id="d-done-sheet">Done</button>';
+        else if (id === "s-sheet") acts = '<button class="desk-btn" id="d-print">&#128424; Print</button><button class="desk-btn" id="d-sheet-wa" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25d366;">&#128172; WhatsApp</button><button class="desk-btn" id="d-done-sheet">Done</button>';
         else if (id === "s-inv") acts = '<button class="desk-btn" id="d-staff">&#128100; Staff</button><button class="desk-btn gold" id="d-add-item">+ Add Item</button>';
         else if (id === "s-inv-reserve") acts = '<button class="desk-btn" id="d-skip-reserve">Skip for now</button>';
         document.getElementById("desk-topbar-acts").innerHTML = acts;
@@ -4479,6 +4480,21 @@
           bind("d-back-cart", function () { go("s-dispatch"); });
           bind("d-print", function () { window.print(); });
           bind("d-done-sheet", function () { go("s-bkns"); });
+          bind("d-sheet-wa", function () {
+            if (!curBkg) return;
+            var b = curBkg;
+            var items = Object.keys(cart);
+            var msg = "Assalam o Alaikum Team,%0A%0A*Dispatch Sheet Ready* %F0%9F%9A%9A%0A%0A";
+            msg += "*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + fD(b.date) + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + fT(b.ready) + "%0A*Pickup:* " + fT(b.pickup) + "%0A%0A";
+            msg += "*Items (" + items.length + "):*%0A";
+            items.forEach(function (id) {
+              var item = INV.find(function (i) { return i.id === id; });
+              if (item) msg += "%E2%80%A2 " + item.name + " x" + cart[id] + "%0A";
+            });
+            if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
+            msg += "%0AJazakAllah";
+            window.open("https://wa.me/?text=" + msg, "_blank");
+          });
           bind("d-add-item", openAddItem);
           bind("d-staff", function () { renderStaffModal(); oM("staff-modal"); });
           bind("d-skip-reserve", function () { go("s-bkns"); });
@@ -5301,7 +5317,7 @@
         var el = document.getElementById("bdetail-body"); if (!el) return;
         var h = "";
         h += "<div class='bdsec'><div class='bdsec-hdr'>" + b.name + " <span style='font-size:11px;color:var(--gold);font-family:Jost,sans-serif;font-weight:400;'>" + b.ref + "</span></div><div class='bdsec-body'>";
-        h += "<button onclick='sendWhatsApp(\"" + b.id + "\")' style='width:100%;padding:9px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25d366;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer;font-family:Jost,sans-serif;margin-bottom:10px;'>&#128172; Send WhatsApp to Team</button>";
+        h += "<button id='detail-wa-btn' style='width:100%;padding:9px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:#25d366;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer;font-family:Jost,sans-serif;margin-bottom:10px;'>&#128172; Send WhatsApp to Team</button>";
         h += "<div class='bd-meta-grid'>";
         h += "<div class='bd-field'><div class='bd-label'>Client</div><div class='bd-val'>" + b.name + "</div></div>";
         h += "<div class='bd-field'><div class='bd-label'>WhatsApp</div><div class='bd-val'>" + (b.phone || "-") + "</div></div>";
@@ -5334,6 +5350,8 @@
         h += "<button class='btn-save' style='margin-top:7px;' id='add-log-btn'>Add Note</button>";
         h += "</div></div>";
         el.innerHTML = h;
+        var waBtn = document.getElementById("detail-wa-btn");
+        if (waBtn) waBtn.addEventListener("click", function () { sendWhatsApp(b.id); });
         renderDiscussionLog(b);
         document.getElementById("add-log-btn").addEventListener("click", function () {
           var txt = document.getElementById("log-inp").value.trim(); if (!txt) return;
@@ -5419,10 +5437,16 @@
           if (b.ready) h += "<div class='bc-mi'>&#8987; Ready <b>" + fT(b.ready) + "</b></div>";
           if (b.pickup) h += "<div class='bc-mi'>&#128666; Pickup <b>" + fT(b.pickup) + "</b></div>";
           h += "<div class='bc-mi'>&#128230; <b>" + di.length + " items reserved</b></div></div>";
-          h += "<div class='bc-btns'><div class='bcbtn hi' data-dispatch-id='" + b.id + "'>&#128666; Open Dispatch</div></div></div></div>";
+          h += "<div class='bc-btns'>";
+          h += "<div class='bcbtn hi' data-dispatch-id='" + b.id + "'>&#128666; Dispatch</div>";
+          h += "<div class='bcbtn' data-dispatch-wa='" + b.id + "' style='background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25d366;'>&#128172; WhatsApp</div>";
+          h += "<div class='bcbtn' data-dispatch-detail='" + b.id + "'>&#128065; View</div>";
+          h += "</div></div></div>";
         });
         el.innerHTML = h;
         el.querySelectorAll("[data-dispatch-id]").forEach(function (btn) { btn.addEventListener("click", function () { openDispatch(this.getAttribute("data-dispatch-id")); }); });
+        el.querySelectorAll("[data-dispatch-wa]").forEach(function (btn) { btn.addEventListener("click", function (e) { e.stopPropagation(); sendWhatsApp(this.getAttribute("data-dispatch-wa")); }); });
+        el.querySelectorAll("[data-dispatch-detail]").forEach(function (btn) { btn.addEventListener("click", function (e) { e.stopPropagation(); curDetailId = this.getAttribute("data-dispatch-detail"); go("s-bkn-detail"); }); });
       }
 
       // ── DISPATCH ────────────────────────────────────────────────────────────────
@@ -5756,6 +5780,21 @@
       var doneSheetEl = document.getElementById("done-sheet"); if (doneSheetEl) doneSheetEl.addEventListener("click", function () { go("s-bkns"); });
       var editSheetEl = document.getElementById("edit-sheet"); if (editSheetEl) editSheetEl.addEventListener("click", function () { go("s-cart"); });
       var printBtnEl = document.getElementById("print-btn"); if (printBtnEl) printBtnEl.addEventListener("click", function () { window.print(); });
+      var sheetWaEl = document.getElementById("sheet-wa-btn"); if (sheetWaEl) sheetWaEl.addEventListener("click", function () {
+        if (!curBkg) return;
+        var b = curBkg;
+        var items = Object.keys(cart);
+        var msg = "Assalam o Alaikum Team,%0A%0A*Dispatch Sheet Ready* %F0%9F%9A%9A%0A%0A";
+        msg += "*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + fD(b.date) + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + fT(b.ready) + "%0A*Pickup:* " + fT(b.pickup) + "%0A%0A";
+        msg += "*Items (%22" + items.length + "%22):*%0A";
+        items.forEach(function (id) {
+          var item = INV.find(function (i) { return i.id === id; });
+          if (item) msg += "%E2%80%A2 " + item.name + " x" + cart[id] + "%0A";
+        });
+        if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
+        msg += "%0AJazakAllah";
+        window.open("https://wa.me/?text=" + msg, "_blank");
+      });
 
       // ── INVENTORY ────────────────────────────────────────────────────────────────
       function bindInvSearch() {
