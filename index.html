@@ -1785,10 +1785,29 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(8, 4, 2, .82);
+      background: rgba(8, 4, 2, .88);
       z-index: 10000;
       align-items: center;
       justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .overlay.open { display: flex; }
+
+    @media (max-width: 767px) {
+      .overlay {
+        align-items: flex-end;
+      }
+      .overlay .modal {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+        margin-bottom: 0 !important;
+      }
+      .overlay.open .modal {
+        transform: translateY(0);
+      }
     }
 
     .overlay.open {
@@ -1989,7 +2008,7 @@
     .task-remove:hover { opacity: 0.8; color: var(--red); }
     
     .task-container {
-      max-height: 280px;
+      max-height: 210px;
       overflow-y: auto;
       padding-right: 4px;
       margin-bottom: 10px;
@@ -3085,7 +3104,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #F8F4F0; /* Clean, premium off-white background */
+        background: #F8F4F0; 
         width: 100%;
         min-height: 100vh;
       }
@@ -3103,6 +3122,57 @@
       .auth-input { background: #FAF9F7; border-color: rgba(44, 26, 14, 0.12); color: #1A0F08; padding: 16px; }
       .auth-input:focus { background: #FFFFFF; border-color: var(--gold); box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.06); }
       .auth-label { color: #8B6914; margin-bottom: 10px; }
+
+      /* Desktop Calendar Overhaul */
+      .cal-wrap {
+        max-width: 900px;
+        margin: 20px auto;
+        background: var(--desk-card);
+        border: 1px solid var(--desk-brd);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+      .cal-grid {
+        gap: 2px;
+        background: var(--desk-brd);
+        border: 1px solid var(--desk-brd);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .cal-d {
+        height: 100px;
+        background: var(--desk-card);
+        padding: 10px;
+        font-size: 14px;
+        color: var(--desk-text);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .cal-d.td {
+        background: rgba(201, 168, 76, 0.1);
+        font-weight: bold;
+      }
+      .cal-d.hb {
+        background: rgba(201, 168, 76, 0.05);
+      }
+      .cal-dl {
+        background: var(--desk-card2);
+        color: var(--gold);
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+      }
+      .cal-hdr {
+        margin-bottom: 25px;
+      }
+      .cal-mn {
+        font-size: 24px;
+        font-family: Georgia, serif;
+      }
     }
     .verify-screen {
       text-align: center;
@@ -3221,9 +3291,6 @@
         <div class="auth-toggle">
           <p id="auth-toggle-text">Having trouble signing in?</p>
           <a class="auth-link" id="auth-toggle-btn">Forgot Password</a>
-        </div>
-        <div style="margin-top:20px; text-align:center; opacity:0.5; font-size:10px;">
-          <a class="auth-link" id="legacy-pin-btn">Access with PIN (Legacy)</a>
         </div>
       </div>
       <div class="auth-card verify-screen" id="auth-verify-screen">
@@ -4809,6 +4876,7 @@
       document.getElementById("auth-submit-btn").addEventListener("click", handleAuth);
       document.getElementById("auth-toggle-btn").addEventListener("click", handleForgotPassword);
       document.getElementById("save-new-pass-btn").addEventListener("click", handleUpdatePassword);
+      document.getElementById("save-new-pass-btn").addEventListener("click", handleUpdatePassword);
       document.getElementById("legacy-pin-btn").addEventListener("click", function() {
         const pin = prompt("Enter Legacy Access PIN:");
         if (pin === FP) {
@@ -5038,16 +5106,25 @@
             var pri = document.getElementById('task-pri-sel').value;
             var due = new Date(date + "T" + time).toISOString();
             
-            ld();
+            // Optimistic Update
+            var tempTask = { id: 'temp-' + Date.now(), title: title, due_at: due, priority: pri, status: 'pending' };
+            TASKS.unshift(tempTask);
+            cM('task-modal');
+            rDash();
+            
             try {
                 const { data, error } = await _sb.from('tasks').insert([{ title: title, due_at: due, priority: pri, status: 'pending' }]).select();
                 if(error) throw error;
+                // Replace temp task with real one
+                TASKS = TASKS.filter(t => t.id !== tempTask.id);
                 TASKS.unshift(data[0]);
-                cM('task-modal');
                 rDash();
-                toast("Task added.");
-            } catch(e) { toast(e.message); }
-            finally { hd(); }
+            } catch(e) { 
+                toast(e.message);
+                // Rollback on error
+                TASKS = TASKS.filter(t => t.id !== tempTask.id);
+                rDash();
+            }
         };
 
         // Complete/Delete Logic
@@ -6534,7 +6611,6 @@
             h += "<div style='padding:7px 8px;'>";
             h += "<div style='font-size:10px;font-weight:500;color:var(--mob-cream,#F0E6D3);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + m.title + "</div>";
             h += "<div style='font-size:9px;color:var(--gold);'>" + m.cat + "</div>";
-            if (m.tags && m.tags.length > 0) h += "<div style='font-size:8px;color:var(--mob-mut,#7A6347);margin-top:2px;'>" + m.tags.join(", ") + "</div>";
             h += "</div>";
             h += "<button style='position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);border:none;color:#fff;width:20px;height:20px;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;' data-delm='" + i + "'>&#10005;</button>";
             h += "</div>";
