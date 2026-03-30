@@ -1786,8 +1786,8 @@
       position: fixed;
       inset: 0;
       background: rgba(8, 4, 2, .82);
-      z-index: 200;
-      align-items: flex-end;
+      z-index: 10000;
+      align-items: center;
       justify-content: center;
     }
 
@@ -3083,36 +3083,40 @@
     @media (min-width: 768px) {
       .auth-container {
         display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        background: #F8F3ED;
+        grid-template-columns: 1fr 1fr;
+        background: #F8F3ED; /* Matches the form side to hide gaps */
         padding: 0;
         overflow: hidden;
+        width: 100%;
+        min-height: 100vh;
       }
       .auth-card {
         justify-self: center;
         align-self: center;
-        max-width: 400px;
+        width: 100%;
+        max-width: 440px;
         background: #FFFFFF;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
         border: 1px solid rgba(44, 26, 14, 0.08);
-        padding: 50px 45px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.05);
-        border-radius: 24px;
-        margin-right: 0;
+        padding: 60px;
+        box-shadow: 0 40px 80px rgba(44, 26, 14, 0.1);
+        border-radius: 32px;
+        margin: 0;
       }
-      .auth-title { color: #1A0F08; font-size: 32px; margin-bottom: 12px; }
-      .auth-sub { color: #7A6347; margin-bottom: 40px; }
-      .auth-input { background: #FAF9F7; border-color: rgba(44, 26, 14, 0.1); color: #1A0F08; padding: 16px; }
-      .auth-input:focus { background: #FFFFFF; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.05); }
-      .auth-label { color: #8B6914; margin-bottom: 10px; }
+      .auth-title { color: #1A0F08; font-size: 36px; margin-bottom: 12px; }
+      .auth-sub { font-size: 16px; color: #7A6347; margin-bottom: 48px; }
+      .auth-input { background: #FAF9F7; border-color: rgba(44, 26, 14, 0.15); color: #1A0F08; padding: 18px; }
+      .auth-input:focus { background: #FFFFFF; border-color: var(--gold); box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.08); }
+      .auth-label { color: #8B6914; margin-bottom: 12px; }
       .auth-container::before {
         content: "";
         display: block;
         width: 100%;
-        height: 100vh;
-        background: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80') center/cover no-repeat;
-        border-radius: 0 40px 40px 0;
+        height: 100%;
+        min-height: 100vh;
+        background: url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80') center/cover no-repeat;
+        border-radius: 0;
       }
     }
     .verify-screen {
@@ -3155,7 +3159,7 @@
         z-index: 9999 !important;
         width: 100vw !important;
         height: 100vh !important;
-        background: #0F0905 !important;
+        background: #F8F3ED !important; /* Changed to match form side */
       }
     }
   </style>
@@ -4219,6 +4223,21 @@
   <input type="file" accept="image/*" id="logo-file" style="display:none">
   <input type="file" accept="image/*" id="desk-logo-file" style="display:none">
 
+  <!-- UPDATE PASSWORD MODAL -->
+  <div class="overlay" id="update-pass-modal">
+    <div class="modal" style="max-width:360px;">
+      <div class="mname">Update Password</div>
+      <div class="msub">Please enter your new password below.</div>
+      <div class="fg" style="margin-bottom:16px;">
+        <div class="fl">New Password</div>
+        <input type="password" class="auth-input" id="new-password-inp" placeholder="Min 6 characters">
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-a" id="save-new-pass-btn">Save Password</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- TASK MODAL -->
   <div class="overlay" id="task-modal">
@@ -4315,6 +4334,26 @@
         }
       }
 
+      async function handleUpdatePassword() {
+        const newPass = document.getElementById("new-password-inp").value;
+        if (newPass.length < 6) {
+          toast("Password must be at least 6 characters.");
+          return;
+        }
+        const btn = document.getElementById("save-new-pass-btn");
+        btn.disabled = true; btn.textContent = "Updating...";
+        try {
+          const { error } = await _sb.auth.updateUser({ password: newPass });
+          if (error) throw error;
+          toast("Password updated successfully!");
+          cM('update-pass-modal');
+        } catch (e) {
+          toast(e.message);
+        } finally {
+          btn.disabled = false; btn.textContent = "Save Password";
+        }
+      }
+
       async function logout() {
         await _sb.auth.signOut();
         location.reload();
@@ -4325,6 +4364,9 @@
           document.getElementById("s-login").style.display = "none";
           initLayout();
           loadAll();
+          if (event === 'PASSWORD_RECOVERY') {
+            setTimeout(() => oM('update-pass-modal'), 500);
+          }
         } else if (event === 'SIGNED_OUT') {
           document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
           document.getElementById("s-login").style.display = "flex";
@@ -4781,6 +4823,7 @@
       // ── LOGIN ──────────────────────────────────────────────────────────────────
       document.getElementById("auth-submit-btn").addEventListener("click", handleAuth);
       document.getElementById("auth-toggle-btn").addEventListener("click", handleForgotPassword);
+      document.getElementById("save-new-pass-btn").addEventListener("click", handleUpdatePassword);
       document.getElementById("legacy-pin-btn").addEventListener("click", function() {
         const pin = prompt("Enter Legacy Access PIN:");
         if (pin === FP) {
@@ -6659,6 +6702,14 @@
       const logo = document.getElementById('tl-img');
       const authLogo = document.getElementById('auth-logo-img');
       if (logo && authLogo) authLogo.src = logo.src;
+
+      // Ensure Auth Listeners are bound
+      const asb = document.getElementById("auth-submit-btn");
+      if (asb) asb.onclick = handleAuth;
+      const atb = document.getElementById("auth-toggle-btn");
+      if (atb) atb.onclick = handleForgotPassword;
+      const snp = document.getElementById("save-new-pass-btn");
+      if (snp) snp.onclick = handleUpdatePassword;
 
     } catch (e) { console.warn("Init:", e.message); }</script>
 </body>
