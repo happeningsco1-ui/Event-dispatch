@@ -2008,10 +2008,10 @@
     .task-remove:hover { opacity: 0.8; color: var(--red); }
     
     .task-container {
-      max-height: 210px;
+      max-height: 185px; /* Strictly shows ~3 tasks */
       overflow-y: auto;
       padding-right: 4px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     .task-container::-webkit-scrollbar { width: 4px; }
     .task-container::-webkit-scrollbar-thumb { background: var(--mob-brd); border-radius: 4px; }
@@ -6752,7 +6752,7 @@
       // ── SAMPLE DATA ──────────────────────────────────────────────────────────────
       // Supabase connected - data loads via loadAll()
 
-      // ── INIT ─────────────────────────────────────────────────────────────────────
+      // INIT
       sessionStorage.removeItem("auth");
       document.getElementById("desk-sidebar").style.display = "none";
       document.getElementById("desk-main").style.display = "none";
