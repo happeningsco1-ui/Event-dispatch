@@ -2008,7 +2008,7 @@
     .task-remove:hover { opacity: 0.8; color: var(--red); }
     
     .task-container {
-      max-height: 185px; /* Strictly shows ~3 tasks */
+      max-height: 165px; /* Strictly shows ~3 tasks */
       overflow-y: auto;
       padding-right: 4px;
       margin-bottom: 15px;
@@ -4484,13 +4484,17 @@
       // ── LAYOUT ─────────────────────────────────────────────────────────────────
       function initLayout() {
         isDesk = window.innerWidth >= 768;
+        document.body.className = isDesk ? "desktop-mode" : "mobile-mode";
+        const activeScreen = document.querySelector(".screen.active");
         if (isDesk) {
           document.getElementById("desk-sidebar").style.display = "flex";
           document.getElementById("desk-main").style.display = "flex";
-          document.querySelectorAll(".screen").forEach(function (s) { s.style.display = "none"; });
+          document.querySelectorAll(".screen:not(.active)").forEach(function (s) { s.style.display = "none"; });
+          if (activeScreen) activeScreen.style.display = "contents";
         } else {
-          document.getElementById("desk-sidebar").style.display = "none";
-          document.getElementById("desk-main").style.display = "none";
+          var sidebar = document.getElementById("desk-sidebar"); if (sidebar) sidebar.style.display = "none";
+          var main = document.getElementById("desk-main"); if (main) main.style.display = "none";
+          if (activeScreen) activeScreen.style.display = "block";
         }
       }
       window.addEventListener("resize", function () {
@@ -6753,16 +6757,24 @@
       // Supabase connected - data loads via loadAll()
 
       // INIT
-      sessionStorage.removeItem("auth");
+      if (BL) applyLogo(BL);
+      initLayout();
+      
+      // Default to login screen while Supabase checks auth state
       document.getElementById("desk-sidebar").style.display = "none";
       document.getElementById("desk-main").style.display = "none";
-      document.querySelectorAll(".screen").forEach(function (s) { s.style.display = "none"; });
+      document.querySelectorAll(".screen").forEach(function (s) { s.classList.remove("active"); s.style.display = "none"; });
       var loginEl = document.getElementById("s-login");
-      if (loginEl) loginEl.style.cssText = "display:flex !important;";
-
-      const logo = document.getElementById('tl-img');
-      const authLogo = document.getElementById('auth-logo-img');
-      if (logo && authLogo) authLogo.src = logo.src;
+      if (loginEl) {
+        loginEl.classList.add("active");
+        loginEl.style.cssText = "display:flex !important;";
+      }
+      
+      setTimeout(() => {
+        const logo = document.getElementById('tl-img');
+        const authLogo = document.getElementById('auth-logo-img');
+        if (logo && authLogo && logo.src) authLogo.src = logo.src;
+      }, 300);
 
       // Ensure Auth Listeners are bound
       const asb = document.getElementById("auth-submit-btn");
