@@ -76,9 +76,14 @@
 
     /* LOGIN */
     #s-login {
-      background: radial-gradient(ellipse at 50% 30%, rgba(201, 168, 76, .1) 0%, transparent 60%), #0F0905;
+      background: #0F0905;
       align-items: center;
       justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
     }
 
     .login-box {
@@ -1897,10 +1902,15 @@
       color: #0F0905;
       border: none;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       font-family: Jost, sans-serif;
+      transition: all 0.2s;
+    }
+    .mbtn-a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
     }
 
     /* UTILS */
@@ -1967,17 +1977,25 @@
     }
 
     /* Task Management System */
-    .task-card { background: var(--mob-bm); border: 1px solid var(--mob-brs); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
-    .task-card.completed { background: rgba(46, 125, 50, 0.15); border-color: #2e7d32; }
-    .task-check { width: 22px; height: 22px; border: 2px solid var(--gold); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .task-card { background: var(--mob-bg2); border: 1px solid var(--mob-brs); border-radius: 8px; padding: 7px 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
+    .task-card.completed { background: rgba(46, 125, 50, 0.05); border-color: rgba(46, 125, 50, 0.15); opacity: 0.6; }
+    .task-check { width: 18px; height: 18px; border: 1.5px solid var(--gold); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 9px; }
     .task-card.completed .task-check { background: #2e7d32; border-color: #2e7d32; color: white; }
-    .task-info { flex: 1; }
-    .task-title { font-size: 13px; font-weight: 500; color: var(--mob-cream); margin-bottom: 2px; }
-    .task-time { font-size: 10px; color: var(--gold); }
-    .task-urgent { color: #f44336 !important; font-weight: 700; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-    .task-remove { font-size: 14px; color: var(--mob-mut); cursor: pointer; padding: 4px; display: none; }
-    .task-card.completed .task-remove { display: block; }
+    .task-info { flex: 1; min-width: 0; }
+    .task-title { font-size: 11.5px; font-weight: 500; color: var(--mob-cream); margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.9; }
+    .task-time { font-size: 8.5px; color: var(--gold); opacity: 0.8; }
+    .task-urgent { color: #f44336 !important; font-weight: 700; }
+    .task-remove { font-size: 11px; color: var(--mob-mut); cursor: pointer; padding: 4px; opacity: 0.4; }
+    .task-remove:hover { opacity: 0.8; color: var(--red); }
+    
+    .task-container {
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 10px;
+    }
+    .task-container::-webkit-scrollbar { width: 4px; }
+    .task-container::-webkit-scrollbar-thumb { background: var(--mob-brd); border-radius: 4px; }
     
     .schedule-toggle { display: flex; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 4px; margin-bottom: 16px; }
     .st-btn { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 11px; cursor: pointer; color: var(--mob-mut); transition: 0.2s; }
@@ -2970,15 +2988,13 @@
       justify-content: center;
       min-height: 100vh;
       padding: 20px;
-      background: radial-gradient(circle at top right, #2C1A0E, #0F0905);
+      background: #0F0905;
     }
     .auth-card {
       width: 100%;
-      max-width: 400px;
-      background: rgba(44, 26, 14, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(201, 168, 76, 0.15);
+      max-width: 340px;
+      background: #1A0F08;
+      border: 1px solid rgba(201, 168, 76, 0.1);
       border-radius: 24px;
       padding: 40px 32px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
@@ -3049,18 +3065,55 @@
     .auth-toggle {
       margin-top: 24px;
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       color: #7A6347;
     }
     .auth-link {
       color: var(--gold);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      margin-left: 4px;
+      display: inline-block;
+      margin-top: 4px;
     }
     .auth-link:hover {
       text-decoration: underline;
+    }
+    
+    @media (min-width: 768px) {
+      .auth-container {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        background: #F8F3ED;
+        padding: 0;
+        overflow: hidden;
+      }
+      .auth-card {
+        justify-self: center;
+        align-self: center;
+        max-width: 400px;
+        background: #FFFFFF;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(44, 26, 14, 0.08);
+        padding: 50px 45px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.05);
+        border-radius: 24px;
+        margin-right: 0;
+      }
+      .auth-title { color: #1A0F08; font-size: 32px; margin-bottom: 12px; }
+      .auth-sub { color: #7A6347; margin-bottom: 40px; }
+      .auth-input { background: #FAF9F7; border-color: rgba(44, 26, 14, 0.1); color: #1A0F08; padding: 16px; }
+      .auth-input:focus { background: #FFFFFF; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.05); }
+      .auth-label { color: #8B6914; margin-bottom: 10px; }
+      .auth-container::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 100vh;
+        background: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80') center/cover no-repeat;
+        border-radius: 0 40px 40px 0;
+      }
     }
     .verify-screen {
       text-align: center;
@@ -3177,8 +3230,8 @@
         </div>
         <button class="auth-btn" id="auth-submit-btn">Sign In</button>
         <div class="auth-toggle">
-         <span id="auth-toggle-text">Don't have an account?</span>
-       <a class="auth-link" id="auth-toggle-btn">Sign Up</a>
+          <p id="auth-toggle-text">Having trouble signing in?</p>
+          <a class="auth-link" id="auth-toggle-btn">Forgot Password</a>
         </div>
         <div style="margin-top:20px; text-align:center; opacity:0.5; font-size:10px;">
           <a class="auth-link" id="legacy-pin-btn">Access with PIN (Legacy)</a>
@@ -4230,13 +4283,17 @@
       var _sb = supabase.createClient(SU, SK);
       var authMode = "signin";
 
-      function authToggle() {
-        authMode = authMode === "signin" ? "signup" : "signin";
-        document.getElementById("auth-title").textContent = authMode === "signin" ? "Welcome Back" : "Create Account";
-        document.getElementById("auth-sub").textContent = authMode === "signin" ? "Please enter your details to continue" : "Join our team to start planning events";
-        document.getElementById("auth-submit-btn").textContent = authMode === "signin" ? "Sign In" : "Sign Up";
-        document.getElementById("auth-toggle-text").textContent = authMode === "signin" ? "Don't have an account?" : "Already have an account?";
-        document.getElementById("auth-toggle-btn").textContent = authMode === "signin" ? "Sign Up" : "Sign In";
+      async function handleForgotPassword() {
+        const email = document.getElementById("auth-email").value.trim();
+        if (!email) { toast("Please enter your email address first"); return; }
+        
+        try {
+          const { error } = await _sb.auth.resetPasswordForEmail(email);
+          if (error) throw error;
+          toast("Password reset link sent to your email!");
+        } catch (err) {
+          toast(err.message || "Error sending reset link");
+        }
       }
 
       async function handleAuth() {
@@ -4248,18 +4305,13 @@
         btn.disabled = true; btn.textContent = "Processing...";
         
         try {
-          if (authMode === "signup") {
-            const { error } = await _sb.auth.signUp({ email, password });
-            if (error) throw error;
-            document.getElementById("auth-main-card").style.display = "none";
-            document.getElementById("auth-verify-screen").style.display = "block";
-          } else {
-            const { error } = await _sb.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-          }
+          const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          location.reload();
         } catch (e) {
           toast(e.message);
-          btn.disabled = false; btn.textContent = authMode === "signin" ? "Sign In" : "Sign Up";
+        } finally {
+          btn.disabled = false; btn.textContent = "Sign In";
         }
       }
 
@@ -4728,7 +4780,7 @@
 
       // ── LOGIN ──────────────────────────────────────────────────────────────────
       document.getElementById("auth-submit-btn").addEventListener("click", handleAuth);
-      document.getElementById("auth-toggle-btn").addEventListener("click", authToggle);
+      document.getElementById("auth-toggle-btn").addEventListener("click", handleForgotPassword);
       document.getElementById("legacy-pin-btn").addEventListener("click", function() {
         const pin = prompt("Enter Legacy Access PIN:");
         if (pin === FP) {
@@ -4879,7 +4931,7 @@
 
         // Pending Tasks List
         if (TASKS.length > 0) {
-          h += "<div class='dsec'><div class='dsec-hdr'>Pending Tasks</div>";
+          h += "<div class='dsec'><div class='dsec-hdr'>Pending Tasks</div><div class='task-container'>";
           var sortedTasks = TASKS.slice().sort(function(a,b){ 
             if(a.status === "completed" && b.status === "pending") return 1;
             if(a.status === "pending" && b.status === "completed") return -1;
@@ -4906,7 +4958,7 @@
              h += "<div class='task-remove' data-action='delete'>&#128465;</div>";
              h += "</div>";
           });
-          h += "</div>";
+          h += "</div></div>";
         }
 
         if (todayB.length > 0) {
