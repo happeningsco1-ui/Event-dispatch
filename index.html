@@ -5142,16 +5142,29 @@
                 } catch(e) { toast(e.message); }
                 finally { hd(); }
             };
-            card.querySelector('.task-remove').onclick = async function() {
-                ld();
-                try {
-                    const { error } = await _sb.from('tasks').delete().eq('id', tid);
-                    if(error) throw error;
-                    TASKS = TASKS.filter(function(x){ return x.id != tid; });
-                    rDash();
-                    toast("Task removed.");
-                } catch(e) { toast(e.message); }
-                finally { hd(); }
+            card.querySelector('.task-remove').onclick = async function(e) {
+                e.stopPropagation();
+                var me = this;
+                if (me.getAttribute('data-c') === '1') {
+                    ld();
+                    try {
+                        const { error } = await _sb.from('tasks').delete().eq('id', tid);
+                        if(error) throw error;
+                        TASKS = TASKS.filter(function(x){ return x.id != tid; });
+                        rDash();
+                        toast("Task removed.");
+                    } catch(ex) { toast(ex.message); }
+                    finally { hd(); }
+                } else {
+                    me.setAttribute('data-c', '1');
+                    me.innerHTML = '<span style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;padding:0 2px;">DEL?</span>';
+                    setTimeout(function () { 
+                        if (me.getAttribute('data-c') === '1') { 
+                            me.removeAttribute('data-c'); 
+                            me.innerHTML = '&#128465;'; 
+                        } 
+                    }, 3000);
+                }
             };
         });
 
