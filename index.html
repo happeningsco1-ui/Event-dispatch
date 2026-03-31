@@ -3742,6 +3742,7 @@
         </div>
       </div>
       <div class="tb-acts">
+        <button class="tbtn" id="m-edit-detail" style="font-size:12px;">&#9998;</button>
         <button class="tbtn gold" id="detail-dispatch-btn">&#128666; Dispatch</button>
         <button class="tbtn" id="back-detail">&#8592;</button>
       </div>
@@ -4683,7 +4684,7 @@
 
         var acts = "";
         if (id === "s-bkns") acts = '<button class="desk-btn gold" id="d-new-bkn">+ New Booking</button>';
-        else if (id === "s-bkn-detail") acts = '<button class="desk-btn gold" id="d-dispatch">&#128666; Dispatch</button><button class="desk-btn" id="d-back-detail">&#8592; Back</button>';
+        else if (id === "s-bkn-detail") acts = '<button class="desk-btn" id="d-edit-detail">&#9998; Edit</button><button class="desk-btn gold" id="d-dispatch">&#128666; Dispatch</button><button class="desk-btn" id="d-back-detail">&#8592; Back</button>';
         else if (id === "s-new-bkn") acts = '<button class="desk-btn" id="d-back-new">&#8592; Back</button>';
         else if (id === "s-dispatch") acts = '<button class="desk-btn" id="d-back-dispatch">&#8592; Back</button>';
         else if (id === "s-cart") acts = '<button class="desk-btn" id="d-back-cart">&#8592; Edit</button>';
@@ -4695,6 +4696,7 @@
         setTimeout(function () {
           function bind(eid, fn) { var e = document.getElementById(eid); if (e) e.addEventListener("click", fn); }
           bind("d-new-bkn", function () { clearNewBkn(); go("s-new-bkn"); });
+          bind("d-edit-detail", function () { if(curDetailId) openEditBkn(curDetailId); });
           bind("d-dispatch", function () { if (curDetailId) openDispatch(curDetailId); });
           bind("d-back-detail", function () { go("s-bkns"); });
           bind("d-back-new", function () { go("s-bkns"); });
@@ -5331,15 +5333,57 @@
       });
 
       // ── NEW BOOKING ─────────────────────────────────────────────────────────────
+      var curEditBknId = null;
+
       function clearNewBkn() {
+        curEditBknId = null;
         document.querySelectorAll(".echk").forEach(function (e) { e.classList.remove("on"); });
         ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-total", "nb-paid"].forEach(function (id) {
           var el = document.getElementById(id); if (el) el.value = "";
         });
+        document.getElementById("nb-type").value = "Other";
         curEventInspos = []; curEventNotes = ""; draftCart = {};
         // Reset to step 1
         showNbStep(1);
         bindNewBkn();
+      }
+
+      function openEditBkn(id) {
+        clearNewBkn();
+        var b = BKN.find(function(x) { return x.id === id; });
+        if (!b) return;
+        curEditBknId = id;
+        
+        var dName = document.getElementById("nb-name"); if(dName) dName.value = b.name || "";
+        var dDate = document.getElementById("nb-date"); if(dDate) dDate.value = b.date || "";
+        var dPhone = document.getElementById("nb-phone"); if(dPhone) dPhone.value = b.phone || "";
+        var dType = document.getElementById("nb-type"); if(dType) dType.value = b.type || "Other";
+        var dVenue = document.getElementById("nb-venue"); if(dVenue) dVenue.value = b.venue || "";
+        var dReady = document.getElementById("nb-ready"); if(dReady) dReady.value = b.ready || "";
+        var dPickup = document.getElementById("nb-pickup"); if(dPickup) dPickup.value = b.pickup || "";
+        var dNotes = document.getElementById("nb-notes"); if(dNotes) dNotes.value = b.notes || "";
+        var dTotal = document.getElementById("nb-total"); if(dTotal) dTotal.value = b.total || "";
+        var dPaid = document.getElementById("nb-paid"); if(dPaid) dPaid.value = b.paid || "";
+        
+        curEventNotes = b.eventNotes || b.reminder_notes || b.reminder || "";
+        var dENotes = document.getElementById("nb-ed-notes"); if(dENotes) dENotes.value = curEventNotes;
+        
+        curEventInspos = (b.eventInspos || []).slice();
+        rNbEdThumbs();
+
+        draftCart = {};
+        if (b.dispatchItems) {
+           b.dispatchItems.forEach(function(di) {
+               draftCart[di.itemId] = di.qty;
+           });
+        }
+        
+        var exts = b.extItems || b.pending_items || [];
+        document.querySelectorAll(".echk").forEach(function(e) {
+          if (exts.includes(e.getAttribute("data-v"))) e.classList.add("on");
+        });
+        
+        go("s-new-bkn");
       }
 
       function showNbStep(step) {
@@ -5499,33 +5543,67 @@
         if (!name || !date) { alert("Please enter client name and date."); showNbStep(1); return; }
         var ext = [];
         document.querySelectorAll(".echk.on").forEach(function (e) { ext.push(e.getAttribute("data-v")); });
-        bknCounter++;
-        var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
+        
         var di = withInventory ? Object.keys(draftCart).map(function (id) { return { itemId: id, qty: draftCart[id] }; }) : null;
-        var b = {
-          id: "b" + Date.now(), name: name, date: date, ref: refNum,
-          phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
-          type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
-          venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
-          ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
-          pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
-          status: "Confirmed",
-          notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
-          total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
-          paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
-          dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
-          discussion_log: [], staff_assigned: [], invoice_items: []
-        };
-        ld();
-        db("bookings", "POST", b).then(function () {
-          b.dispatchItems = di; b.extItems = ext; b.costs = {}; b.reminder = curEventNotes || "";
-          b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
-          b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
-          BKN.push(b); BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
-          hd(); toast("Booking saved! Ref: " + refNum);
-          clearNewBkn();
-          go("s-bkns");
-        }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        
+        if (curEditBknId) {
+            var ex = BKN.find(function(x) { return x.id === curEditBknId; });
+            if(!ex) return;
+            var pd = {
+              name: name, date: date, phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+              pending_items: ext, reminder_notes: curEventNotes || "", event_inspos: curEventInspos || []
+            };
+            if (withInventory) pd.dispatch_items = di;
+            
+            ld();
+            db("bookings?id=eq." + curEditBknId, "PATCH", pd).then(function() {
+                Object.assign(ex, {
+                  name: pd.name, date: pd.date, phone: pd.phone, type: pd.type, venue: pd.venue,
+                  ready: pd.ready, pickup: pd.pickup, notes: pd.notes, total: pd.total, paid: pd.paid,
+                  extItems: pd.pending_items, eventNotes: pd.reminder_notes, reminder: pd.reminder_notes,
+                  eventInspos: pd.event_inspos
+                });
+                if(withInventory) ex.dispatchItems = pd.dispatch_items;
+                BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
+                hd(); toast("Booking updated!");
+                clearNewBkn(); go("s-bkn-detail");
+                rDetail(curEditBknId);
+            }).catch(function(err) { hd(); alert("Error: " + err.message); });
+        } else {
+            bknCounter++;
+            var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
+            var b = {
+              id: "b" + Date.now(), name: name, date: date, ref: refNum,
+              phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+              status: "Confirmed",
+              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+              dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
+              discussion_log: [], staff_assigned: [], invoice_items: [], event_inspos: curEventInspos || []
+            };
+            ld();
+            db("bookings", "POST", b).then(function () {
+              b.dispatchItems = di; b.extItems = ext; b.costs = {}; b.reminder = curEventNotes || "";
+              b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
+              b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
+              BKN.push(b); BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
+              hd(); toast("Booking saved! Ref: " + refNum);
+              clearNewBkn();
+              go("s-bkns");
+            }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        }
       }
 
       function delBkn(id) {
@@ -5608,6 +5686,7 @@
       }
 
       var backDetailEl = document.getElementById("back-detail"); if (backDetailEl) backDetailEl.addEventListener("click", function () { go("s-bkns"); });
+      var mEditDetailEl = document.getElementById("m-edit-detail"); if (mEditDetailEl) mEditDetailEl.addEventListener("click", function () { if (curDetailId) openEditBkn(curDetailId); });
       var backInvEl = document.getElementById("back-invoice"); if (backInvEl) backInvEl.addEventListener("click", function () { go("s-bkns"); });
       var backInvPrevEl = document.getElementById("back-invoice-preview"); if (backInvPrevEl) backInvPrevEl.addEventListener("click", function () { go("s-invoice"); });
       var invPrintEl = document.getElementById("invoice-print-btn"); if (invPrintEl) invPrintEl.addEventListener("click", function () { window.print(); });
