@@ -1785,9 +1785,9 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(8, 4, 2, .82);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 10000;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
     }
 
@@ -1796,16 +1796,26 @@
     }
 
     .modal {
-      background: #1A0F08;
+      background: #120A06;
       border: 1px solid var(--mob-brd);
       border-top: 2px solid var(--gold);
-      border-radius: 16px 16px 0 0;
-      padding: 20px;
+      border-radius: 20px 20px 0 0;
+      padding: 12px 20px 32px;
       width: 100%;
       max-width: 480px;
-      animation: slideUp .25s ease;
-      max-height: 88vh;
+      animation: slideUp .3s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--mob-bl);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+      opacity: 0.6;
     }
 
     @keyframes slideUp {
@@ -4288,6 +4298,7 @@
   <!-- TASK MODAL -->
   <div class="overlay" id="task-modal">
     <div class="modal">
+      <div class="modal-handle"></div>
       <div class="mname">Add Pending Task</div>
       <div class="schedule-toggle">
         <div class="st-btn on" id="task-today-btn">Today</div>
