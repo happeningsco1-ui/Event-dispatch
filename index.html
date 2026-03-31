@@ -4281,17 +4281,7 @@
       </div>
       <div class="fg" style="margin-bottom:10px;">
         <div class="fl">Category</div>
-        <select class="fs" id="media-cat-sel">
-          <option>Nikkah</option>
-          <option>Engagement</option>
-          <option>Bridal Shower</option>
-          <option>Birthday</option>
-          <option>Mehendi</option>
-          <option>Backdrop</option>
-          <option>Florals</option>
-          <option>Setup</option>
-          <option>Other</option>
-        </select>
+        <select class="fs" id="media-cat-sel"></select>
       </div>
       <div class="fg" style="margin-bottom:16px;">
         <div class="fl">Tags (comma separated)</div>
@@ -4303,6 +4293,23 @@
       </div>
     </div>
   </div>
+
+  <!-- MEDIA CATEGORIES MODAL -->
+  <div class="overlay" id="media-cats-modal">
+    <div class="modal">
+      <div class="mname">Manage Categories</div>
+      <div class="msub">Add or remove photo categories</div>
+      <div id="media-cats-list" style="margin-bottom:14px; max-height:250px; overflow-y:auto; border: 1px solid var(--mob-brs); border-radius: 8px; padding: 5px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input class="fi" id="new-mcat-inp" placeholder="New Category" style="flex:1;">
+        <button class="mbtn-a" id="add-mcat-btn" style="flex:none;padding:10px 14px;">Add</button>
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-a" onclick="cM('media-cats-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
 
   <div class="loading" id="loading">
     <div class="spinner"></div>
@@ -6584,7 +6591,7 @@
       }
 
       // ── EVENT MEDIA GALLERY ──────────────────────────────────────────────────────────
-      var MEDIA_CATS = ["All", "Nikkah", "Engagement", "Bridal Shower", "Birthday", "Mehendi", "Backdrop", "Florals", "Setup", "Other"];
+      var MEDIA_CATS = JSON.parse(localStorage.getItem("ev_m_cats") || '["All", "Nikkah", "Engagement", "Bridal Shower", "Birthday", "Mehendi", "Backdrop", "Florals", "Setup", "Other"]');
 
       function rMedia() {
         var el = document.getElementById("media-body"); if (!el) return;
@@ -6593,9 +6600,11 @@
         // Upload button + filter tabs
         h += "<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
         h += "<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
+        h += "<button class='tbtn' id='media-cats-btn' style='background:rgba(201,168,76,0.1); border:1px solid var(--gold);'><span style='margin-right:4px;'>⚙️</span>Categories</button>";
         h += "<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
-        h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:8px 11px;'>";
+        h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:10px 14px;'>";
         h += "</div>";
+
         h += "<div class='cattabs' style='background:transparent;border:none;margin-bottom:14px;padding:0;'>";
         MEDIA_CATS.forEach(function (c) { h += "<div class='ctab" + (mediaFilter === c ? " on" : "") + "' data-mcat='" + c + "'>" + c + "</div>"; });
         h += "</div>";
@@ -6638,8 +6647,12 @@
             rF(f, function (src) {
               var title = f.name.replace(/\.[^.]+$/, "");
               oM("media-add-modal");
+              var catSel = document.getElementById("media-cat-sel");
+              catSel.innerHTML = "";
+              MEDIA_CATS.forEach(function(c) { if(c !== "All") { var o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o); } });
               document.getElementById("media-title-inp").value = title;
-              document.getElementById("media-cat-sel").value = "Other";
+              catSel.value = MEDIA_CATS[1] || "Other";
+
               document.getElementById("media-tags-inp").value = "";
               document.getElementById("media-preview").innerHTML = isVideo
                 ? "<video src='" + src + "' style='width:100%;max-height:200px;border-radius:8px;' controls></video>"
@@ -6742,7 +6755,46 @@
             lb.addEventListener("click", function (e) { if (e.target === lb) document.body.removeChild(lb); });
           });
         });
+        var mcb = document.getElementById("media-cats-btn");
+        if(mcb) mcb.onclick = function() { rMediaCats(); oM("media-cats-modal"); };
       }
+
+
+      function rMediaCats() {
+        var list = document.getElementById("media-cats-list");
+        if(!list) return;
+        var hArr = [];
+        MEDIA_CATS.forEach(function(c, i) {
+          if(c === "All") return;
+          var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
+          row += "<div style='font-size:14px; color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
+          row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delcat='" + i + "'>&#10005;</div>";
+          row += "</div>";
+          hArr.push(row);
+        });
+        list.innerHTML = hArr.join("") || "<div style='padding:25px; text-align:center; font-size:12px; opacity:0.6; color:#7A6347;'>No custom categories.</div>";
+        
+        list.querySelectorAll("[data-delcat]").forEach(function(btn) {
+          btn.onclick = function() {
+            var idx = parseInt(this.getAttribute("data-delcat"));
+            MEDIA_CATS.splice(idx, 1);
+            localStorage.setItem("ev_m_cats", JSON.stringify(MEDIA_CATS));
+            rMediaCats(); rMedia();
+          };
+        });
+      }
+
+      document.getElementById("add-mcat-btn").onclick = function() {
+        var inp = document.getElementById("new-mcat-inp");
+        var val = inp.value.trim();
+        if(!val) return;
+        if(MEDIA_CATS.indexOf(val) > -1) { toast("Category exists."); return; }
+        MEDIA_CATS.push(val);
+        localStorage.setItem("ev_m_cats", JSON.stringify(MEDIA_CATS));
+        inp.value = "";
+        rMediaCats(); rMedia();
+        toast("Category added.");
+      };
 
       // ── OVERLAY CLOSE ────────────────────────────────────────────────────────────
       document.querySelectorAll(".overlay").forEach(function (el) {
