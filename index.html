@@ -6334,6 +6334,22 @@
       document.getElementById("pay-cancel").addEventListener("click", function () { cM("pay-modal"); });
 
       // ── INVOICE ────────────────────────────────────────────────────────────────────
+      function numToWords(n) {
+        if (n === 0) return "Zero";
+        var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+        var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+        function h(num) {
+          if (num === 0) return "";
+          if (num < 20) return ones[num] + " ";
+          if (num < 100) return tens[Math.floor(num / 10)] + " " + (num % 10 ? ones[num % 10] + " " : "");
+          if (num < 1000) return ones[Math.floor(num / 100)] + " Hundred " + (num % 100 ? h(num % 100) : "");
+          if (num < 100000) return h(Math.floor(num / 1000)) + "Thousand " + (num % 1000 ? h(num % 1000) : "");
+          if (num < 10000000) return h(Math.floor(num / 100000)) + "Lac " + (num % 100000 ? h(num % 100000) : "");
+          return h(Math.floor(num / 10000000)) + "Crore " + (num % 10000000 ? h(num % 10000000) : "");
+        }
+        return h(n).trim() + " Rupees Only";
+      }
+
       function openInvoice(id) {
         invoiceBkgId = id;
         var b = BKN.find(function (x) { return x.id === id; });
@@ -6350,60 +6366,6 @@
           if (el) { el.style.display = "flex"; el.classList.add("active"); }
           rInvoiceScreen();
         }
-      }
-      function renderInvoiceModal(b) {
-        var h = "";
-        invoiceLines.forEach(function (line, i) {
-          h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--mob-brs,rgba(201,168,76,0.08));'>";
-          h += "<span style='font-size:12px;color:var(--mob-cream,#F0E6D3);flex:1;'>" + line.desc + "</span>";
-          h += "<span style='font-size:12px;color:var(--gold);margin-left:8px;'>PKR " + parseInt(line.amt).toLocaleString() + "</span>";
-          h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;margin-left:8px;' data-deline='" + i + "'>&#10005;</button></div>";
-        });
-        if (!invoiceLines.length) h = "<div style='font-size:11px;color:var(--mob-mut,#7A6347);'>Add line items below.</div>";
-        document.getElementById("invoice-items-el").innerHTML = h;
-        document.querySelectorAll("[data-deline]").forEach(function (btn) {
-          btn.addEventListener("click", function () { invoiceLines.splice(parseInt(this.getAttribute("data-deline")), 1); renderInvoiceModal(b); updateInvoiceTotals(b); });
-        });
-        updateInvoiceTotals(b);
-      }
-      function updateInvoiceTotals(b) {
-        var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
-        var adv = b ? b.paid || 0 : 0, bal = total - adv;
-        document.getElementById("inv-total-el").textContent = "PKR " + total.toLocaleString();
-        document.getElementById("inv-advance-el").textContent = "PKR " + adv.toLocaleString();
-        document.getElementById("inv-balance-el").textContent = "PKR " + Math.max(0, bal).toLocaleString();
-      }
-      document.getElementById("inv-add-line-btn").addEventListener("click", function () {
-        var desc = document.getElementById("inv-desc").value.trim();
-        var amt = parseFloat(document.getElementById("inv-amt").value) || 0;
-        if (!desc || !amt) { toast("Enter description and amount."); return; }
-        invoiceLines.push({ desc: desc, amt: amt });
-        var b = BKN.find(function (x) { return x.id === invoiceBkgId; });
-        document.getElementById("inv-desc").value = ""; document.getElementById("inv-amt").value = "";
-        renderInvoiceModal(b);
-      });
-      document.getElementById("inv-cancel").addEventListener("click", function () { cM("invoice-modal"); });
-      document.getElementById("inv-print-btn").addEventListener("click", function () {
-        var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (!b) return;
-        b.invoiceItems = invoiceLines;
-        db("bookings?id=eq." + b.id, "PATCH", { invoice_items: invoiceLines });
-        printInvoice(b); cM("invoice-modal");
-      });
-
-      function numToWords(n) {
-        if (n === 0) return "Zero";
-        var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-        var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-        function h(num) {
-          if (num === 0) return "";
-          if (num < 20) return ones[num] + " ";
-          if (num < 100) return tens[Math.floor(num / 10)] + " " + (num % 10 ? ones[num % 10] + " " : "");
-          if (num < 1000) return ones[Math.floor(num / 100)] + " Hundred " + (num % 100 ? h(num % 100) : "");
-          if (num < 100000) return h(Math.floor(num / 1000)) + "Thousand " + (num % 1000 ? h(num % 1000) : "");
-          if (num < 10000000) return h(Math.floor(num / 100000)) + "Lac " + (num % 100000 ? h(num % 100000) : "");
-          return h(Math.floor(num / 10000000)) + "Crore " + (num % 10000000 ? h(num % 10000000) : "");
-        }
-        return h(n).trim() + " Rupees Only";
       }
 
       function rInvoiceScreen() {
@@ -6426,7 +6388,7 @@
         h += "<button class='btn-save' id='gen-invoice-btn'>Generate Invoice</button>";
         el.innerHTML = h;
         renderInvoiceLines2(b);
-        document.getElementById("inv-add-line2").addEventListener("click", function () {
+        document.getElementById("inv-add-line2").onclick = function () {
           var desc = document.getElementById("inv-desc2").value.trim();
           var amt = parseFloat(document.getElementById("inv-amt2").value) || 0;
           if (!desc || !amt) { toast("Enter description and amount."); return; }
@@ -6434,12 +6396,12 @@
           document.getElementById("inv-desc2").value = "";
           document.getElementById("inv-amt2").value = "";
           renderInvoiceLines2(b);
-        });
-        document.getElementById("gen-invoice-btn").addEventListener("click", function () {
+        };
+        document.getElementById("gen-invoice-btn").onclick = function () {
           var bx = BKN.find(function (x) { return x.id === invoiceBkgId; });
           if (bx) { bx.invoiceItems = invoiceLines; db("bookings?id=eq." + bx.id, "PATCH", { invoice_items: invoiceLines }); }
           go("s-invoice-preview");
-        });
+        };
       }
       function renderInvoiceLines2(b) {
         var el = document.getElementById("invoice-line-list"); if (!el) return;
@@ -6453,7 +6415,7 @@
         if (!invoiceLines.length) h = "<div style='font-size:11px;color:var(--mob-mut,#7A6347);padding:6px 0;'>Add items below.</div>";
         el.innerHTML = h;
         el.querySelectorAll("[data-dline]").forEach(function (btn) {
-          btn.addEventListener("click", function () { invoiceLines.splice(parseInt(this.getAttribute("data-dline")), 1); renderInvoiceLines2(b); updateInvoiceTotals2(b); });
+          btn.onclick = function () { invoiceLines.splice(parseInt(this.getAttribute("data-dline")), 1); renderInvoiceLines2(b); updateInvoiceTotals2(b); };
         });
         updateInvoiceTotals2(b);
       }
@@ -6473,40 +6435,57 @@
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
         var logoSrc = BL || "";
         var rows = invoiceLines.map(function (l, i) {
-          return '<tr style="background:' + (i % 2 === 0 ? "#fff" : "#fdf8f0") + ';"><td style="padding:6pt 8pt;font-size:9pt;font-weight:600;text-transform:uppercase;border-bottom:0.5pt solid #eee;">' + l.desc + '</td><td style="padding:6pt 8pt;text-align:right;font-size:9pt;font-weight:600;border-bottom:0.5pt solid #eee;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
+          return '<tr style="border-bottom:1px solid #F0E6D3;"><td style="padding:15px 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:15px 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
         }).join("");
-        var inv =
-          '<div style="font-family:Georgia,Arial,sans-serif;max-width:680px;margin:0 auto;background:#fff;padding:20px;color:#111;border:1px solid #ddd;">'
-          + '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #C9A84C;margin-bottom:14px;">'
-          + (logoSrc ? '<img src="' + logoSrc + '" style="width:70px;height:70px;object-fit:contain;">' : '<div style="width:70px;"></div>')
-          + '<div style="text-align:center;flex:1;"><div style="font-size:26pt;font-weight:700;color:#1A0F08;letter-spacing:1px;">Happenings.co</div><div style="font-size:10pt;color:#C9A84C;letter-spacing:3px;">── Event Organiser ──</div></div>'
-          + '<div style="width:70px;"></div></div>'
-          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:9pt;">'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Customer</div><div style="font-weight:700;font-size:11pt;">' + b.name.toUpperCase() + '</div></div>'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Booking Ref</div><div style="font-weight:700;">' + b.ref + '</div></div>'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Mobile</div><div>' + (b.phone || "-") + '</div></div>'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Invoice Date</div><div>' + today + '</div></div>'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Event Location</div><div>' + (b.venue || "-") + '</div></div>'
-          + '<div><div style="color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Event Date</div><div>' + fD(b.date) + '</div></div>'
-          + '</div>'
-          + '<div style="font-size:10pt;margin-bottom:12px;color:#555;">Dear Client,<br>We are pleased to submit the invoice for the following:</div>'
-          + '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">'
-          + '<thead><tr style="background:#C9A84C;color:#0F0905;"><th style="padding:7pt 8pt;text-align:left;font-size:9pt;text-transform:uppercase;letter-spacing:1px;">Description</th><th style="padding:7pt 8pt;text-align:right;font-size:9pt;text-transform:uppercase;letter-spacing:1px;">Amount</th></tr></thead>'
+
+        var inv = 
+          '<div style="font-family:\'Jost\',sans-serif;max-width:700px;margin:0 auto;background:#fff;padding:45px;color:#1A0F08;border:1px solid #EDE4D6;box-shadow:0 10px 40px rgba(0,0,0,0.06);">'
+          + '<!-- Header -->'
+          + '<div style="text-align:center;padding-bottom:25px;border-bottom:2px solid #C9A84C;margin-bottom:35px;position:relative;">'
+          + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute;left:0;top:-10px;height:80px;width:80px;object-fit:contain;border-radius:50%;">' : '')
+          + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:38pt;font-weight:700;color:#1A0F08;line-height:1;margin-bottom:6px;letter-spacing:-0.5px;">Happenings.co</div>'
+          + '<div style="font-size:10pt;color:#C9A84C;letter-spacing:5px;text-transform:uppercase;font-weight:500;">── Premium Event Planning ──</div></div>'
+          
+          + '<!-- Meta Info -->'
+          + '<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:40px;margin-bottom:40px;">'
+          + '<div><div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;">Client Details</div>'
+          + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20pt;font-weight:700;color:#1A0F08;margin-bottom:5px;">' + b.name.toUpperCase() + '</div>'
+          + '<div style="font-size:10.5pt;background:rgba(201,168,76,0.05);display:inline-block;padding:2px 8px;border-radius:4px;color:#7A6347;margin-bottom:8px;">' + (b.phone || "-") + '</div>'
+          + '<div style="font-size:10.5pt;color:#555;line-height:1.4;">' + (b.venue || "Location Not Specified") + '</div></div>'
+          + '<div style="text-align:right;"><div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;">Statement Info</div>'
+          + '<div style="font-size:11pt;font-weight:700;margin-bottom:5px;color:#1A0F08;">REF ID: ' + b.ref + '</div>'
+          + '<div style="font-size:10pt;color:#555;margin-bottom:3px;">Date: ' + today + '</div>'
+          + '<div style="font-size:10pt;color:#1A0F08;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Event: ' + fD(b.date) + '</div></div></div>'
+          
+          + '<div style="font-size:11pt;color:#555;margin-bottom:25px;line-height:1.6;">Dear Client,<br>We are pleased to submit the professional invoice for your upcoming event. Thank you for choosing Happenings.co.</div>'
+          
+          + '<!-- Table -->'
+          + '<table style="width:100%;border-collapse:collapse;margin-bottom:30px;"><thead><tr style="border-bottom:2.5pt solid #1A0F08;"><th style="padding:12px 0;text-align:left;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Service Description</th><th style="padding:12px 0;text-align:right;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Amount</th></tr></thead>'
           + '<tbody>' + rows
-          + '<tr style="background:#f5f0e8;"><td style="padding:7pt 8pt;font-size:9pt;font-weight:700;text-transform:uppercase;border-top:2pt solid #C9A84C;">Total Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;font-weight:700;border-top:2pt solid #C9A84C;">' + total.toLocaleString() + '/-</td></tr>'
-          + '<tr style="background:#f5f0e8;"><td style="padding:7pt 8pt;font-size:9pt;font-weight:700;text-transform:uppercase;">Advance Paid</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;font-weight:700;">' + adv.toLocaleString() + '/-</td></tr>'
-          + '<tr style="background:#1A0F08;color:#C9A84C;"><td style="padding:8pt 8pt;font-size:10pt;font-weight:700;text-transform:uppercase;">Balance Amount</td><td style="padding:8pt 8pt;text-align:right;font-size:11pt;font-weight:700;">' + bal.toLocaleString() + '/-</td></tr>'
+          + '<tr><td style="padding:25px 0 6px;text-align:right;font-size:10.5pt;color:#7A6347;">Gross Total</td><td style="padding:25px 0 6px;text-align:right;font-size:10.5pt;font-weight:600;">' + total.toLocaleString() + '/-</td></tr>'
+          + '<tr><td style="padding:4px 0;text-align:right;font-size:10.5pt;color:#7A6347;">Advance Received</td><td style="padding:4px 0;text-align:right;font-size:10.5pt;font-weight:600;color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
+          + '<tr style="color:#C9A84C;"><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:20pt;font-weight:700;">Final Balance Due</td><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:24pt;font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
           + '</tbody></table>'
-          + '<div style="font-size:10pt;font-weight:700;padding:8pt;background:#fff8ee;border-left:4pt solid #C9A84C;margin-bottom:14px;">BALANCE AMOUNT RS ' + bal.toLocaleString() + '/-&nbsp;&nbsp;' + numToWords(bal).toUpperCase() + '</div>'
-          + '<div style="font-size:9pt;color:#555;font-style:italic;margin-bottom:12px;">Thanking and assuring you for our best services all time, InshaAllah</div>'
-          + '<div style="margin-bottom:14px;"><div style="font-size:9pt;">Yours Truly</div><div style="font-size:10pt;font-weight:700;margin-top:8px;">FINANCE MANAGER</div><div style="font-size:10pt;font-weight:700;">HAPPENINGS.CO</div></div>'
-          + '<div style="font-size:8pt;color:#888;font-style:italic;margin-bottom:14px;">** System generated bill. Signature not required **</div>'
-          + '<div style="background:#1A0F08;color:#C9A84C;padding:10px 14px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
-          + '<div style="font-size:8pt;">&#128205; Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
-          + '<div style="font-size:8pt;display:flex;gap:14px;"><span>&#128247; Happenings.co</span><span>&#128222; 03302894915</span></div>'
-          + '</div></div>';
+          
+          + '<!-- Words -->'
+          + '<div style="padding:22px;background:#FBF8F2;border-left:5px solid #C9A84C;margin-bottom:45px;border-radius:0 10px 10px 0;">'
+          + '<div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:600;">Total Amount in Words</div>'
+          + '<div style="font-size:12pt;font-weight:700;color:#1A0F08;text-transform:uppercase;letter-spacing:0.5px;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
+          
+          + '<!-- Signoff -->'
+          + '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:45px;">'
+          + '<div style="font-size:11pt;color:#7A6347;font-style:italic;max-width:350px;line-height:1.6;">Thanking and assuring you for our best professional services at all times.</div>'
+          + '<div style="text-align:right;"><div style="font-size:10pt;margin-bottom:45px;color:#555;">Sincerely,</div><div style="font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\',serif;font-size:18pt;font-weight:700;color:#C9A84C;">Happenings.co</div></div></div>'
+          
+          + '<div style="text-align:center;font-size:8.5pt;color:#BBB;margin-bottom:30px;font-style:italic;border-top:1px solid #F0F0F0;padding-top:18px;">** This is a computer generated document and does not require a physical signature **</div>'
+          
+          + '<!-- Footer -->'
+          + '<div style="background:#1A0F08;color:#FBF8F2;padding:22px 30px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;font-size:9pt;box-shadow:0 4px 15px rgba(26,15,8,0.2);">'
+          + '<div><span style="color:#C9A84C;margin-right:8px;">📍</span>Karachi, PK — Office SA-10 CMCHS, Bahadurabad.</div>'
+          + '<div style="display:flex;gap:25px;"><span><span style="color:#C9A84C;margin-right:6px;">📸</span>happenings.co</span><span><span style="color:#C9A84C;margin-right:6px;">📞</span>03302894915</span></div></div>'
+          + '</div>';
+
         el.innerHTML = inv;
-        // Store for print
         document.getElementById("print-sheet").innerHTML = inv;
       }
 
@@ -6517,38 +6496,50 @@
         var logoSrc = BL || "";
         var ps = document.getElementById("print-sheet");
         var rows = invoiceLines.map(function (l, i) {
-          return '<tr style="background:' + (i % 2 === 0 ? "#fff" : "#fdf8f0") + ';"><td style="padding:6pt 8pt;font-size:9pt;font-weight:600;text-transform:uppercase;">' + l.desc + '</td><td style="padding:6pt 8pt;text-align:right;font-size:9pt;font-weight:600;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
+          return '<tr style="border-bottom: 0.5pt solid #F0E6D3;"><td style="padding:12pt 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:12pt 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
         }).join("");
-        ps.innerHTML =
-          '<div style="font-family:Arial,sans-serif;max-width:210mm;margin:0 auto;padding:10mm 14mm;color:#111;">'
-          + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8mm;border-bottom:2px solid #C9A84C;padding-bottom:6mm;">'
-          + '<div style="width:70px;height:70px;">' + (logoSrc ? '<img src="' + logoSrc + '" style="width:100%;height:100%;object-fit:contain;">' : '') + '</div>'
-          + '<div style="text-align:center;flex:1;"><div style="font-size:28pt;font-weight:700;color:#1A0F08;font-family:Georgia,serif;">Happenings.co</div><div style="font-size:11pt;color:#C9A84C;letter-spacing:2px;">\u2500\u2500 Event Organiser \u2500\u2500</div></div>'
-          + '<div style="width:70px;"></div></div>'
-          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:8mm;">'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Customer</div><div style="font-size:10pt;font-weight:600;">' + b.name.toUpperCase() + '</div></div>'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Booking Ref</div><div style="font-size:10pt;font-weight:600;">' + b.ref + '</div></div>'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Mobile</div><div style="font-size:10pt;">' + (b.phone || "-") + '</div></div>'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Invoice Date</div><div style="font-size:10pt;">' + today + '</div></div>'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Location</div><div style="font-size:10pt;">' + (b.venue || "-") + '</div></div>'
-          + '<div><div style="font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:1px;">Event Date</div><div style="font-size:10pt;">' + new Date(b.date + "T00:00:00").toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase() + '</div></div>'
-          + '</div>'
-          + '<div style="font-size:10pt;margin-bottom:6mm;">Dear Client,<br><span style="color:#555;">We are pleased to submit the invoice for the following:</span></div>'
-          + '<table style="width:100%;border-collapse:collapse;margin-bottom:4mm;">'
-          + '<thead><tr style="background:#C9A84C;color:#0F0905;"><th style="padding:7pt 8pt;text-align:left;font-size:9pt;text-transform:uppercase;">Description</th><th style="padding:7pt 8pt;text-align:right;font-size:9pt;text-transform:uppercase;">Amount</th></tr></thead>'
+
+        ps.innerHTML = 
+          '<div style="font-family:\'Jost\', sans-serif; max-width:210mm; margin:0 auto; padding:15mm 20mm; color:#1A0F08; background:#fff;">'
+          + '<div style="text-align:center; padding-bottom:18pt; border-bottom:2.5pt solid #C9A84C; margin-bottom:30pt; position:relative;">'
+          + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute; left:0; top:0; height:65pt; width:65pt; object-fit:contain; border-radius:50%;">' : '')
+          + '<div style="font-family:\'Cormorant Garamond\', serif; font-size:36pt; font-weight:700; color:#1A0F08; line-height:1; margin-bottom:5pt;">Happenings.co</div>'
+          + '<div style="font-size:10pt; color:#C9A84C; letter-spacing:4pt; text-transform:uppercase; font-weight:500;">── Premium Event Planning ──</div></div>'
+          
+          + '<div style="display:grid; grid-template-columns: 1.6fr 1fr; gap:35pt; margin-bottom:35pt;">'
+          + '<div><div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:8pt; font-weight:600;">Client Details</div>'
+          + '<div style="font-family:\'Cormorant Garamond\', serif; font-weight:700; font-size:18pt; color:#1A0F08; margin-bottom:4pt;">' + b.name.toUpperCase() + '</div>'
+          + '<div style="font-size:10pt; color:#555;">' + (b.phone || "-") + '</div>'
+          + '<div style="font-size:10pt; color:#555; margin-top:3pt;">' + (b.venue || "Location Not Specified") + '</div></div>'
+          + '<div style="text-align:right;"><div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:8pt; font-weight:600;">Statement Info</div>'
+          + '<div style="font-size:11pt; font-weight:700; margin-bottom:4pt; color:#1A0F08;">REF ID: ' + b.ref + '</div>'
+          + '<div style="font-size:10pt; color:#555; margin-bottom:3pt;">Date: ' + today + '</div>'
+          + '<div style="font-size:10pt; color:#1A0F08; font-weight:600; text-transform:uppercase;">Event: ' + fD(b.date) + '</div></div></div>'
+          
+          + '<div style="font-size:11pt; color:#555; margin-bottom:20pt; line-height:1.5;">Dear Client, we are pleased to submit the professional invoice for your scheduled event:</div>'
+          
+          + '<table style="width:100%; border-collapse:collapse; margin-bottom:25pt;"><thead><tr style="border-bottom:2pt solid #1A0F08;"><th style="padding:10pt 0; text-align:left; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Service Description</th><th style="padding:10pt 0; text-align:right; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Amount</th></tr></thead>'
           + '<tbody>' + rows
-          + '<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;border-top:1.5pt solid #C9A84C;">Total Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;border-top:1.5pt solid #C9A84C;">' + total.toLocaleString() + '/-</td></tr>'
-          + '<tr style="background:#f5f0e8;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Advance Paid</td><td style="padding:7pt 8pt;text-align:right;font-size:9pt;">' + adv.toLocaleString() + '/-</td></tr>'
-          + '<tr style="background:#2C1A0E;color:#C9A84C;font-weight:700;"><td style="padding:7pt 8pt;font-size:9pt;text-transform:uppercase;">Balance Amount</td><td style="padding:7pt 8pt;text-align:right;font-size:10pt;">' + bal.toLocaleString() + '/-</td></tr>'
+          + '<tr><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; color:#7A6347;">Gross Total</td><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; font-weight:600;">' + total.toLocaleString() + '/-</td></tr>'
+          + '<tr><td style="padding:5pt 0; text-align:right; font-size:10pt; color:#7A6347;">Advance Received</td><td style="padding:5pt 0; text-align:right; font-size:10pt; font-weight:600; color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
+          + '<tr style="color:#C9A84C;"><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:18pt; font-weight:700;">Final Balance Due</td><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:22pt; font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
           + '</tbody></table>'
-          + '<div style="font-size:10pt;font-weight:700;margin-bottom:8mm;padding:5pt 8pt;background:#fff3e0;border-left:3pt solid #C9A84C;">BALANCE AMOUNT RS ' + bal.toLocaleString() + '/-  ' + numToWords(bal).toUpperCase() + '</div>'
-          + '<div style="font-size:9pt;color:#555;margin-bottom:6mm;font-style:italic;">Thanking and assuring you for our best services all time, InshaAllah</div>'
-          + '<div style="margin-bottom:8mm;"><div style="font-size:9pt;">Yours Truly</div><div style="font-size:10pt;font-weight:700;margin-top:4mm;">FINANCE MANAGER</div><div style="font-size:10pt;font-weight:700;">HAPPENINGS.CO</div></div>'
-          + '<div style="font-size:8pt;color:#888;font-style:italic;margin-bottom:8mm;">** System generated bill. Signature not required **</div>'
-          + '<div style="background:#1A0F08;color:#C9A84C;padding:5mm 8mm;border-radius:4pt;display:flex;align-items:center;justify-content:space-between;">'
-          + '<div style="font-size:8pt;">\u{1F4CD} Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
-          + '<div style="font-size:8pt;display:flex;gap:12pt;"><span>\u{1F4F7} Happenings.co</span><span>\u{1F4DE} 03302894915</span></div>'
-          + '</div></div>';
+          
+          + '<div style="padding:18pt; background:#FBF8F2; border-left:4pt solid #C9A84C; margin-bottom:35pt; border-radius: 0 8pt 8pt 0;">'
+          + '<div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:6pt; font-weight:600;">Total Amount in Words</div>'
+          + '<div style="font-size:11pt; font-weight:700; color:#1A0F08; text-transform:uppercase;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
+          
+          + '<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:35pt;">'
+          + '<div style="font-size:10pt; color:#7A6347; font-style:italic; max-width:300px; line-height:1.5;">Thanking and assuring you for our best professional services at all times.</div>'
+          + '<div style="text-align:right;"><div style="font-size:10pt; margin-bottom:40pt; color:#555;">Sincerely,</div><div style="font-size:10pt; font-weight:700; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:2pt; color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\', serif; font-size:16pt; font-weight:700; color:#C9A84C;">Happenings.co</div></div></div>'
+          
+          + '<div style="text-align:center; font-size:8pt; color:#AAA; margin-bottom:25pt; font-style:italic; border-top:1pt solid #F0F0F0; padding-top:15pt;">** Computer generated document. No signature required **</div>'
+          
+          + '<div style="background:#1A0F08; color:#FBF8F2; padding:15pt 25pt; border-radius:10pt; display:flex; justify-content:space-between; align-items:center; font-size:8pt;">'
+          + '<div>📍 Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
+          + '<div style="display:flex; gap:18pt;"><span>📸 happenings.co</span><span>📞 03302894915</span></div></div>'
+          + '</div>';
+          
         window.print();
         setTimeout(function () { ps.innerHTML = ""; }, 1000);
       }
