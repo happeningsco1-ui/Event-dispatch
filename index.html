@@ -3285,9 +3285,7 @@
           <p id="auth-toggle-text">Having trouble signing in?</p>
           <a class="auth-link" id="auth-toggle-btn">Forgot Password</a>
         </div>
-        <div style="margin-top:20px; text-align:center; opacity:0.5; font-size:10px;">
-          <a class="auth-link" id="legacy-pin-btn">Access with PIN (Legacy)</a>
-        </div>
+
       </div>
       <div class="auth-card verify-screen" id="auth-verify-screen">
         <div class="verify-icon">✉️</div>
@@ -4872,16 +4870,7 @@
       document.getElementById("auth-submit-btn").addEventListener("click", handleAuth);
       document.getElementById("auth-toggle-btn").addEventListener("click", handleForgotPassword);
       document.getElementById("save-new-pass-btn").addEventListener("click", handleUpdatePassword);
-      document.getElementById("legacy-pin-btn").addEventListener("click", function() {
-        const pin = prompt("Enter Legacy Access PIN:");
-        if (pin === FP) {
-          document.getElementById("s-login").style.display = "none";
-          initLayout();
-          loadAll();
-        } else if (pin !== null) {
-          toast("Invalid legacy PIN");
-        }
-      });
+
 
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
