@@ -4958,7 +4958,6 @@
             ld(); db("bookings?id=eq." + id, "DELETE").then(function () { BKN = BKN.filter(function (b) { return b.id !== id; }); hd(); rBkns(); toast("Deleted."); }).catch(function () { hd(); });
           } else {
             me.setAttribute("data-c", "1"); me.textContent = "Sure?"; me.style.color = "var(--red)";
-            setTimeout(function () { if (me.getAttribute("data-c") === "1") { me.removeAttribute("data-c"); me.innerHTML = "&#128465;"; me.style.color = ""; } }, 2000);
           }
           return;
         }
@@ -5145,7 +5144,7 @@
             card.querySelector('.task-remove').onclick = async function(e) {
                 e.stopPropagation();
                 var me = this;
-                if (me.getAttribute('data-c') === '1') {
+                if (me.getAttribute("data-c") === "1") {
                     ld();
                     try {
                         const { error } = await _sb.from('tasks').delete().eq('id', tid);
@@ -5153,17 +5152,13 @@
                         TASKS = TASKS.filter(function(x){ return x.id != tid; });
                         rDash();
                         toast("Task removed.");
-                    } catch(ex) { toast(ex.message); }
+                    } catch(e) { toast(e.message); }
                     finally { hd(); }
                 } else {
-                    me.setAttribute('data-c', '1');
-                    me.innerHTML = '<span style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;padding:0 2px;">DEL?</span>';
-                    setTimeout(function () { 
-                        if (me.getAttribute('data-c') === '1') { 
-                            me.removeAttribute('data-c'); 
-                            me.innerHTML = '&#128465;'; 
-                        } 
-                    }, 3000);
+                    me.setAttribute("data-c", "1");
+                    me.textContent = "Sure?";
+                    me.style.color = "var(--red)";
+                    me.style.fontSize = "10px";
                 }
             };
         });
