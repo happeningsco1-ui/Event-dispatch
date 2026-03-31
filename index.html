@@ -3348,6 +3348,7 @@
           <p id="auth-toggle-text">Having trouble signing in?</p>
           <a class="auth-link" id="auth-toggle-btn">Forgot Password</a>
         </div>
+        <div id="auth-msg" style="color:var(--grn); font-size:13px; text-align:center; margin-top:10px; display:none; font-weight:500;"></div>
 
       </div>
       <div class="auth-card verify-screen" id="auth-verify-screen">
@@ -4413,13 +4414,31 @@
 
       async function handleForgotPassword() {
         const email = document.getElementById("auth-email").value.trim();
-        if (!email) { toast("Please enter your email address first"); return; }
+        const msgEl = document.getElementById("auth-msg");
+        msgEl.style.display = "none";
+        
+        if (!email) { 
+          msgEl.style.color = "var(--red)";
+          msgEl.textContent = "Please enter your email address first.";
+          msgEl.style.display = "block";
+          toast("Please enter your email address first"); 
+          return; 
+        }
         
         try {
           const { error } = await _sb.auth.resetPasswordForEmail(email);
           if (error) throw error;
+          
+          msgEl.style.color = "var(--grn)";
+          msgEl.textContent = "Password reset link sent to your email!";
+          msgEl.style.display = "block";
+          
           toast("Password reset link sent to your email!");
         } catch (err) {
+          msgEl.style.color = "var(--red)";
+          msgEl.textContent = err.message || "Error sending reset link";
+          msgEl.style.display = "block";
+          
           toast(err.message || "Error sending reset link");
         }
       }
