@@ -4157,16 +4157,8 @@
       <div class="mname">Staff Members</div>
       <div class="msub">Manage your team list</div>
       <div id="staff-list-el" style="margin-bottom:14px;"></div>
-      <div style="margin-bottom:8px;">
-        <select class="fs" id="staff-role-sel" style="margin-bottom:8px;">
-          <option>Florist</option>
-          <option>Labour</option>
-          <option>Supervisor</option>
-          <option>Driver</option>
-          <option>Other</option>
-        </select>
-      </div>
       <div id="staff-form-area"></div>
+
       <div style="display:flex;gap:8px;margin-bottom:16px;">
         <input class="fi" id="staff-name-inp" placeholder="Enter name" style="flex:1;">
         <button class="mbtn-a" id="staff-add-btn" style="flex:none;padding:10px 14px;">Add</button>
@@ -4885,8 +4877,8 @@
 
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
-            function loadAll() {
-        ld();
+      function loadAll() {
+        if (BKN.length === 0) ld();
         var timeout = setTimeout(function () {
           hd(); go("s-dash"); toast("Connection slow - showing cached data.");
         }, 12000);
@@ -6083,23 +6075,20 @@
         });
         if (!STAFF_LIST.length) h = "<div style='font-size:12px;color:var(--mob-mut,#7A6347);padding:8px 0;'>No staff added yet.</div>";
         document.getElementById("staff-list-el").innerHTML = h;
-        // Add form
-        h = "<div style='margin-bottom:10px;'><select class='fs' id='staff-role-sel' style='margin-bottom:8px;'>";
-        STAFF_ROLES.forEach(function (r) { h += "<option>" + r + "</option>"; });
-        h += "</select></div>";
         var formEl = document.getElementById("staff-form-area");
         if (formEl) {
-          formEl.innerHTML = h;
-          // Re-render role select
-          var sel = document.createElement("select");
-          sel.className = "fs"; sel.id = "staff-role-sel"; sel.style.marginBottom = "8px";
-          STAFF_ROLES.forEach(function (r) { var o = document.createElement("option"); o.value = r; o.textContent = r; sel.appendChild(o); });
-          formEl.innerHTML = "";
-          formEl.appendChild(sel);
+          formEl.innerHTML = "<select class='fs' id='staff-role-sel' style='margin-bottom:8px;'></select>";
+          var sel = formEl.querySelector("select");
+          STAFF_ROLES.forEach(function (r) { 
+            var o = document.createElement("option"); 
+            o.value = r; o.textContent = r; 
+            sel.appendChild(o); 
+          });
         }
         document.querySelectorAll("[data-si]").forEach(function (btn) {
           btn.addEventListener("click", function () {
             STAFF_LIST.splice(parseInt(this.getAttribute("data-si")), 1);
+
             localStorage.setItem("ev_staff", JSON.stringify(STAFF_LIST));
             renderStaffModal();
           });
