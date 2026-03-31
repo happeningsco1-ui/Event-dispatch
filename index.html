@@ -4267,23 +4267,8 @@
         <button class="mbtn-c" id="inv-cancel">Cancel</button>
         <button class="mbtn-a" id="inv-print-btn">Print Invoice</button>
       </div>
+    </div>
   </div>
- 
-   <!-- MANAGE MEDIA CATEGORIES MODAL -->
-   <div class="overlay" id="manage-media-cats-modal">
-     <div class="modal">
-       <div class="mname">Manage Photo Categories</div>
-       <div class="msub">Add or remove gallery tags</div>
-       <div id="media-cats-list" style="margin-bottom:14px;max-height:200px;overflow-y:auto;border:1px solid var(--mob-brs);border-radius:10px;padding:8px;"></div>
-       <div style="display:flex;gap:8px;margin-bottom:16px;">
-         <input class="fi" id="new-media-cat-inp" placeholder="e.g. Reception" style="flex:1;">
-         <button class="mbtn-a" id="add-media-cat-btn" style="flex:none;padding:10px 14px;">Add</button>
-       </div>
-       <div class="mbtns">
-         <button class="mbtn-a" onclick="cM('manage-media-cats-modal')">Done</button>
-       </div>
-     </div>
-   </div>
 
   <!-- MEDIA ADD MODAL -->
   <div class="overlay" id="media-add-modal">
@@ -6600,10 +6585,6 @@
 
       // ── EVENT MEDIA GALLERY ──────────────────────────────────────────────────────────
       var MEDIA_CATS = ["All", "Nikkah", "Engagement", "Bridal Shower", "Birthday", "Mehendi", "Backdrop", "Florals", "Setup", "Other"];
-      try {
-        var savedCats = localStorage.getItem("ev_media_cats");
-        if (savedCats) MEDIA_CATS = JSON.parse(savedCats);
-      } catch(e) {}
 
       function rMedia() {
         var el = document.getElementById("media-body"); if (!el) return;
@@ -6612,7 +6593,6 @@
         // Upload button + filter tabs
         h += "<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
         h += "<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
-        h += "<button class='mbtn-c' id='manage-cats-btn' style='padding:8px 12px;font-size:11px;' title='Manage Categories'>⚙️</button>";
         h += "<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
         h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:8px 11px;'>";
         h += "</div>";
@@ -6648,9 +6628,6 @@
         // Bind upload
         var ub = document.getElementById("media-upload-btn");
         if (ub) ub.addEventListener("click", function () { document.getElementById("media-file").click(); });
-
-        var mcb = document.getElementById("manage-cats-btn");
-        if (mcb) mcb.onclick = function() { renderMediaCatsModal(); oM("manage-media-cats-modal"); };
         var mf = document.getElementById("media-file");
         if (mf) mf.addEventListener("change", function () {
           var files = Array.from(this.files);
@@ -6662,18 +6639,7 @@
               var title = f.name.replace(/\.[^.]+$/, "");
               oM("media-add-modal");
               document.getElementById("media-title-inp").value = title;
-              
-              // Populate categories
-              var catSel = document.getElementById("media-cat-sel");
-              catSel.innerHTML = "";
-              MEDIA_CATS.forEach(function(c) {
-                if (c === "All") return;
-                var opt = document.createElement("option");
-                opt.value = c; opt.textContent = c;
-                catSel.appendChild(opt);
-              });
-              catSel.value = "Other";
-              
+              document.getElementById("media-cat-sel").value = "Other";
               document.getElementById("media-tags-inp").value = "";
               document.getElementById("media-preview").innerHTML = isVideo
                 ? "<video src='" + src + "' style='width:100%;max-height:200px;border-radius:8px;' controls></video>"
@@ -6805,44 +6771,6 @@
       if (atb) atb.onclick = handleForgotPassword;
       const snp = document.getElementById("save-new-pass-btn");
       if (snp) snp.onclick = handleUpdatePassword;
-
-      // ── MEDIA CATEGORY HELPERS ──────────────────────────────────────────────────
-      window.renderMediaCatsModal = function() {
-        var list = document.getElementById("media-cats-list");
-        if (!list) return;
-        var h = "";
-        MEDIA_CATS.forEach(function(c, i) {
-          if (c === "All" || c === "Other") {
-             h += "<div style='display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--mob-brs);font-size:12px;opacity:0.6;'><span>" + c + " (System)</span></div>";
-          } else {
-             h += "<div style='display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--mob-brs);font-size:12px;'><span>" + c + "</span><span style='color:var(--red);cursor:pointer;' data-rmcat='" + i + "'>&#10005;</span></div>";
-          }
-        });
-        list.innerHTML = h;
-        list.querySelectorAll("[data-rmcat]").forEach(function(btn) {
-          btn.onclick = function() {
-            var idx = parseInt(this.getAttribute("data-rmcat"));
-            MEDIA_CATS.splice(idx, 1);
-            localStorage.setItem("ev_media_cats", JSON.stringify(MEDIA_CATS));
-            renderMediaCatsModal();
-            rMedia();
-          };
-        });
-      }
-
-      var amcb = document.getElementById("add-media-cat-btn");
-      if (amcb) amcb.onclick = function() {
-        var inp = document.getElementById("new-media-cat-inp");
-        var val = inp.value.trim();
-        if (!val) return;
-        if (MEDIA_CATS.indexOf(val) === -1) {
-          MEDIA_CATS.push(val);
-          localStorage.setItem("ev_media_cats", JSON.stringify(MEDIA_CATS));
-          inp.value = "";
-          renderMediaCatsModal();
-          rMedia();
-        } else { toast("Already exists"); }
-      };
 
     } catch (e) { console.warn("Init:", e.message); }</script>
 </body>
