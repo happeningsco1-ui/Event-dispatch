@@ -4385,6 +4385,21 @@
     </div>
   </div>
 
+  <div class="overlay" id="cols-modal">
+    <div class="modal" style="max-height:80vh; overflow-y:auto;">
+      <div class="modal-handle"></div>
+      <div class="mname">Cost Columns</div>
+      <div id="cols-list" style="margin-bottom:15px;display:flex;flex-direction:column;gap:8px;"></div>
+      <div class="fg" style="margin-bottom:20px;">
+        <input class="fi" id="new-col-inp" placeholder="e.g. Photography">
+        <button class="btn-save" style="margin-top:8px;" id="add-col-btn">Add Column</button>
+      </div>
+      <div class="mbtns" style="margin-top:0;">
+        <button class="mbtn-a" onclick="cM('cols-modal')" style="width:100%;">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     try {
       var AP = null, FP = "12345678"; // AP is now null, legacy PIN access is handled separately
@@ -4400,7 +4415,7 @@
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
       var CATS = ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
       var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
-      var COSTS = ["Transport", "Labour", "Night", "Light", "Printing", "Balloons", "Rental", "Fresh Floral", "Misc"];
+      var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
       var STAFF_ROLES = ["Florist", "Labour", "Supervisor", "Driver", "Other"];
       var MEDIA = JSON.parse(localStorage.getItem("ev_media") || "[]");
@@ -4412,6 +4427,34 @@
       var SK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
       var _sb = supabase.createClient(SU, SK);
       var authMode = "signin";
+
+      // Manage cols globally
+      function renderCols() {
+        var el = document.getElementById("cols-list"); if (!el) return;
+        var h = "";
+        COST_COLS.forEach(function (c, i) {
+          h += "<div style='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:6px;'>";
+          h += "<div style='font-size:12px;color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
+          if (c !== "Note") h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:12px;font-weight:600;' onclick='removeCol(" + i + ")'>&#10005;</button>";
+          h += "</div>";
+        });
+        el.innerHTML = h;
+      }
+      window.removeCol = function(idx) {
+        COST_COLS.splice(idx, 1);
+        localStorage.setItem("ev_cost_cols", JSON.stringify(COST_COLS));
+        renderCols(); rFin();
+      };
+      document.getElementById("add-col-btn").addEventListener("click", function() {
+        var inp = document.getElementById("new-col-inp");
+        var val = inp.value.trim();
+        if (!val) return;
+        if (COST_COLS.indexOf(val) > -1) { toast("Column exists."); return; }
+        var nIdx = COST_COLS.indexOf("Note");
+        COST_COLS.splice(nIdx > -1 ? nIdx : COST_COLS.length, 0, val);
+        localStorage.setItem("ev_cost_cols", JSON.stringify(COST_COLS));
+        inp.value = ""; renderCols(); rFin(); toast("Column Added");
+      });
 
       async function handleForgotPassword() {
         const email = document.getElementById("auth-email").value.trim();
@@ -6358,7 +6401,7 @@
         var mBkns = BKN.filter(function (b) { var d = new Date(b.date + "T00:00:00"); return d.getMonth() === finM && d.getFullYear() === currY; });
         var rev = mBkns.reduce(function (s, b) { return s + (b.total || 0); }, 0);
         var rec = mBkns.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
-        var tc = mBkns.reduce(function (s, b) { return s + COSTS.reduce(function (cs, k) { return cs + (parseFloat((b.costs || {})[k]) || 0); }, 0); }, 0);
+        var tc = mBkns.reduce(function (s, b) { return s + COST_COLS.reduce(function (cs, k) { return k !== "Note" ? cs + (parseFloat((b.costs || {})[k]) || 0) : cs; }, 0); }, 0);
 
         h += "<div class='fin-month-row' data-m='" + finM + "' data-y='" + currY + "'>";
         
@@ -6382,13 +6425,13 @@
           });
         } else {
           // Spreadsheet table
+          h += "<div style='display:flex;justify-content:space-between;align-items:center;margin-top:16px;'><div style='font-size:12px;font-weight:600;color:var(--gold);'>Internal Costs Grid</div><button id='manage-cols-btn' style='background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.3);border-radius:6px;font-size:10px;padding:5px 9px;cursor:pointer;font-weight:500;'>&#9881; Columns</button></div>";
           h += "<div style='overflow-x:auto;margin-top:8px;'><table style='width:100%;border-collapse:collapse;font-size:11px;min-width:900px;'>";
           h += "<thead><tr style='background:var(--gold);color:#0F0905;'>";
           h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Ref</th>";
           h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Client</th>";
           h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Date</th>";
           h += "<th style='padding:7px 8px;text-align:left;white-space:nowrap;'>Event</th>";
-          var COST_COLS = ["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"];
           COST_COLS.forEach(function (k) { h += "<th style='padding:7px 6px;white-space:nowrap;'>" + k + "</th>"; });
           h += "<th style='padding:7px 8px;text-align:right;white-space:nowrap;background:#C9A84C;'>Total</th>";
           h += "</tr></thead><tbody>";
@@ -6435,6 +6478,11 @@
         var sBtn = document.getElementById("save-costs-" + finM);
         if (sBtn) sBtn.addEventListener("click", function() {
           saveCosts(parseInt(this.getAttribute("data-m")));
+        });
+
+        var mcb = document.getElementById("manage-cols-btn");
+        if (mcb) mcb.addEventListener("click", function () {
+          renderCols(); oM("cols-modal");
         });
       }
 
