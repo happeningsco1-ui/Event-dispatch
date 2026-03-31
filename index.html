@@ -2239,6 +2239,18 @@
         border-color: transparent;
       }
 
+      .tbtn {
+        background: var(--desk-card);
+        color: var(--desk-text);
+        border: 1px solid var(--desk-brd);
+        padding: 8px 12px;
+      }
+      .tbtn.gold {
+        background: var(--gold);
+        color: #0F0905;
+        border-color: transparent;
+      }
+
       /* Screen content wrapper */
       .screen.active {
         display: contents;
@@ -6600,7 +6612,7 @@
         // Upload button + filter tabs
         h += "<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
         h += "<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
-        h += "<button class='tbtn' id='media-cats-btn' style='background:rgba(201,168,76,0.1); border:1px solid var(--gold);'><span style='margin-right:4px;'>⚙️</span>Categories</button>";
+        h += "<button class='tbtn' id='media-cats-btn'><span style='margin-right:4px;'>⚙️</span>Categories</button>";
         h += "<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
         h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:10px 14px;'>";
         h += "</div>";
