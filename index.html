@@ -1452,7 +1452,7 @@
     }
 
     .fin-month-row {
-      background: #1A0F08;
+      background: var(--mob-bg2, #1A0F08);
       border: 1px solid var(--mob-brs, rgba(201,168,76,0.1));
       border-radius: 12px;
       margin-bottom: 12px;
@@ -1498,7 +1498,7 @@
     .fin-month-body {
       display: none;
       padding: 16px 18px;
-      background: #0F0905;
+      background: var(--mob-bg, #0F0905);
       animation: shutterOpen 0.4s ease-out;
     }
     @keyframes shutterOpen {
@@ -2669,6 +2669,25 @@
         border-color: var(--gold);
         color: #8B6914;
       }
+
+      /* Desktop Month Row Adjustments */
+      .fin-month-row {
+        background: var(--desk-bg2);
+        border-color: var(--desk-brd);
+        box-shadow: 0 1px 4px rgba(44, 26, 14, 0.05);
+      }
+      .fin-month-hdr { background: transparent; }
+      .fin-month-title { color: var(--desk-text); }
+      .fin-month-body { background: var(--desk-card); border-top: 1px solid var(--desk-brd); }
+      .fstat { background: var(--desk-bg2); border-color: var(--desk-brd); }
+      .fsval { color: var(--desk-text); }
+      .fcard { background: var(--desk-bg2); border-color: var(--desk-brd); }
+      .fc-name { color: var(--desk-text); }
+      .fc-row span { color: var(--desk-text); }
+      .cost-card { background: var(--desk-bg2); border-color: var(--desk-brd); }
+      .cost-name { color: var(--desk-text); }
+      .cost-item { background: var(--desk-card); }
+      .cost-inp { color: var(--desk-text); }
 
       .fstats {
         grid-template-columns: repeat(4, 1fr);
@@ -6208,8 +6227,9 @@
 
         h += "<div class='fin-tabs' style='margin-bottom:15px;'><div class='fin-tab" + (finTab === "payments" ? " on" : "") + "' data-ft='payments'>Client Payments</div><div class='fin-tab" + (finTab === "costs" ? " on" : "") + "' data-ft='costs'>Internal Costs</div></div>";
 
+        var currM = new Date().getMonth();
         // Show current year months
-        for (var m = 0; m < 12; m++) {
+        for (var m = 0; m <= currM; m++) {
           var mBkns = BKN.filter(function (b) { var d = new Date(b.date + "T00:00:00"); return d.getMonth() === m && d.getFullYear() === currY; });
           var rev = mBkns.reduce(function (s, b) { return s + (b.total || 0); }, 0);
           var rec = mBkns.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
