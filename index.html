@@ -6003,6 +6003,9 @@
           h += "</div></div></div>";
         }
         h += "<div class='bdsec'><div class='bdsec-hdr'>Discussion Log</div><div class='bdsec-body'>";
+        if (b.staffAssigned && b.staff_assigned.length > 0) {
+          h += "<div style='font-size:11px;color:var(--mob-mut,#7A6347);margin-bottom:8px;'>Assigned Team: <span style='color:var(--gold);'>" + b.staff_assigned.join(", ") + "</span></div>";
+        }
         h += "<div id='discussion-log-entries'></div>";
         h += "<div style='display:flex;gap:7px;margin-top:8px;'><textarea class='reminder-area' id='log-inp' placeholder='Add a note...' style='min-height:60px;flex:1;'></textarea></div>";
         h += "<button class='btn-save' style='margin-top:7px;' id='add-log-btn'>Add Note</button>";
@@ -6110,9 +6113,12 @@
 
       // ── DISPATCH ────────────────────────────────────────────────────────────────
       function openDispatch(id) {
-        cart = {}; curInspos = [];
+        cart = {}; curInspos = []; curStaffAssign = [];
         curBkg = BKN.find(function (b) { return b.id === id; }); if (!curBkg) { alert("Booking not found."); return; }
         if (curBkg.dispatchItems) curBkg.dispatchItems.forEach(function (d) { cart[d.itemId] = d.qty; });
+        if (curBkg.staff_assigned) curStaffAssign = JSON.parse(JSON.stringify(curBkg.staff_assigned));
+        else if (curBkg.staffAssigned) curStaffAssign = JSON.parse(JSON.stringify(curBkg.staffAssigned));
+        if (curBkg.eventInspos) curInspos = JSON.parse(JSON.stringify(curBkg.eventInspos));
         go("s-dispatch");
       }
 
@@ -6623,10 +6629,16 @@
         }
         document.querySelectorAll("[data-si]").forEach(function (btn) {
           btn.addEventListener("click", function () {
-            STAFF_LIST.splice(parseInt(this.getAttribute("data-si")), 1);
-
-            localStorage.setItem("ev_staff", JSON.stringify(STAFF_LIST));
-            renderStaffModal();
+            var idx = parseInt(this.getAttribute("data-si"));
+            var s = STAFF_LIST[idx];
+            if (!s) return;
+            ld();
+            db("staff?id=eq." + s.id, "DELETE").then(function () {
+              STAFF_LIST.splice(idx, 1);
+              hd(); renderStaffModal(); toast("Staff removed.");
+            }).catch(function (err) {
+              hd(); toast("Delete failed: " + err.message);
+            });
           });
         });
       }
