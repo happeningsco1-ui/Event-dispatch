@@ -1453,16 +1453,18 @@
 
     .fin-month-row {
       background: var(--mob-bg2, #1A0F08);
-      border: 1px solid var(--mob-brs, rgba(201,168,76,0.1));
+      border: 1px solid var(--mob-brs, rgba(201, 168, 76, 0.1));
       border-radius: 12px;
       margin-bottom: 12px;
       overflow: hidden;
       transition: all 0.3s ease;
     }
+
     .fin-month-row.open {
       border-color: var(--gold);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
+
     .fin-month-hdr {
       padding: 14px 18px;
       display: flex;
@@ -1472,13 +1474,16 @@
       background: rgba(255, 255, 255, 0.02);
       transition: background 0.2s;
     }
+
     .fin-month-hdr:hover {
       background: rgba(201, 168, 76, 0.05);
     }
+
     .fin-month-row.open .fin-month-hdr {
       background: rgba(201, 168, 76, 0.08);
-      border-bottom: 1px solid rgba(201,168,76,0.1);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.1);
     }
+
     .fin-month-title {
       font-family: "Cormorant Garamond", serif;
       font-size: 17px;
@@ -1486,28 +1491,41 @@
       letter-spacing: 0.5px;
       color: #F0E6D3;
     }
+
     .fin-month-arrow {
       font-size: 14px;
       color: var(--gold);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       opacity: 0.7;
     }
+
     .fin-month-row.open .fin-month-arrow {
       transform: rotate(180deg);
     }
+
     .fin-month-body {
       display: none;
       padding: 16px 18px;
       background: var(--mob-bg, #0F0905);
       animation: shutterOpen 0.4s ease-out;
     }
+
     @keyframes shutterOpen {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .fin-month-row.open .fin-month-body {
       display: block;
     }
+
     .fstats {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1918,6 +1936,7 @@
       font-family: Jost, sans-serif;
       transition: all 0.2s;
     }
+
     .mbtn-a:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
@@ -1987,29 +2006,124 @@
     }
 
     /* Task Management System */
-    .task-card { background: var(--mob-bg2); border: 1px solid var(--mob-brs); border-radius: 8px; padding: 7px 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
-    .task-card.completed { background: rgba(46, 125, 50, 0.05); border-color: rgba(46, 125, 50, 0.15); opacity: 0.85; }
-    .task-check { width: 18px; height: 18px; border: 1.5px solid var(--gold); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; font-size: 9px; }
-    .task-card.completed .task-check { background: #2e7d32; border-color: #2e7d32; color: white; }
-    .task-info { flex: 1; min-width: 0; }
-    .task-title { font-size: 11.5px; font-weight: 500; color: var(--mob-cream); margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.9; }
-    .task-time { font-size: 8.5px; color: var(--gold); opacity: 0.8; }
-    .task-urgent { color: #f44336 !important; font-weight: 700; }
-    .task-remove { font-size: 11px; color: var(--mob-mut); cursor: pointer; padding: 4px; opacity: 0.4; }
-    .task-remove:hover { opacity: 0.8; color: var(--red); }
-    
+    .task-card {
+      background: var(--mob-bg2);
+      border: 1px solid var(--mob-brs);
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .task-card.completed {
+      background: rgba(46, 125, 50, 0.05);
+      border-color: rgba(46, 125, 50, 0.15);
+      opacity: 0.85;
+    }
+
+    .task-check {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      font-size: 9px;
+    }
+
+    .task-card.completed .task-check {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: white;
+    }
+
+    .task-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--mob-cream);
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.9;
+    }
+
+    .task-time {
+      font-size: 8.5px;
+      color: var(--gold);
+      opacity: 0.8;
+    }
+
+    .task-urgent {
+      color: #f44336 !important;
+      font-weight: 700;
+    }
+
+    .task-remove {
+      font-size: 11px;
+      color: var(--mob-mut);
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.4;
+    }
+
+    .task-remove:hover {
+      opacity: 0.8;
+      color: var(--red);
+    }
+
     .task-container {
       max-height: 140px;
       overflow-y: auto;
       padding-right: 4px;
       margin-bottom: 10px;
     }
-    .task-container::-webkit-scrollbar { width: 4px; }
-    .task-container::-webkit-scrollbar-thumb { background: var(--mob-brd); border-radius: 4px; }
-    
-    .schedule-toggle { display: flex; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 4px; margin-bottom: 16px; }
-    .st-btn { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 11px; cursor: pointer; color: var(--mob-mut); transition: 0.2s; }
-    .st-btn.on { background: var(--gold); color: #000; font-weight: 600; }
+
+    .task-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .task-container::-webkit-scrollbar-thumb {
+      background: var(--mob-brd);
+      border-radius: 4px;
+    }
+
+    .schedule-toggle {
+      display: flex;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 16px;
+    }
+
+    .st-btn {
+      flex: 1;
+      padding: 8px;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--mob-mut);
+      transition: 0.2s;
+    }
+
+    .st-btn.on {
+      background: var(--gold);
+      color: #000;
+      font-weight: 600;
+    }
 
     .empty-tx {
       font-size: 12px;
@@ -2245,6 +2359,7 @@
         border: 1px solid var(--desk-brd);
         padding: 8px 12px;
       }
+
       .tbtn.gold {
         background: var(--gold);
         color: #0F0905;
@@ -2327,19 +2442,38 @@
         padding: 10px 14px;
         box-shadow: 0 1px 4px rgba(44, 26, 14, 0.05);
       }
-      .task-title { color: var(--desk-text); font-size: 13px; font-weight: 500; }
+
+      .task-title {
+        color: var(--desk-text);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
       .task-card.completed {
         background: rgba(107, 158, 99, 0.07) !important;
         opacity: 1 !important;
       }
-      .task-card.completed .task-title { 
-        color: var(--desk-mut); 
+
+      .task-card.completed .task-title {
+        color: var(--desk-mut);
         text-decoration: line-through;
         opacity: 0.6;
       }
-      .task-card.completed .task-time { opacity: 0.5; }
-      .task-remove { font-size: 14px; opacity: 0.6 !important; color: var(--desk-mut); }
-      .task-remove:hover { color: var(--red); opacity: 1 !important; }
+
+      .task-card.completed .task-time {
+        opacity: 0.5;
+      }
+
+      .task-remove {
+        font-size: 14px;
+        opacity: 0.6 !important;
+        color: var(--desk-mut);
+      }
+
+      .task-remove:hover {
+        color: var(--red);
+        opacity: 1 !important;
+      }
 
       .dcn {
         color: var(--desk-text);
@@ -2688,18 +2822,58 @@
         border-color: var(--desk-brd);
         box-shadow: 0 1px 4px rgba(44, 26, 14, 0.05);
       }
-      .fin-month-hdr { background: transparent; }
-      .fin-month-title { color: var(--desk-text); }
-      .fin-month-body { background: var(--desk-card); border-top: 1px solid var(--desk-brd); }
-      .fstat { background: var(--desk-bg2); border-color: var(--desk-brd); }
-      .fsval { color: var(--desk-text); }
-      .fcard { background: var(--desk-bg2); border-color: var(--desk-brd); }
-      .fc-name { color: var(--desk-text); }
-      .fc-row span { color: var(--desk-text); }
-      .cost-card { background: var(--desk-bg2); border-color: var(--desk-brd); }
-      .cost-name { color: var(--desk-text); }
-      .cost-item { background: var(--desk-card); }
-      .cost-inp { color: var(--desk-text); }
+
+      .fin-month-hdr {
+        background: transparent;
+      }
+
+      .fin-month-title {
+        color: var(--desk-text);
+      }
+
+      .fin-month-body {
+        background: var(--desk-card);
+        border-top: 1px solid var(--desk-brd);
+      }
+
+      .fstat {
+        background: var(--desk-bg2);
+        border-color: var(--desk-brd);
+      }
+
+      .fsval {
+        color: var(--desk-text);
+      }
+
+      .fcard {
+        background: var(--desk-bg2);
+        border-color: var(--desk-brd);
+      }
+
+      .fc-name {
+        color: var(--desk-text);
+      }
+
+      .fc-row span {
+        color: var(--desk-text);
+      }
+
+      .cost-card {
+        background: var(--desk-bg2);
+        border-color: var(--desk-brd);
+      }
+
+      .cost-name {
+        color: var(--desk-text);
+      }
+
+      .cost-item {
+        background: var(--desk-card);
+      }
+
+      .cost-inp {
+        color: var(--desk-text);
+      }
 
       .fstats {
         grid-template-columns: repeat(4, 1fr);
@@ -3105,6 +3279,7 @@
     #print-sheet {
       display: none;
     }
+
     /* AUTH SYSTEM */
     .auth-container {
       display: flex;
@@ -3115,6 +3290,7 @@
       padding: 20px;
       background: #0F0905;
     }
+
     .auth-card {
       width: 100%;
       max-width: 340px;
@@ -3122,8 +3298,9 @@
       border: 1px solid rgba(201, 168, 76, 0.1);
       border-radius: 24px;
       padding: 40px 32px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
+
     .auth-title {
       font-size: 28px;
       font-weight: 700;
@@ -3132,15 +3309,18 @@
       text-align: center;
       letter-spacing: -0.5px;
     }
+
     .auth-sub {
       font-size: 14px;
       color: #7A6347;
       text-align: center;
       margin-bottom: 32px;
     }
+
     .auth-group {
       margin-bottom: 20px;
     }
+
     .auth-label {
       font-size: 11px;
       text-transform: uppercase;
@@ -3149,6 +3329,7 @@
       margin-bottom: 8px;
       font-weight: 600;
     }
+
     .auth-input {
       width: 100%;
       background: rgba(15, 9, 5, 0.6);
@@ -3160,12 +3341,14 @@
       font-size: 15px;
       transition: all 0.3s;
     }
+
     .auth-input:focus {
       outline: none;
       border-color: var(--gold);
       background: rgba(15, 9, 5, 0.8);
       box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
     }
+
     .auth-btn {
       width: 100%;
       background: linear-gradient(135deg, var(--gold), var(--gl));
@@ -3180,19 +3363,23 @@
       margin-top: 12px;
       transition: transform 0.2s, opacity 0.2s;
     }
+
     .auth-btn:active {
       transform: scale(0.98);
     }
+
     .auth-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
+
     .auth-toggle {
       margin-top: 24px;
       text-align: center;
       font-size: 13px;
       color: #7A6347;
     }
+
     .auth-link {
       color: var(--gold);
       text-decoration: none;
@@ -3201,19 +3388,22 @@
       display: inline-block;
       margin-top: 4px;
     }
+
     .auth-link:hover {
       text-decoration: underline;
     }
-    
+
     @media (min-width: 768px) {
       .auth-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #F8F4F0; /* Clean, premium off-white background */
+        background: #F8F4F0;
+        /* Clean, premium off-white background */
         width: 100%;
         min-height: 100vh;
       }
+
       .auth-card {
         width: 100%;
         max-width: 460px;
@@ -3223,16 +3413,43 @@
         border-radius: 36px;
         border: 1px solid rgba(44, 26, 14, 0.05);
       }
-      .auth-title { color: #1A0F08; font-size: 34px; margin-bottom: 12px; }
-      .auth-sub { font-size: 15px; color: #7A6347; margin-bottom: 40px; }
-      .auth-input { background: #FAF9F7; border-color: rgba(44, 26, 14, 0.12); color: #1A0F08; padding: 16px; }
-      .auth-input:focus { background: #FFFFFF; border-color: var(--gold); box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.06); }
-      .auth-label { color: #8B6914; margin-bottom: 10px; }
+
+      .auth-title {
+        color: #1A0F08;
+        font-size: 34px;
+        margin-bottom: 12px;
+      }
+
+      .auth-sub {
+        font-size: 15px;
+        color: #7A6347;
+        margin-bottom: 40px;
+      }
+
+      .auth-input {
+        background: #FAF9F7;
+        border-color: rgba(44, 26, 14, 0.12);
+        color: #1A0F08;
+        padding: 16px;
+      }
+
+      .auth-input:focus {
+        background: #FFFFFF;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.06);
+      }
+
+      .auth-label {
+        color: #8B6914;
+        margin-bottom: 10px;
+      }
     }
+
     .verify-screen {
       text-align: center;
       display: none;
     }
+
     .verify-icon {
       font-size: 48px;
       margin-bottom: 20px;
@@ -3248,7 +3465,7 @@
       border-radius: 6px;
       background: rgba(184, 92, 74, 0.05);
     }
-    
+
     .desk-nav-item.logout {
       margin-top: auto;
       color: var(--red) !important;
@@ -3256,6 +3473,7 @@
       border-top: 1px solid rgba(184, 92, 74, 0.1);
       padding-top: 16px;
     }
+
     .desk-nav-item.logout:hover {
       opacity: 1;
       background: rgba(184, 92, 74, 0.05) !important;
@@ -3330,7 +3548,8 @@
     <div class="auth-container">
       <div class="auth-card" id="auth-main-card">
         <div style="text-align:center; margin-bottom:20px;">
-           <img id="auth-logo-img" src="" style="width:85px; height:85px; object-fit:contain; display:block; margin:0 auto;">
+          <img id="auth-logo-img" src=""
+            style="width:85px; height:85px; object-fit:contain; display:block; margin:0 auto;">
         </div>
 
         <div class="auth-title" id="auth-title">Welcome Back</div>
@@ -3348,13 +3567,16 @@
           <p id="auth-toggle-text">Having trouble signing in?</p>
           <a class="auth-link" id="auth-toggle-btn">Forgot Password</a>
         </div>
-        <div id="auth-msg" style="color:var(--grn); font-size:13px; text-align:center; margin-top:10px; display:none; font-weight:500;"></div>
+        <div id="auth-msg"
+          style="color:var(--grn); font-size:13px; text-align:center; margin-top:10px; display:none; font-weight:500;">
+        </div>
 
       </div>
       <div class="auth-card verify-screen" id="auth-verify-screen">
         <div class="verify-icon">✉️</div>
         <div class="auth-title">Verification Required</div>
-        <div class="auth-sub">We've sent a magic link to your email. Please click the link to verify your account and get started.</div>
+        <div class="auth-sub">We've sent a magic link to your email. Please click the link to verify your account and
+          get started.</div>
         <button class="auth-btn" onclick="location.reload()">I've Verified My Email</button>
         <div class="auth-toggle">
           <a class="auth-link" onclick="location.reload()">Back to Login</a>
@@ -3862,7 +4084,9 @@
     <div class="sheet-body" id="sheet-body"></div>
     <div class="sheet-acts noprint">
       <button class="btn-back2" id="edit-sheet">&#8592; Edit</button>
-      <button class="btn-print" id="sheet-wa-btn" style="background:rgba(37,211,102,.15);color:#25d366;border:1px solid rgba(37,211,102,.3);">&#128172; WhatsApp</button>
+      <button class="btn-print" id="sheet-wa-btn"
+        style="background:rgba(37,211,102,.15);color:#25d366;border:1px solid rgba(37,211,102,.3);">&#128172;
+        WhatsApp</button>
       <button class="btn-print" id="print-btn">Print Sheet</button>
     </div>
   </div>
@@ -4269,13 +4493,16 @@
       <div style="background:var(--mob-bm,#2C1A0E);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
         <div
           style="display:flex;justify-content:space-between;font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:4px;">
-          <span>Total Amount</span><span id="inv-total-el" style="color:var(--cream,#F0E6D3);">PKR 0</span></div>
+          <span>Total Amount</span><span id="inv-total-el" style="color:var(--cream,#F0E6D3);">PKR 0</span>
+        </div>
         <div
           style="display:flex;justify-content:space-between;font-size:12px;color:var(--mob-mut,#7A6347);margin-bottom:4px;">
-          <span>Advance Paid</span><span id="inv-advance-el" style="color:var(--grn,#6B9E63);">PKR 0</span></div>
+          <span>Advance Paid</span><span id="inv-advance-el" style="color:var(--grn,#6B9E63);">PKR 0</span>
+        </div>
         <div
           style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--red,#B85C4A);">
-          <span>Balance Due</span><span id="inv-balance-el">PKR 0</span></div>
+          <span>Balance Due</span><span id="inv-balance-el">PKR 0</span>
+        </div>
       </div>
       <div class="mbtns">
         <button class="mbtn-c" id="inv-cancel">Cancel</button>
@@ -4313,7 +4540,9 @@
     <div class="modal">
       <div class="mname">Manage Categories</div>
       <div class="msub">Add or remove photo categories</div>
-      <div id="media-cats-list" style="margin-bottom:14px; max-height:250px; overflow-y:auto; border: 1px solid var(--mob-brs); border-radius: 8px; padding: 5px;"></div>
+      <div id="media-cats-list"
+        style="margin-bottom:14px; max-height:250px; overflow-y:auto; border: 1px solid var(--mob-brs); border-radius: 8px; padding: 5px;">
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
         <input class="fi" id="new-mcat-inp" placeholder="New Category" style="flex:1;">
         <button class="mbtn-a" id="add-mcat-btn" style="flex:none;padding:10px 14px;">Add</button>
@@ -4440,12 +4669,12 @@
         });
         el.innerHTML = h;
       }
-      window.removeCol = function(idx) {
+      window.removeCol = function (idx) {
         COST_COLS.splice(idx, 1);
         localStorage.setItem("ev_cost_cols", JSON.stringify(COST_COLS));
         renderCols(); rFin();
       };
-      document.getElementById("add-col-btn").addEventListener("click", function() {
+      document.getElementById("add-col-btn").addEventListener("click", function () {
         var inp = document.getElementById("new-col-inp");
         var val = inp.value.trim();
         if (!val) return;
@@ -4460,29 +4689,29 @@
         const email = document.getElementById("auth-email").value.trim();
         const msgEl = document.getElementById("auth-msg");
         msgEl.style.display = "none";
-        
-        if (!email) { 
+
+        if (!email) {
           msgEl.style.color = "var(--red)";
           msgEl.textContent = "Please enter your email address first.";
           msgEl.style.display = "block";
-          toast("Please enter your email address first"); 
-          return; 
+          toast("Please enter your email address first");
+          return;
         }
-        
+
         try {
           const { error } = await _sb.auth.resetPasswordForEmail(email);
           if (error) throw error;
-          
+
           msgEl.style.color = "var(--grn)";
           msgEl.textContent = "Password reset link sent to your email!";
           msgEl.style.display = "block";
-          
+
           toast("Password reset link sent to your email!");
         } catch (err) {
           msgEl.style.color = "var(--red)";
           msgEl.textContent = err.message || "Error sending reset link";
           msgEl.style.display = "block";
-          
+
           toast(err.message || "Error sending reset link");
         }
       }
@@ -4491,10 +4720,10 @@
         const email = document.getElementById("auth-email").value.trim();
         const password = document.getElementById("auth-password").value.trim();
         if (!email || !password) { toast("Enter email and password"); return; }
-        
+
         const btn = document.getElementById("auth-submit-btn");
         btn.disabled = true; btn.textContent = "Processing...";
-        
+
         try {
           const { data, error } = await _sb.auth.signInWithPassword({ email, password });
           if (error) throw error;
@@ -4572,7 +4801,7 @@
       function toast(m) { var t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); setTimeout(function () { t.classList.remove("show"); }, 2500); }
       function oM(id) { document.getElementById(id).classList.add("open"); }
       function cM(id) { document.getElementById(id).classList.remove("open"); }
-            function rF(f, cb) {
+      function rF(f, cb) {
         var r = new FileReader();
         r.onload = function (e) {
           var raw = e.target.result;
@@ -4648,11 +4877,11 @@
           else if (id === "s-bkn-detail" && curDetailId) rDetail(curDetailId);
           else if (id === "s-invoice") rInvoiceScreen();
           else if (id === "s-event-details") {
-            if (curBkg) { 
-              curEventNotes = curBkg.reminder || ""; 
-              curEventInspos = curBkg.eventInspos || []; 
+            if (curBkg) {
+              curEventNotes = curBkg.reminder || "";
+              curEventInspos = curBkg.eventInspos || [];
             }
-            rEventDetails(); 
+            rEventDetails();
           }
           else if (id === "s-invoice-preview") rInvoicePreview();
           else if (id === "s-media") rMedia();
@@ -4686,10 +4915,10 @@
             };
             var saveEd = document.getElementById("save-event-details-btn"); if (saveEd) saveEd.onclick = function () {
               curEventNotes = document.getElementById("ed-notes").value.trim();
-                            if (curBkg) { 
-                curBkg.eventNotes = curEventNotes; 
-                curBkg.eventInspos = curEventInspos; 
-                db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos }); 
+              if (curBkg) {
+                curBkg.eventNotes = curEventNotes;
+                curBkg.eventInspos = curEventInspos;
+                db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos });
               }
               go("s-inv-reserve");
             };
@@ -4743,7 +4972,7 @@
         setTimeout(function () {
           function bind(eid, fn) { var e = document.getElementById(eid); if (e) e.addEventListener("click", fn); }
           bind("d-new-bkn", function () { clearNewBkn(); go("s-new-bkn"); });
-          bind("d-edit-detail", function () { if(curDetailId) openEditBkn(curDetailId); });
+          bind("d-edit-detail", function () { if (curDetailId) openEditBkn(curDetailId); });
           bind("d-dispatch", function () { if (curDetailId) openDispatch(curDetailId); });
           bind("d-back-detail", function () { go("s-bkns"); });
           bind("d-back-new", function () { go("s-bkns"); });
@@ -4946,10 +5175,10 @@
           };
           var saveEd = document.getElementById("save-event-details-btn"); if (saveEd) saveEd.onclick = function () {
             curEventNotes = document.getElementById("ed-notes").value.trim();
-                        if (curBkg) { 
-              curBkg.eventNotes = curEventNotes; 
-              curBkg.eventInspos = curEventInspos; 
-              db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos }); 
+            if (curBkg) {
+              curBkg.eventNotes = curEventNotes;
+              curBkg.eventInspos = curEventInspos;
+              db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos });
             }
             go("s-inv-reserve");
           };
@@ -5014,8 +5243,7 @@
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
           db("media?order=created_at.desc"),
-          db("tasks?order=due_at.asc"),
-          db("staff?order=created_at.asc")
+          db("tasks?order=due_at.asc")
         ])
           .then(function (r) {
             clearTimeout(timeout);
@@ -5034,23 +5262,22 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
-            STAFF_LIST = Array.isArray(r[4]) ? r[4] : [];
-            hd(); initBiz(); 
+            hd(); initBiz();
             var sc = localStorage.getItem("cur_screen") || "s-dash";
             curDetailId = localStorage.getItem("cur_detail_id");
             invoiceBkgId = localStorage.getItem("inv_bkg_id");
             curEditBknId = localStorage.getItem("cur_edit_bkn_id");
             go(sc);
             loadDraft();
-          }).catch(function (e) { 
+          }).catch(function (e) {
             clearTimeout(timeout); hd();
             var sc = localStorage.getItem("cur_screen") || "s-dash";
             curDetailId = localStorage.getItem("cur_detail_id");
             invoiceBkgId = localStorage.getItem("inv_bkg_id");
             curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-            go(sc); 
+            go(sc);
             loadDraft();
-                        toast("Load error: " + e.message);
+            toast("Load error: " + e.message);
           });
       }
 
@@ -5093,7 +5320,7 @@
         var els = [document.getElementById("tb-biz"), document.getElementById("desk-biz-txt")];
         els.forEach(function (el) { if (el) el.textContent = BN; });
         if (BL) applyLogo(BL);
-        
+
         const logo = document.getElementById('tl-img');
         const authLogo = document.getElementById('auth-logo-img');
         if (logo && authLogo) authLogo.src = logo.src;
@@ -5139,7 +5366,7 @@
         var today = new Date().toISOString().split("T")[0];
         var todayB = BKN.filter(function (b) { return b.date === today; });
         var upB = BKN.filter(function (b) { return b.date >= today; }).slice(0, 5);
-        var pendingTasks = TASKS.filter(function(t){ return t.status === "pending"; });
+        var pendingTasks = TASKS.filter(function (t) { return t.status === "pending"; });
         var ds = new Date().toLocaleDateString("en-PK", { weekday: "long", day: "numeric", month: "long" });
         var hr = new Date().getHours();
         var h = "";
@@ -5156,31 +5383,31 @@
         // Pending Tasks List
         if (TASKS.length > 0) {
           h += "<div class='dsec'><div class='dsec-hdr'>Pending Tasks</div><div class='task-container'>";
-          var sortedTasks = TASKS.slice().sort(function(a,b){ 
-            if(a.status === "completed" && b.status === "pending") return 1;
-            if(a.status === "pending" && b.status === "completed") return -1;
+          var sortedTasks = TASKS.slice().sort(function (a, b) {
+            if (a.status === "completed" && b.status === "pending") return 1;
+            if (a.status === "pending" && b.status === "completed") return -1;
             return new Date(a.due_at) - new Date(b.due_at);
           });
-          sortedTasks.slice(0, 3).forEach(function(t) {
-             var now = new Date();
-             var due = new Date(t.due_at);
-             var diff = (due - now) / 1000 / 60 / 60; // in hours
-             var dueTxt = "";
-             var isUrgent = false;
+          sortedTasks.slice(0, 3).forEach(function (t) {
+            var now = new Date();
+            var due = new Date(t.due_at);
+            var diff = (due - now) / 1000 / 60 / 60; // in hours
+            var dueTxt = "";
+            var isUrgent = false;
 
-             if (diff < 0) dueTxt = "Overdue";
-             else if (diff < 1) { dueTxt = "URGENT"; isUrgent = true; }
-             else if (diff < 24) dueTxt = "Due in " + Math.round(diff) + "h";
-             else dueTxt = "Due in " + Math.round(diff/24) + "d";
+            if (diff < 0) dueTxt = "Overdue";
+            else if (diff < 1) { dueTxt = "URGENT"; isUrgent = true; }
+            else if (diff < 24) dueTxt = "Due in " + Math.round(diff) + "h";
+            else dueTxt = "Due in " + Math.round(diff / 24) + "d";
 
-             h += "<div class='task-card " + (t.status === "completed" ? "completed" : "") + "' data-tid='" + t.id + "'>";
-             h += "<div class='task-check' data-action='complete'>" + (t.status === "completed" ? "&#10003;" : "") + "</div>";
-             h += "<div class='task-info'><div class='task-title'>" + t.title + "</div>";
-             if (t.status === "pending") h += "<div class='task-time " + (isUrgent ? "task-urgent" : "") + "'>" + (isUrgent ? "&#9888; " : "") + dueTxt + "</div>";
-             else h += "<div class='task-time'>Marked as Completed</div>";
-             h += "</div>";
-             h += "<div class='task-remove' data-action='delete'>&#128465;</div>";
-             h += "</div>";
+            h += "<div class='task-card " + (t.status === "completed" ? "completed" : "") + "' data-tid='" + t.id + "'>";
+            h += "<div class='task-check' data-action='complete'>" + (t.status === "completed" ? "&#10003;" : "") + "</div>";
+            h += "<div class='task-info'><div class='task-title'>" + t.title + "</div>";
+            if (t.status === "pending") h += "<div class='task-time " + (isUrgent ? "task-urgent" : "") + "'>" + (isUrgent ? "&#9888; " : "") + dueTxt + "</div>";
+            else h += "<div class='task-time'>Marked as Completed</div>";
+            h += "</div>";
+            h += "<div class='task-remove' data-action='delete'>&#128465;</div>";
+            h += "</div>";
           });
           h += "</div></div>";
         }
@@ -5199,88 +5426,88 @@
           h += "<div class='dc' data-id='" + b.id + "'><div class='dcn'>" + b.name + " <span style='font-size:9px;color:var(--gold);'>" + b.ref + "</span></div><div class='dcm'>" + fD(b.date) + " &middot; " + b.type + (b.venue ? " &middot; " + b.venue : "") + "</div></div>";
         });
         h += "</div>";
-        
+
         var el = document.getElementById("dash-body"); if (el) el.innerHTML = h;
-        
+
         // Modal Logic
         var atb = document.getElementById("add-task-btn");
-        if(atb) atb.onclick = function() {
-            oM('task-modal');
-            document.getElementById('task-date-group').style.display = 'none';
-            document.getElementById('task-today-btn').className = 'st-btn on';
-            document.getElementById('task-future-btn').className = 'st-btn';
-            var now = new Date();
-            document.getElementById('task-date-inp').value = now.toISOString().split('T')[0];
-            document.getElementById('task-time-inp').value = String(now.getHours()+1).padStart(2,'0') + ":00";
+        if (atb) atb.onclick = function () {
+          oM('task-modal');
+          document.getElementById('task-date-group').style.display = 'none';
+          document.getElementById('task-today-btn').className = 'st-btn on';
+          document.getElementById('task-future-btn').className = 'st-btn';
+          var now = new Date();
+          document.getElementById('task-date-inp').value = now.toISOString().split('T')[0];
+          document.getElementById('task-time-inp').value = String(now.getHours() + 1).padStart(2, '0') + ":00";
         };
 
-        document.getElementById('task-today-btn').onclick = function() {
-            this.className = 'st-btn on';
-            document.getElementById('task-future-btn').className = 'st-btn';
-            document.getElementById('task-date-group').style.display = 'none';
-            document.getElementById('task-date-inp').value = new Date().toISOString().split('T')[0];
+        document.getElementById('task-today-btn').onclick = function () {
+          this.className = 'st-btn on';
+          document.getElementById('task-future-btn').className = 'st-btn';
+          document.getElementById('task-date-group').style.display = 'none';
+          document.getElementById('task-date-inp').value = new Date().toISOString().split('T')[0];
         };
-        document.getElementById('task-future-btn').onclick = function() {
-            this.className = 'st-btn on';
-            document.getElementById('task-today-btn').className = 'st-btn';
-            document.getElementById('task-date-group').style.display = 'block';
+        document.getElementById('task-future-btn').onclick = function () {
+          this.className = 'st-btn on';
+          document.getElementById('task-today-btn').className = 'st-btn';
+          document.getElementById('task-date-group').style.display = 'block';
         };
 
-        document.getElementById('task-save-btn').onclick = async function() {
-            var title = document.getElementById('task-title-inp').value.trim();
-            if(!title) return;
-            var date = document.getElementById('task-date-inp').value;
-            var time = document.getElementById('task-time-inp').value || "12:00";
-            var pri = document.getElementById('task-pri-sel').value;
-            var due = new Date(date + "T" + time).toISOString();
-            
-            ld();
-            try {
-                const { data, error } = await _sb.from('tasks').insert([{ title: title, due_at: due, priority: pri, status: 'pending' }]).select();
-                if(error) throw error;
-                TASKS.unshift(data[0]);
-                cM('task-modal');
-                rDash();
-                toast("Task added.");
-            } catch(e) { toast(e.message); }
-            finally { hd(); }
+        document.getElementById('task-save-btn').onclick = async function () {
+          var title = document.getElementById('task-title-inp').value.trim();
+          if (!title) return;
+          var date = document.getElementById('task-date-inp').value;
+          var time = document.getElementById('task-time-inp').value || "12:00";
+          var pri = document.getElementById('task-pri-sel').value;
+          var due = new Date(date + "T" + time).toISOString();
+
+          ld();
+          try {
+            const { data, error } = await _sb.from('tasks').insert([{ title: title, due_at: due, priority: pri, status: 'pending' }]).select();
+            if (error) throw error;
+            TASKS.unshift(data[0]);
+            cM('task-modal');
+            rDash();
+            toast("Task added.");
+          } catch (e) { toast(e.message); }
+          finally { hd(); }
         };
 
         // Complete/Delete Logic
-        document.querySelectorAll('.task-card').forEach(function(card) {
-            var tid = card.getAttribute('data-tid');
-            card.querySelector('.task-check').onclick = async function() {
-                ld();
-                try {
-                    const { error } = await _sb.from('tasks').update({ status: 'completed' }).eq('id', tid);
-                    if(error) throw error;
-                    var t = TASKS.find(function(x){ return x.id == tid; });
-                    if(t) t.status = 'completed';
-                    rDash();
-                    toast("Task completed!");
-                } catch(e) { toast(e.message); }
-                finally { hd(); }
-            };
-            card.querySelector('.task-remove').onclick = async function(e) {
-                e.stopPropagation();
-                var me = this;
-                if (me.getAttribute("data-c") === "1") {
-                    ld();
-                    try {
-                        const { error } = await _sb.from('tasks').delete().eq('id', tid);
-                        if(error) throw error;
-                        TASKS = TASKS.filter(function(x){ return x.id != tid; });
-                        rDash();
-                        toast("Task removed.");
-                    } catch(e) { toast(e.message); }
-                    finally { hd(); }
-                } else {
-                    me.setAttribute("data-c", "1");
-                    me.textContent = "Sure?";
-                    me.style.color = "var(--red)";
-                    me.style.fontSize = "10px";
-                }
-            };
+        document.querySelectorAll('.task-card').forEach(function (card) {
+          var tid = card.getAttribute('data-tid');
+          card.querySelector('.task-check').onclick = async function () {
+            ld();
+            try {
+              const { error } = await _sb.from('tasks').update({ status: 'completed' }).eq('id', tid);
+              if (error) throw error;
+              var t = TASKS.find(function (x) { return x.id == tid; });
+              if (t) t.status = 'completed';
+              rDash();
+              toast("Task completed!");
+            } catch (e) { toast(e.message); }
+            finally { hd(); }
+          };
+          card.querySelector('.task-remove').onclick = async function (e) {
+            e.stopPropagation();
+            var me = this;
+            if (me.getAttribute("data-c") === "1") {
+              ld();
+              try {
+                const { error } = await _sb.from('tasks').delete().eq('id', tid);
+                if (error) throw error;
+                TASKS = TASKS.filter(function (x) { return x.id != tid; });
+                rDash();
+                toast("Task removed.");
+              } catch (e) { toast(e.message); }
+              finally { hd(); }
+            } else {
+              me.setAttribute("data-c", "1");
+              me.textContent = "Sure?";
+              me.style.color = "var(--red)";
+              me.style.fontSize = "10px";
+            }
+          };
         });
 
         document.querySelectorAll("#dash-body .dc[data-id]").forEach(function (c) {
@@ -5421,16 +5648,16 @@
           draftCart = d.draftCart || {};
           curEventNotes = d.curEventNotes || "";
           if (d.curEventInspos && d.curEventInspos.length > 0) curEventInspos = d.curEventInspos;
-          
-          Object.keys(d.vals || {}).forEach(function(id) {
+
+          Object.keys(d.vals || {}).forEach(function (id) {
             var el = document.getElementById(id);
-            if(el) el.value = d.vals[id];
+            if (el) el.value = d.vals[id];
           });
-          
+
           // Restore checklists
           var ex = d.vals && d.vals.ext ? d.vals.ext : []; // If we decide to save ext tags too
           // Actually let's just make it simpler for now and save what's in the vals
-        } catch(e) { console.error("Draft load err", e); }
+        } catch (e) { console.error("Draft load err", e); }
       }
 
       function clearDraft() {
@@ -5452,44 +5679,44 @@
       }
 
       function openEditBkn(id) {
-        var b = BKN.find(function(x) { return x.id === id; });
+        var b = BKN.find(function (x) { return x.id === id; });
         if (!b) return;
         curEditBknId = id;
         go("s-new-bkn");
-        setTimeout(function() {
+        setTimeout(function () {
           clearNewBkn();
           // We must find the booking again because clearNewBkn might reset BKN (no it doesn't, but let's be sure)
-          var b = BKN.find(function(x) { return x.id === id; });
+          var b = BKN.find(function (x) { return x.id === id; });
           curEditBknId = id;
-        
-        var dName = document.getElementById("nb-name"); if(dName) dName.value = b.name || "";
-        var dDate = document.getElementById("nb-date"); if(dDate) dDate.value = b.date || "";
-        var dPhone = document.getElementById("nb-phone"); if(dPhone) dPhone.value = b.phone || "";
-        var dType = document.getElementById("nb-type"); if(dType) dType.value = b.type || "Other";
-        var dVenue = document.getElementById("nb-venue"); if(dVenue) dVenue.value = b.venue || "";
-        var dReady = document.getElementById("nb-ready"); if(dReady) dReady.value = b.ready || "";
-        var dPickup = document.getElementById("nb-pickup"); if(dPickup) dPickup.value = b.pickup || "";
-        var dNotes = document.getElementById("nb-notes"); if(dNotes) dNotes.value = b.notes || "";
-        var dTotal = document.getElementById("nb-total"); if(dTotal) dTotal.value = b.total || "";
-        var dPaid = document.getElementById("nb-paid"); if(dPaid) dPaid.value = b.paid || "";
-        
+
+          var dName = document.getElementById("nb-name"); if (dName) dName.value = b.name || "";
+          var dDate = document.getElementById("nb-date"); if (dDate) dDate.value = b.date || "";
+          var dPhone = document.getElementById("nb-phone"); if (dPhone) dPhone.value = b.phone || "";
+          var dType = document.getElementById("nb-type"); if (dType) dType.value = b.type || "Other";
+          var dVenue = document.getElementById("nb-venue"); if (dVenue) dVenue.value = b.venue || "";
+          var dReady = document.getElementById("nb-ready"); if (dReady) dReady.value = b.ready || "";
+          var dPickup = document.getElementById("nb-pickup"); if (dPickup) dPickup.value = b.pickup || "";
+          var dNotes = document.getElementById("nb-notes"); if (dNotes) dNotes.value = b.notes || "";
+          var dTotal = document.getElementById("nb-total"); if (dTotal) dTotal.value = b.total || "";
+          var dPaid = document.getElementById("nb-paid"); if (dPaid) dPaid.value = b.paid || "";
+
           curEventNotes = b.eventNotes || b.reminder_notes || b.reminder || "";
-          var dENotes = document.getElementById("nb-ed-notes"); if(dENotes) dENotes.value = curEventNotes;
-          var deNotesD = document.getElementById("ed-notes-d"); if(deNotesD) deNotesD.value = curEventNotes;
-          
+          var dENotes = document.getElementById("nb-ed-notes"); if (dENotes) dENotes.value = curEventNotes;
+          var deNotesD = document.getElementById("ed-notes-d"); if (deNotesD) deNotesD.value = curEventNotes;
+
           curEventInspos = (b.eventInspos || []).slice();
           rNbEdThumbs();
           if (typeof isDesk !== 'undefined' && isDesk) rNbEdThumbsD();
-  
+
           draftCart = {};
           if (b.dispatchItems) {
-             b.dispatchItems.forEach(function(di) {
-                 draftCart[di.itemId] = di.qty;
-             });
+            b.dispatchItems.forEach(function (di) {
+              draftCart[di.itemId] = di.qty;
+            });
           }
-          
+
           var exts = b.extItems || b.pending_items || [];
-          document.querySelectorAll(".echk").forEach(function(e) {
+          document.querySelectorAll(".echk").forEach(function (e) {
             if (exts.includes(e.getAttribute("data-v"))) e.classList.add("on");
           });
         }, 100);
@@ -5518,14 +5745,14 @@
         if (step === 3) rNbReserveGrid("All");
       }
       function bindNewBkn() {
-        document.querySelectorAll(".echk").forEach(function (e) { 
-          e.onclick = function () { 
-            this.classList.toggle("on"); 
+        document.querySelectorAll(".echk").forEach(function (e) {
+          e.onclick = function () {
+            this.classList.toggle("on");
             saveDraft();
-          }; 
+          };
         });
-        
-        ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid", "nb-ed-notes", "ed-notes-d"].forEach(function(i) {
+
+        ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid", "nb-ed-notes", "ed-notes-d"].forEach(function (i) {
           var el = document.getElementById(i);
           if (el) {
             el.oninput = saveDraft;
@@ -5620,12 +5847,12 @@
         var h = "";
         curEventInspos.forEach(function (s, i) { h += "<div class='inspo-thumb'><img src='" + s + "'><button class='inspo-del' data-ni='" + i + "'>x</button></div>"; });
         el.innerHTML = h;
-        el.querySelectorAll("[data-ni]").forEach(function (btn) { 
-          btn.onclick = function () { 
-            curEventInspos.splice(parseInt(this.getAttribute("data-ni")), 1); 
+        el.querySelectorAll("[data-ni]").forEach(function (btn) {
+          btn.onclick = function () {
+            curEventInspos.splice(parseInt(this.getAttribute("data-ni")), 1);
             saveDraft();
-            rNbEdThumbs(); 
-          }; 
+            rNbEdThumbs();
+          };
         });
       }
 
@@ -5672,66 +5899,66 @@
         if (!name || !date) { alert("Please enter client name and date."); showNbStep(1); return; }
         var ext = [];
         document.querySelectorAll(".echk.on").forEach(function (e) { ext.push(e.getAttribute("data-v")); });
-        
+
         var di = withInventory ? Object.keys(draftCart).map(function (id) { return { itemId: id, qty: draftCart[id] }; }) : null;
-        
+
         if (curEditBknId) {
-            var ex = BKN.find(function(x) { return x.id === curEditBknId; });
-            if(!ex) return;
-            var pd = {
-              name: name, date: date, phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
-              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
-              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
-              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
-              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
-              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
-              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
-              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
-              pending_items: ext, reminder_notes: curEventNotes || "", event_inspos: curEventInspos || []
-            };
-            if (withInventory) pd.dispatch_items = di;
-            
-            ld();
-            db("bookings?id=eq." + curEditBknId, "PATCH", pd).then(function() {
-                Object.assign(ex, {
-                  name: pd.name, date: pd.date, phone: pd.phone, type: pd.type, venue: pd.venue,
-                  ready: pd.ready, pickup: pd.pickup, notes: pd.notes, total: pd.total, paid: pd.paid,
-                  extItems: pd.pending_items, eventNotes: pd.reminder_notes, reminder: pd.reminder_notes,
-                  eventInspos: pd.event_inspos
-                });
-                if(withInventory) ex.dispatchItems = pd.dispatch_items;
-                BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
-                hd(); toast("Booking updated!");
-                clearNewBkn(); go("s-bkn-detail");
-                rDetail(curEditBknId);
-            }).catch(function(err) { hd(); alert("Error: " + err.message); });
+          var ex = BKN.find(function (x) { return x.id === curEditBknId; });
+          if (!ex) return;
+          var pd = {
+            name: name, date: date, phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+            type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+            venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+            ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+            pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+            notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+            total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+            paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+            pending_items: ext, reminder_notes: curEventNotes || "", event_inspos: curEventInspos || []
+          };
+          if (withInventory) pd.dispatch_items = di;
+
+          ld();
+          db("bookings?id=eq." + curEditBknId, "PATCH", pd).then(function () {
+            Object.assign(ex, {
+              name: pd.name, date: pd.date, phone: pd.phone, type: pd.type, venue: pd.venue,
+              ready: pd.ready, pickup: pd.pickup, notes: pd.notes, total: pd.total, paid: pd.paid,
+              extItems: pd.pending_items, eventNotes: pd.reminder_notes, reminder: pd.reminder_notes,
+              eventInspos: pd.event_inspos
+            });
+            if (withInventory) ex.dispatchItems = pd.dispatch_items;
+            BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
+            hd(); toast("Booking updated!");
+            clearNewBkn(); go("s-bkn-detail");
+            rDetail(curEditBknId);
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
         } else {
-            bknCounter++;
-            var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
-            var b = {
-              id: "b" + Date.now(), name: name, date: date, ref: refNum,
-              phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
-              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
-              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
-              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
-              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
-              status: "Confirmed",
-              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
-              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
-              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
-              dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
-              discussion_log: [], staff_assigned: [], invoice_items: [], event_inspos: curEventInspos || []
-            };
-            ld();
-            db("bookings", "POST", b).then(function () {
-              b.dispatchItems = di; b.extItems = ext; b.costs = {}; b.reminder = curEventNotes || "";
-              b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
-              b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
-              BKN.push(b); BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
-              hd(); toast("Booking saved! Ref: " + refNum);
-              clearNewBkn();
-              go("s-bkns");
-            }).catch(function (err) { hd(); alert("Error: " + err.message); });
+          bknCounter++;
+          var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
+          var b = {
+            id: "b" + Date.now(), name: name, date: date, ref: refNum,
+            phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+            type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+            venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+            ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+            pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+            status: "Confirmed",
+            notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+            total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+            paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+            dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
+            discussion_log: [], staff_assigned: [], invoice_items: [], event_inspos: curEventInspos || []
+          };
+          ld();
+          db("bookings", "POST", b).then(function () {
+            b.dispatchItems = di; b.extItems = ext; b.costs = {}; b.reminder = curEventNotes || "";
+            b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
+            b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
+            BKN.push(b); BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
+            hd(); toast("Booking saved! Ref: " + refNum);
+            clearNewBkn();
+            go("s-bkns");
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
         }
       }
 
@@ -6337,7 +6564,7 @@
             e.stopPropagation();
             var me = this, id = me.getAttribute("data-did");
             if (me.getAttribute("data-c") === "1") {
-                            ld(); db("inventory?id=eq." + id, "DELETE").then(function () { INV = INV.filter(function (i) { return i.id !== id; }); hd(); rINV(); toast("Item removed."); }).catch(function (err) { hd(); toast("Delete failed: " + err.message); });
+              ld(); db("inventory?id=eq." + id, "DELETE").then(function () { INV = INV.filter(function (i) { return i.id !== id; }); hd(); rINV(); toast("Item removed."); }).catch(function (err) { hd(); toast("Delete failed: " + err.message); });
             } else {
               me.setAttribute("data-c", "1"); me.textContent = "Sure?"; me.style.color = "var(--red)"; me.style.fontSize = "10px";
               setTimeout(function () { if (me.getAttribute("data-c") === "1") { me.removeAttribute("data-c"); me.innerHTML = "&#128465;"; me.style.color = ""; me.style.fontSize = ""; } }, 2000);
@@ -6348,7 +6575,7 @@
           var inp = document.getElementById("upd" + item.id);
           if (inp) inp.addEventListener("change", function () {
             var f = this.files[0]; if (!f) return;
-                        rF(f, function (s) { item.photo = s; ld(); db("inventory?id=eq." + item.id, "PATCH", { photo: s }).then(function () { hd(); rINV(); toast("Photo updated!"); }).catch(function (err) { hd(); toast("Update failed: " + err.message); }); });
+            rF(f, function (s) { item.photo = s; ld(); db("inventory?id=eq." + item.id, "PATCH", { photo: s }).then(function () { hd(); rINV(); toast("Photo updated!"); }).catch(function (err) { hd(); toast("Update failed: " + err.message); }); });
           });
         });
       }
@@ -6374,10 +6601,10 @@
         if (formEl) {
           formEl.innerHTML = "<select class='fs' id='staff-role-sel' style='margin-bottom:8px;'></select>";
           var sel = formEl.querySelector("select");
-          STAFF_ROLES.forEach(function (r) { 
-            var o = document.createElement("option"); 
-            o.value = r; o.textContent = r; 
-            sel.appendChild(o); 
+          STAFF_ROLES.forEach(function (r) {
+            var o = document.createElement("option");
+            o.value = r; o.textContent = r;
+            sel.appendChild(o);
           });
         }
         document.querySelectorAll("[data-si]").forEach(function (btn) {
@@ -6480,7 +6707,7 @@
         for (var m = 0; m <= currM; m++) {
           var isOn = (m === finM && currY === finY);
           var bg = isOn ? "background:var(--gold);color:#0F0905;" : "background:#1A0F08;color:#7A6347;border:1px solid var(--mob-brs);";
-          h += "<div class='fin-month-btn' data-m='" + m + "' data-y='" + currY + "' style='padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;" + bg + "'>" + MN[m].substring(0,3) + " " + currY + "</div>";
+          h += "<div class='fin-month-btn' data-m='" + m + "' data-y='" + currY + "' style='padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;" + bg + "'>" + MN[m].substring(0, 3) + " " + currY + "</div>";
         }
         h += "</div>";
 
@@ -6490,7 +6717,7 @@
         var tc = mBkns.reduce(function (s, b) { return s + COST_COLS.reduce(function (cs, k) { return k !== "Note" ? cs + (parseFloat((b.costs || {})[k]) || 0) : cs; }, 0); }, 0);
 
         h += "<div class='fin-month-row' data-m='" + finM + "' data-y='" + currY + "'>";
-        
+
         h += "<div class='fstats'>";
         h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR " + rev.toLocaleString() + "</div></div>";
         h += "<div class='fstat'><div class='fslbl'>Received</div><div class='fsval g'>PKR " + rec.toLocaleString() + "</div></div>";
@@ -6552,9 +6779,9 @@
 
         document.querySelectorAll(".fin-tab[data-ft]").forEach(function (t) { t.addEventListener("click", function () { finTab = this.getAttribute("data-ft"); rFin(); }); });
         document.querySelectorAll("[data-pay]").forEach(function (btn) { btn.addEventListener("click", function () { openPay(this.getAttribute("data-pay")); }); });
-        
-        document.querySelectorAll(".fin-month-btn").forEach(function(btn) {
-          btn.addEventListener("click", function() {
+
+        document.querySelectorAll(".fin-month-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
             finM = parseInt(this.getAttribute("data-m"));
             finY = parseInt(this.getAttribute("data-y"));
             rFin();
@@ -6562,7 +6789,7 @@
         });
 
         var sBtn = document.getElementById("save-costs-" + finM);
-        if (sBtn) sBtn.addEventListener("click", function() {
+        if (sBtn) sBtn.addEventListener("click", function () {
           saveCosts(parseInt(this.getAttribute("data-m")));
         });
 
@@ -6717,14 +6944,14 @@
           return '<tr style="border-bottom:1px solid #F0E6D3;"><td style="padding:15px 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:15px 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
         }).join("");
 
-        var inv = 
+        var inv =
           '<div style="font-family:\'Jost\',sans-serif;max-width:700px;margin:0 auto;background:#fff;padding:45px;color:#1A0F08;border:1px solid #EDE4D6;box-shadow:0 10px 40px rgba(0,0,0,0.06);">'
           + '<!-- Header -->'
           + '<div style="text-align:center;padding-bottom:25px;border-bottom:2px solid #C9A84C;margin-bottom:35px;position:relative;">'
           + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute;left:0;top:-10px;height:80px;width:80px;object-fit:contain;border-radius:50%;">' : '')
           + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:38pt;font-weight:700;color:#1A0F08;line-height:1;margin-bottom:6px;letter-spacing:-0.5px;">Happenings.co</div>'
           + '<div style="font-size:10pt;color:#C9A84C;letter-spacing:5px;text-transform:uppercase;font-weight:500;">── Premium Event Planning ──</div></div>'
-          
+
           + '<!-- Meta Info -->'
           + '<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:40px;margin-bottom:40px;">'
           + '<div><div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;">Client Details</div>'
@@ -6735,9 +6962,9 @@
           + '<div style="font-size:11pt;font-weight:700;margin-bottom:5px;color:#1A0F08;">REF ID: ' + b.ref + '</div>'
           + '<div style="font-size:10pt;color:#555;margin-bottom:3px;">Date: ' + today + '</div>'
           + '<div style="font-size:10pt;color:#1A0F08;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Event: ' + fD(b.date) + '</div></div></div>'
-          
+
           + '<div style="font-size:11pt;color:#555;margin-bottom:25px;line-height:1.6;">Dear Client,<br>We are pleased to submit the professional invoice for your upcoming event. Thank you for choosing Happenings.co.</div>'
-          
+
           + '<!-- Table -->'
           + '<table style="width:100%;border-collapse:collapse;margin-bottom:30px;"><thead><tr style="border-bottom:2.5pt solid #1A0F08;"><th style="padding:12px 0;text-align:left;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Service Description</th><th style="padding:12px 0;text-align:right;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Amount</th></tr></thead>'
           + '<tbody>' + rows
@@ -6745,19 +6972,19 @@
           + '<tr><td style="padding:4px 0;text-align:right;font-size:10.5pt;color:#7A6347;">Advance Received</td><td style="padding:4px 0;text-align:right;font-size:10.5pt;font-weight:600;color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
           + '<tr style="color:#C9A84C;"><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:20pt;font-weight:700;">Final Balance Due</td><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:24pt;font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
           + '</tbody></table>'
-          
+
           + '<!-- Words -->'
           + '<div style="padding:22px;background:#FBF8F2;border-left:5px solid #C9A84C;margin-bottom:45px;border-radius:0 10px 10px 0;">'
           + '<div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:600;">Total Amount in Words</div>'
           + '<div style="font-size:12pt;font-weight:700;color:#1A0F08;text-transform:uppercase;letter-spacing:0.5px;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
-          
+
           + '<!-- Signoff -->'
           + '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:45px;">'
           + '<div style="font-size:11pt;color:#7A6347;font-style:italic;max-width:350px;line-height:1.6;">Thanking and assuring you for our best professional services at all times.</div>'
           + '<div style="text-align:right;"><div style="font-size:10pt;margin-bottom:45px;color:#555;">Sincerely,</div><div style="font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\',serif;font-size:18pt;font-weight:700;color:#C9A84C;">Happenings.co</div></div></div>'
-          
+
           + '<div style="text-align:center;font-size:8.5pt;color:#BBB;margin-bottom:30px;font-style:italic;border-top:1px solid #F0F0F0;padding-top:18px;">** This is a computer generated document and does not require a physical signature **</div>'
-          
+
           + '<!-- Footer -->'
           + '<div style="background:#1A0F08;color:#FBF8F2;padding:22px 30px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;font-size:9pt;box-shadow:0 4px 15px rgba(26,15,8,0.2);">'
           + '<div><span style="color:#C9A84C;margin-right:8px;">📍</span>Karachi, PK — Office SA-10 CMCHS, Bahadurabad.</div>'
@@ -6778,13 +7005,13 @@
           return '<tr style="border-bottom: 0.5pt solid #F0E6D3;"><td style="padding:12pt 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:12pt 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
         }).join("");
 
-        ps.innerHTML = 
+        ps.innerHTML =
           '<div style="font-family:\'Jost\', sans-serif; max-width:210mm; margin:0 auto; padding:15mm 20mm; color:#1A0F08; background:#fff;">'
           + '<div style="text-align:center; padding-bottom:18pt; border-bottom:2.5pt solid #C9A84C; margin-bottom:30pt; position:relative;">'
           + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute; left:0; top:0; height:65pt; width:65pt; object-fit:contain; border-radius:50%;">' : '')
           + '<div style="font-family:\'Cormorant Garamond\', serif; font-size:36pt; font-weight:700; color:#1A0F08; line-height:1; margin-bottom:5pt;">Happenings.co</div>'
           + '<div style="font-size:10pt; color:#C9A84C; letter-spacing:4pt; text-transform:uppercase; font-weight:500;">── Premium Event Planning ──</div></div>'
-          
+
           + '<div style="display:grid; grid-template-columns: 1.6fr 1fr; gap:35pt; margin-bottom:35pt;">'
           + '<div><div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:8pt; font-weight:600;">Client Details</div>'
           + '<div style="font-family:\'Cormorant Garamond\', serif; font-weight:700; font-size:18pt; color:#1A0F08; margin-bottom:4pt;">' + b.name.toUpperCase() + '</div>'
@@ -6794,31 +7021,31 @@
           + '<div style="font-size:11pt; font-weight:700; margin-bottom:4pt; color:#1A0F08;">REF ID: ' + b.ref + '</div>'
           + '<div style="font-size:10pt; color:#555; margin-bottom:3pt;">Date: ' + today + '</div>'
           + '<div style="font-size:10pt; color:#1A0F08; font-weight:600; text-transform:uppercase;">Event: ' + fD(b.date) + '</div></div></div>'
-          
+
           + '<div style="font-size:11pt; color:#555; margin-bottom:20pt; line-height:1.5;">Dear Client, we are pleased to submit the professional invoice for your scheduled event:</div>'
-          
+
           + '<table style="width:100%; border-collapse:collapse; margin-bottom:25pt;"><thead><tr style="border-bottom:2pt solid #1A0F08;"><th style="padding:10pt 0; text-align:left; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Service Description</th><th style="padding:10pt 0; text-align:right; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Amount</th></tr></thead>'
           + '<tbody>' + rows
           + '<tr><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; color:#7A6347;">Gross Total</td><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; font-weight:600;">' + total.toLocaleString() + '/-</td></tr>'
           + '<tr><td style="padding:5pt 0; text-align:right; font-size:10pt; color:#7A6347;">Advance Received</td><td style="padding:5pt 0; text-align:right; font-size:10pt; font-weight:600; color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
           + '<tr style="color:#C9A84C;"><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:18pt; font-weight:700;">Final Balance Due</td><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:22pt; font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
           + '</tbody></table>'
-          
+
           + '<div style="padding:18pt; background:#FBF8F2; border-left:4pt solid #C9A84C; margin-bottom:35pt; border-radius: 0 8pt 8pt 0;">'
           + '<div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:6pt; font-weight:600;">Total Amount in Words</div>'
           + '<div style="font-size:11pt; font-weight:700; color:#1A0F08; text-transform:uppercase;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
-          
+
           + '<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:35pt;">'
           + '<div style="font-size:10pt; color:#7A6347; font-style:italic; max-width:300px; line-height:1.5;">Thanking and assuring you for our best professional services at all times.</div>'
           + '<div style="text-align:right;"><div style="font-size:10pt; margin-bottom:40pt; color:#555;">Sincerely,</div><div style="font-size:10pt; font-weight:700; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:2pt; color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\', serif; font-size:16pt; font-weight:700; color:#C9A84C;">Happenings.co</div></div></div>'
-          
+
           + '<div style="text-align:center; font-size:8pt; color:#AAA; margin-bottom:25pt; font-style:italic; border-top:1pt solid #F0F0F0; padding-top:15pt;">** Computer generated document. No signature required **</div>'
-          
+
           + '<div style="background:#1A0F08; color:#FBF8F2; padding:15pt 25pt; border-radius:10pt; display:flex; justify-content:space-between; align-items:center; font-size:8pt;">'
           + '<div>📍 Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
           + '<div style="display:flex; gap:18pt;"><span>📸 happenings.co</span><span>📞 03302894915</span></div></div>'
           + '</div>';
-          
+
         window.print();
         setTimeout(function () { ps.innerHTML = ""; }, 1000);
       }
@@ -6882,7 +7109,7 @@
               oM("media-add-modal");
               var catSel = document.getElementById("media-cat-sel");
               catSel.innerHTML = "";
-              MEDIA_CATS.forEach(function(c) { if(c !== "All") { var o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o); } });
+              MEDIA_CATS.forEach(function (c) { if (c !== "All") { var o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o); } });
               document.getElementById("media-title-inp").value = title;
               catSel.value = MEDIA_CATS[1] || "Other";
 
@@ -6894,9 +7121,9 @@
                 var title2 = document.getElementById("media-title-inp").value.trim() || f.name;
                 var cat = document.getElementById("media-cat-sel").value;
                 var tags = document.getElementById("media-tags-inp").value;
-                
+
                 ld(); // Loading state ON
-                
+
                 var formData = new FormData();
                 formData.append("file", f);
                 formData.append("title", title2);
@@ -6907,22 +7134,22 @@
                   method: "POST",
                   body: formData
                 })
-                .then(function(res) { return res.json(); })
-                .then(function(result) {
-                  if (result.error) throw new Error(result.error);
-                  if (result.success && result.data) {
-                    MEDIA.unshift(result.data);
-                    cM("media-add-modal");
-                    rMedia();
-                    hd(); // Loading state OFF
-                    toast("Photo added to Cloudflare!");
-                  }
-                })
-                .catch(function(err) {
-                  hd();
-                  toast("R2 Upload failed: " + err.message);
-                  console.error("Upload Error:", err);
-                });
+                  .then(function (res) { return res.json(); })
+                  .then(function (result) {
+                    if (result.error) throw new Error(result.error);
+                    if (result.success && result.data) {
+                      MEDIA.unshift(result.data);
+                      cM("media-add-modal");
+                      rMedia();
+                      hd(); // Loading state OFF
+                      toast("Photo added to Cloudflare!");
+                    }
+                  })
+                  .catch(function (err) {
+                    hd();
+                    toast("R2 Upload failed: " + err.message);
+                    console.error("Upload Error:", err);
+                  });
               };
             });
           });
@@ -6959,12 +7186,12 @@
           btn.addEventListener("click", function (e) {
             e.stopPropagation();
             var me = this, idx = parseInt(me.getAttribute("data-delm"));
-                        if (me.getAttribute("data-c") === "1") {
+            if (me.getAttribute("data-c") === "1") {
               var mid = MEDIA[idx].id;
               ld();
-              db("media?id=eq." + mid, "DELETE").then(function() {
+              db("media?id=eq." + mid, "DELETE").then(function () {
                 MEDIA.splice(idx, 1); hd(); rMedia(); toast("Removed.");
-              }).catch(function(err) { hd(); toast("Delete failed: " + err.message); });
+              }).catch(function (err) { hd(); toast("Delete failed: " + err.message); });
             } else {
               me.setAttribute("data-c", "1"); me.textContent = "?"; me.style.background = "rgba(184,92,74,.8)";
               setTimeout(function () { if (me.getAttribute("data-c") === "1") { me.removeAttribute("data-c"); me.textContent = "&#10005;"; me.style.background = "rgba(0,0,0,.6)"; } }, 2000);
@@ -6989,16 +7216,16 @@
           });
         });
         var mcb = document.getElementById("media-cats-btn");
-        if(mcb) mcb.onclick = function() { rMediaCats(); oM("media-cats-modal"); };
+        if (mcb) mcb.onclick = function () { rMediaCats(); oM("media-cats-modal"); };
       }
 
 
       function rMediaCats() {
         var list = document.getElementById("media-cats-list");
-        if(!list) return;
+        if (!list) return;
         var hArr = [];
-        MEDIA_CATS.forEach(function(c, i) {
-          if(c === "All") return;
+        MEDIA_CATS.forEach(function (c, i) {
+          if (c === "All") return;
           var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
           row += "<div style='font-size:14px; color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
           row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delcat='" + i + "'>&#10005;</div>";
@@ -7006,9 +7233,9 @@
           hArr.push(row);
         });
         list.innerHTML = hArr.join("") || "<div style='padding:25px; text-align:center; font-size:12px; opacity:0.6; color:#7A6347;'>No custom categories.</div>";
-        
-        list.querySelectorAll("[data-delcat]").forEach(function(btn) {
-          btn.onclick = function() {
+
+        list.querySelectorAll("[data-delcat]").forEach(function (btn) {
+          btn.onclick = function () {
             var idx = parseInt(this.getAttribute("data-delcat"));
             MEDIA_CATS.splice(idx, 1);
             localStorage.setItem("ev_m_cats", JSON.stringify(MEDIA_CATS));
@@ -7017,11 +7244,11 @@
         });
       }
 
-      document.getElementById("add-mcat-btn").onclick = function() {
+      document.getElementById("add-mcat-btn").onclick = function () {
         var inp = document.getElementById("new-mcat-inp");
         var val = inp.value.trim();
-        if(!val) return;
-        if(MEDIA_CATS.indexOf(val) > -1) { toast("Category exists."); return; }
+        if (!val) return;
+        if (MEDIA_CATS.indexOf(val) > -1) { toast("Category exists."); return; }
         MEDIA_CATS.push(val);
         localStorage.setItem("ev_m_cats", JSON.stringify(MEDIA_CATS));
         inp.value = "";
