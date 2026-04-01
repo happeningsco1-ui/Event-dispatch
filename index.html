@@ -4427,8 +4427,14 @@
       <div class="mname">Finance Access</div>
       <div class="msub">This section is restricted.</div>
       <div class="fg" style="margin-bottom:14px;">
-        <div class="fl">Finance Password</div><input class="fi" id="fin-inp" type="text" placeholder="Enter password"
-          autocomplete="off" autocapitalize="none">
+        <div class="fl">Finance Password</div>
+        <input class="fi" id="fin-inp" type="password" placeholder="Enter password" autocomplete="off"
+          autocapitalize="none">
+        <div style="text-align:right; margin-top:5px;">
+          <a id="fin-forgot-btn"
+            style="font-size:10px; color:var(--gold); cursor:pointer; text-decoration:none; opacity:0.8;">Forgot
+            password?</a>
+        </div>
       </div>
       <div style="font-size:11px;color:var(--red);margin-bottom:11px;display:none;" id="fin-err">Incorrect password.
       </div>
@@ -6775,6 +6781,25 @@
       });
       document.getElementById("fin-cancel").addEventListener("click", function () { cM("fin-modal"); });
       document.getElementById("fin-inp").addEventListener("keyup", function (e) { if (e.key === "Enter") document.getElementById("fin-confirm").click(); });
+
+      document.getElementById("fin-forgot-btn").addEventListener("click", async function () {
+        ld();
+        try {
+          const { data: { user } } = await _sb.auth.getUser();
+          if (user && user.email) {
+            const { error } = await _sb.auth.resetPasswordForEmail(user.email);
+            if (error) throw error;
+            hd();
+            toast("Account reset link sent to: " + user.email);
+            cM("fin-modal");
+          } else {
+            throw new Error("No active session found. Please re-login.");
+          }
+        } catch (err) {
+          hd();
+          toast(err.message);
+        }
+      });
 
       function rFin() {
         var MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
