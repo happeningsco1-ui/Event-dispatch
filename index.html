@@ -4402,6 +4402,11 @@
         </div>
         <div style="font-size:9px;color:var(--mob-mut);margin-top:4px;">Tap to upload circular logo</div>
       </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <div class="fl">Finance PIN</div>
+        <input class="fi" id="fin-pin-inp" type="password" placeholder="Set Finance PIN">
+        <div style="font-size:9px;color:var(--mob-mut);margin-top:4px;">Default is 12345678</div>
+      </div>
       <div class="mbtns">
         <button class="mbtn-c" id="name-cancel">Cancel</button>
         <button class="mbtn-a" id="name-confirm">Save Profile</button>
@@ -4432,8 +4437,8 @@
           autocapitalize="none">
         <div style="text-align:right; margin-top:5px;">
           <a id="fin-forgot-btn"
-            style="font-size:10px; color:var(--gold); cursor:pointer; text-decoration:none; opacity:0.8;">Forgot
-            password?</a>
+            style="font-size:10px; color:var(--gold); cursor:pointer; text-decoration:none; opacity:0.8;">Forgot Account
+            Password?</a>
         </div>
       </div>
       <div style="font-size:11px;color:var(--red);margin-bottom:11px;display:none;" id="fin-err">Incorrect password.
@@ -4647,7 +4652,7 @@
 
   <script>
     try {
-      var AP = null, FP = "12345678"; // AP is now null, legacy PIN access is handled separately
+      var AP = null, FP = localStorage.getItem("ev_fin_p") || "12345678";
       var INV = [], BKN = [], TASKS = [];
       var BN = localStorage.getItem("biz_n") || "Happenings.co";
       var BL = localStorage.getItem("biz_l") || null;
@@ -4762,8 +4767,10 @@
         try {
           const { error } = await _sb.auth.updateUser({ password: newPass });
           if (error) throw error;
-          toast("Password updated successfully!");
-          cM('update-pass-modal');
+          toast("Password updated! Please log in again.");
+          setTimeout(() => {
+            _sb.auth.signOut().then(() => location.reload());
+          }, 1500);
         } catch (e) {
           toast(e.message);
         } finally {
@@ -5376,6 +5383,8 @@
         var n = document.getElementById("name-inp").value.trim(); if (!n) return;
         BN = n; localStorage.setItem("biz_n", n);
         localStorage.setItem("biz_l", BL || "");
+        var fpin = document.getElementById("fin-pin-inp").value.trim();
+        if (fpin) { FP = fpin; localStorage.setItem("ev_fin_p", fpin); }
         applyLogo(BL || document.getElementById("tl-img").src);
         [document.getElementById("tb-biz"), document.getElementById("desk-biz-txt")].forEach(function (el) { if (el) el.textContent = n; });
         cM("name-modal");
@@ -5385,6 +5394,7 @@
       var nameBtnEl = document.getElementById("name-btn");
       if (nameBtnEl) nameBtnEl.addEventListener("click", function () {
         document.getElementById("name-inp").value = BN;
+        document.getElementById("fin-pin-inp").value = FP;
         var pImg = document.getElementById("logo-preview-img"), pI = document.getElementById("logo-preview-icon");
         if (BL && pImg && pI) { pImg.src = BL; pImg.style.display = "block"; pI.style.display = "none"; }
         else if (pImg && pI) { pImg.style.display = "none"; pI.style.display = "block"; }
@@ -5393,6 +5403,7 @@
       var deskedit = document.getElementById("desk-name-edit-btn");
       if (deskedit) deskedit.addEventListener("click", function () {
         document.getElementById("name-inp").value = BN;
+        document.getElementById("fin-pin-inp").value = FP;
         var pImg = document.getElementById("logo-preview-img"), pI = document.getElementById("logo-preview-icon");
         if (BL && pImg && pI) { pImg.src = BL; pImg.style.display = "block"; pI.style.display = "none"; }
         else if (pImg && pI) { pImg.style.display = "none"; pI.style.display = "block"; }
