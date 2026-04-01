@@ -4621,6 +4621,7 @@
       // ── NAVIGATION ─────────────────────────────────────────────────────────────
       function go(id) {
         curScreen = id;
+        localStorage.setItem("cur_screen", id);
         if (isDesk) {
           renderDesk(id);
         } else {
@@ -5029,9 +5030,15 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
-            hd(); initBiz(); go("s-dash");
+            hd(); initBiz(); 
+            var sc = localStorage.getItem("cur_screen") || "s-dash";
+            go(sc);
+            loadDraft();
           }).catch(function (e) { 
-            clearTimeout(timeout); hd(); go("s-dash"); 
+            clearTimeout(timeout); hd();
+            var sc = localStorage.getItem("cur_screen") || "s-dash";
+            go(sc); 
+            loadDraft();
                         toast("Load error: " + e.message);
           });
       }
@@ -5377,9 +5384,51 @@
 
       // ── NEW BOOKING ─────────────────────────────────────────────────────────────
       var curEditBknId = null;
+      var draftCart = {};
+
+      function saveDraft() {
+        var d = {
+          curEditBknId: curEditBknId,
+          draftCart: draftCart,
+          curEventNotes: curEventNotes,
+          curEventInspos: curEventInspos.length < 5 ? curEventInspos : [], // Only save small inspos to avoid LS limit
+          vals: {}
+        };
+        ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) d.vals[id] = el.value;
+        });
+        localStorage.setItem("ev_bkg_draft", JSON.stringify(d));
+      }
+
+      function loadDraft() {
+        try {
+          var s = localStorage.getItem("ev_bkg_draft");
+          if (!s) return;
+          var d = JSON.parse(s);
+          curEditBknId = d.curEditBknId;
+          draftCart = d.draftCart || {};
+          curEventNotes = d.curEventNotes || "";
+          if (d.curEventInspos && d.curEventInspos.length > 0) curEventInspos = d.curEventInspos;
+          
+          Object.keys(d.vals || {}).forEach(function(id) {
+            var el = document.getElementById(id);
+            if(el) el.value = d.vals[id];
+          });
+          
+          // Restore checklists
+          var ex = d.vals && d.vals.ext ? d.vals.ext : []; // If we decide to save ext tags too
+          // Actually let's just make it simpler for now and save what's in the vals
+        } catch(e) { console.error("Draft load err", e); }
+      }
+
+      function clearDraft() {
+        localStorage.removeItem("ev_bkg_draft");
+      }
 
       function clearNewBkn() {
         curEditBknId = null;
+        clearDraft();
         document.querySelectorAll(".echk").forEach(function (e) { e.classList.remove("on"); });
         ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-total", "nb-paid"].forEach(function (id) {
           var el = document.getElementById(id); if (el) el.value = "";
