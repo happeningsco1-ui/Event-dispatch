@@ -5239,12 +5239,13 @@
         var timeout = setTimeout(function () {
           hd(); go("s-dash"); toast("Connection slow - showing cached data.");
         }, 12000);
+        
+        // Critical core data
         Promise.all([
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
           db("media?order=created_at.desc"),
-          db("tasks?order=due_at.asc"),
-          db("staff?order=created_at.asc")
+          db("tasks?order=due_at.asc")
         ])
           .then(function (r) {
             clearTimeout(timeout);
@@ -5263,14 +5264,22 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
-            STAFF_LIST = Array.isArray(r[4]) ? r[4] : [];
-            hd(); initBiz();
-            var sc = localStorage.getItem("cur_screen") || "s-dash";
-            curDetailId = localStorage.getItem("cur_detail_id");
-            invoiceBkgId = localStorage.getItem("inv_bkg_id");
-            curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-            go(sc);
-            loadDraft();
+            
+            // Try to load staff separately - don't crash if it fails (e.g. table doesn't exist yet)
+            db("staff?order=created_at.asc").then(function (res) {
+              STAFF_LIST = Array.isArray(res) ? res : [];
+            }).catch(function (err) {
+              console.warn("Staff table loading failed:", err.message);
+              STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
+            }).finally(function() {
+              hd(); initBiz();
+              var sc = localStorage.getItem("cur_screen") || "s-dash";
+              curDetailId = localStorage.getItem("cur_detail_id");
+              invoiceBkgId = localStorage.getItem("inv_bkg_id");
+              curEditBknId = localStorage.getItem("cur_edit_bkn_id");
+              go(sc);
+              loadDraft();
+            });
           }).catch(function (e) {
             clearTimeout(timeout); hd();
             var sc = localStorage.getItem("cur_screen") || "s-dash";
@@ -5279,7 +5288,7 @@
             curEditBknId = localStorage.getItem("cur_edit_bkn_id");
             go(sc);
             loadDraft();
-            toast("Load error: " + e.message);
+            toast("Major load error: " + e.message);
           });
       }
 
@@ -6635,9 +6644,13 @@
             ld();
             db("staff?id=eq." + s.id, "DELETE").then(function () {
               STAFF_LIST.splice(idx, 1);
-              hd(); renderStaffModal(); toast("Staff removed.");
+              hd(); renderStaffModal(); toast("Staff removed from database.");
             }).catch(function (err) {
-              hd(); toast("Delete failed: " + err.message);
+              console.error("Staff DB delete failed:", err.message);
+              // Fallback to local storage if DB fails
+              STAFF_LIST.splice(idx, 1);
+              localStorage.setItem("ev_staff", JSON.stringify(STAFF_LIST));
+              hd(); renderStaffModal(); toast("Staff removed (Local Storage).");
             });
           });
         });
@@ -6668,7 +6681,13 @@
           document.getElementById("staff-name-inp").value = "";
           hd(); renderStaffModal(); toast("Staff added to database.");
         }).catch(function (err) {
-          hd(); toast("Add failed: " + err.message);
+          console.error("Staff DB add failed:", err.message);
+          // Fallback to local storage if DB fails
+          var dummy = { id: "ls_" + Date.now(), name: n, role: role };
+          STAFF_LIST.push(dummy);
+          localStorage.setItem("ev_staff", JSON.stringify(STAFF_LIST));
+          document.getElementById("staff-name-inp").value = "";
+          hd(); renderStaffModal(); toast("Staff added (Local Storage).");
         });
       });
       document.getElementById("staff-done-btn").addEventListener("click", function () { cM("staff-modal"); });
