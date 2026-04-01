@@ -4740,6 +4740,9 @@
       async function handleAuth() {
         const email = document.getElementById("auth-email").value.trim();
         const password = document.getElementById("auth-password").value.trim();
+        const msgEl = document.getElementById("auth-msg");
+        msgEl.style.display = "none";
+
         if (!email || !password) { toast("Enter email and password"); return; }
 
         const btn = document.getElementById("auth-submit-btn");
@@ -4747,9 +4750,19 @@
 
         try {
           const { data, error } = await _sb.auth.signInWithPassword({ email, password });
-          if (error) throw error;
+          if (error) {
+            if (error.message.toLowerCase().includes("email not confirmed")) {
+              document.getElementById("auth-main-card").style.display = "none";
+              document.getElementById("auth-verify-screen").style.display = "block";
+              return;
+            }
+            throw error;
+          }
           location.reload();
         } catch (e) {
+          msgEl.style.color = "var(--red)";
+          msgEl.textContent = e.message;
+          msgEl.style.display = "block";
           toast(e.message);
         } finally {
           btn.disabled = false; btn.textContent = "Sign In";
@@ -6825,7 +6838,7 @@
         h += "<div style='display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--mob-brs);padding-bottom:10px;margin-bottom:15px;'>";
         for (var m = 0; m <= currM; m++) {
           var isOn = (m === finM && currY === finY);
-          var bg = isOn ? "background:var(--gold);color:#0F0905;" : "background:#1A0F08;color:#7A6347;border:1px solid var(--mob-brs);";
+          var bg = isOn ? "background:var(--gold);color:#0F0905;" : "background:#F0E6D3;color:#5B4136;border:1px solid #D9C5A3;";
           h += "<div class='fin-month-btn' data-m='" + m + "' data-y='" + currY + "' style='padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;" + bg + "'>" + MN[m].substring(0, 3) + " " + currY + "</div>";
         }
         h += "</div>";
