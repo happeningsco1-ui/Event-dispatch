@@ -5441,10 +5441,15 @@
       }
 
       function openEditBkn(id) {
-        clearNewBkn();
         var b = BKN.find(function(x) { return x.id === id; });
         if (!b) return;
         curEditBknId = id;
+        go("s-new-bkn");
+        setTimeout(function() {
+          clearNewBkn();
+          // We must find the booking again because clearNewBkn might reset BKN (no it doesn't, but let's be sure)
+          var b = BKN.find(function(x) { return x.id === id; });
+          curEditBknId = id;
         
         var dName = document.getElementById("nb-name"); if(dName) dName.value = b.name || "";
         var dDate = document.getElementById("nb-date"); if(dDate) dDate.value = b.date || "";
@@ -5457,25 +5462,26 @@
         var dTotal = document.getElementById("nb-total"); if(dTotal) dTotal.value = b.total || "";
         var dPaid = document.getElementById("nb-paid"); if(dPaid) dPaid.value = b.paid || "";
         
-        curEventNotes = b.eventNotes || b.reminder_notes || b.reminder || "";
-        var dENotes = document.getElementById("nb-ed-notes"); if(dENotes) dENotes.value = curEventNotes;
-        
-        curEventInspos = (b.eventInspos || []).slice();
-        rNbEdThumbs();
-
-        draftCart = {};
-        if (b.dispatchItems) {
-           b.dispatchItems.forEach(function(di) {
-               draftCart[di.itemId] = di.qty;
-           });
-        }
-        
-        var exts = b.extItems || b.pending_items || [];
-        document.querySelectorAll(".echk").forEach(function(e) {
-          if (exts.includes(e.getAttribute("data-v"))) e.classList.add("on");
-        });
-        
-        go("s-new-bkn");
+          curEventNotes = b.eventNotes || b.reminder_notes || b.reminder || "";
+          var dENotes = document.getElementById("nb-ed-notes"); if(dENotes) dENotes.value = curEventNotes;
+          var deNotesD = document.getElementById("ed-notes-d"); if(deNotesD) deNotesD.value = curEventNotes;
+          
+          curEventInspos = (b.eventInspos || []).slice();
+          rNbEdThumbs();
+          if (typeof isDesk !== 'undefined' && isDesk) rNbEdThumbsD();
+  
+          draftCart = {};
+          if (b.dispatchItems) {
+             b.dispatchItems.forEach(function(di) {
+                 draftCart[di.itemId] = di.qty;
+             });
+          }
+          
+          var exts = b.extItems || b.pending_items || [];
+          document.querySelectorAll(".echk").forEach(function(e) {
+            if (exts.includes(e.getAttribute("data-v"))) e.classList.add("on");
+          });
+        }, 100);
       }
 
       function showNbStep(step) {
@@ -5501,7 +5507,20 @@
         if (step === 3) rNbReserveGrid("All");
       }
       function bindNewBkn() {
-        document.querySelectorAll(".echk").forEach(function (e) { e.onclick = function () { this.classList.toggle("on"); }; });
+        document.querySelectorAll(".echk").forEach(function (e) { 
+          e.onclick = function () { 
+            this.classList.toggle("on"); 
+            saveDraft();
+          }; 
+        });
+        
+        ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid", "nb-ed-notes", "ed-notes-d"].forEach(function(i) {
+          var el = document.getElementById(i);
+          if (el) {
+            el.oninput = saveDraft;
+            el.onchange = saveDraft;
+          }
+        });
         // Step 1 next
         var nextBtn = document.getElementById("nb-next-btn");
         if (nextBtn) nextBtn.onclick = function () {
@@ -5579,6 +5598,7 @@
             var cur = draftCart[id] || 0;
             draftCart[id] = cur < item.qty ? cur + 1 : 0;
             if (draftCart[id] === 0) delete draftCart[id];
+            saveDraft();
             rNbReserveGridD(cat);
           };
         });
@@ -5589,7 +5609,13 @@
         var h = "";
         curEventInspos.forEach(function (s, i) { h += "<div class='inspo-thumb'><img src='" + s + "'><button class='inspo-del' data-ni='" + i + "'>x</button></div>"; });
         el.innerHTML = h;
-        el.querySelectorAll("[data-ni]").forEach(function (btn) { btn.onclick = function () { curEventInspos.splice(parseInt(this.getAttribute("data-ni")), 1); rNbEdThumbs(); }; });
+        el.querySelectorAll("[data-ni]").forEach(function (btn) { 
+          btn.onclick = function () { 
+            curEventInspos.splice(parseInt(this.getAttribute("data-ni")), 1); 
+            saveDraft();
+            rNbEdThumbs(); 
+          }; 
+        });
       }
 
       function rNbReserveGrid(cat) {
@@ -5613,6 +5639,7 @@
             var cur = draftCart[id] || 0;
             draftCart[id] = cur < item.qty ? cur + 1 : 0;
             if (draftCart[id] === 0) delete draftCart[id];
+            saveDraft();
             rNbReserveGrid(cat);
           };
         });
@@ -5626,7 +5653,6 @@
       }
       var newBknEl = document.getElementById("new-bkn-btn"); if (newBknEl) newBknEl.addEventListener("click", function () { clearNewBkn(); go("s-new-bkn"); });
       var backNewEl = document.getElementById("back-new-bkn"); if (backNewEl) backNewEl.addEventListener("click", function () { go("s-bkns"); });
-      document.querySelectorAll(".echk").forEach(function (e) { e.addEventListener("click", function () { this.classList.toggle("on"); }); });
       // save buttons bound in bindNewBkn() only
 
       function doFinalSave(withInventory) {
