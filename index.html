@@ -4622,6 +4622,9 @@
       function go(id) {
         curScreen = id;
         localStorage.setItem("cur_screen", id);
+        if (curDetailId) localStorage.setItem("cur_detail_id", curDetailId);
+        if (invoiceBkgId) localStorage.setItem("inv_bkg_id", invoiceBkgId);
+        if (curEditBknId) localStorage.setItem("cur_edit_bkn_id", curEditBknId);
         if (isDesk) {
           renderDesk(id);
         } else {
@@ -5011,7 +5014,8 @@
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
           db("media?order=created_at.desc"),
-          db("tasks?order=due_at.asc")
+          db("tasks?order=due_at.asc"),
+          db("staff?order=created_at.asc")
         ])
           .then(function (r) {
             clearTimeout(timeout);
@@ -5030,13 +5034,20 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
+            STAFF_LIST = Array.isArray(r[4]) ? r[4] : [];
             hd(); initBiz(); 
             var sc = localStorage.getItem("cur_screen") || "s-dash";
+            curDetailId = localStorage.getItem("cur_detail_id");
+            invoiceBkgId = localStorage.getItem("inv_bkg_id");
+            curEditBknId = localStorage.getItem("cur_edit_bkn_id");
             go(sc);
             loadDraft();
           }).catch(function (e) { 
             clearTimeout(timeout); hd();
             var sc = localStorage.getItem("cur_screen") || "s-dash";
+            curDetailId = localStorage.getItem("cur_detail_id");
+            invoiceBkgId = localStorage.getItem("inv_bkg_id");
+            curEditBknId = localStorage.getItem("cur_edit_bkn_id");
             go(sc); 
             loadDraft();
                         toast("Load error: " + e.message);
