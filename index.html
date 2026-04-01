@@ -4387,14 +4387,24 @@
   </div>
   <div class="overlay" id="name-modal">
     <div class="modal">
-      <div class="mname">Business Name</div>
+      <div class="mname">Business Profile</div>
       <div style="height:10px;"></div>
-      <div class="fg" style="margin-bottom:16px;">
+      <div class="fg" style="margin-bottom:12px;">
         <div class="fl">Business Name</div><input class="fi" id="name-inp" placeholder="e.g. Happenings Events">
+      </div>
+      <div class="fg" style="margin-bottom:16px;">
+        <div class="fl">Business Logo</div>
+        <input type="file" id="logo-file" accept="image/*" style="display:none;">
+        <div id="logo-preview-box"
+          style="width:80px;height:80px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--mob-bm);margin-top:5px;overflow:hidden;padding:5px;">
+          <img id="logo-preview-img" style="width:100%;height:100%;object-fit:contain;display:none;">
+          <span id="logo-preview-icon" style="font-size:24px;">&#128247;</span>
+        </div>
+        <div style="font-size:9px;color:var(--mob-mut);margin-top:4px;">Tap to upload circular logo</div>
       </div>
       <div class="mbtns">
         <button class="mbtn-c" id="name-cancel">Cancel</button>
-        <button class="mbtn-a" id="name-confirm">Save</button>
+        <button class="mbtn-a" id="name-confirm">Save Profile</button>
       </div>
     </div>
   </div>
@@ -5344,20 +5354,44 @@
       }
 
       // ── BIZ NAME/LOGO ──────────────────────────────────────────────────────────
-      var logoFileEl = document.getElementById("logo-file"); if (logoFileEl) logoFileEl.addEventListener("change", function () {
+      var logoFileEl = document.getElementById("logo-file");
+      if (logoFileEl) logoFileEl.addEventListener("change", function () {
         var f = this.files[0]; if (!f) return;
-        rF(f, function (s) { BL = s; localStorage.setItem("biz_l", s); applyLogo(s); });
+        rF(f, function (s) {
+          BL = s;
+          var pImg = document.getElementById("logo-preview-img"), pI = document.getElementById("logo-preview-icon");
+          if (pImg && pI) { pImg.src = s; pImg.style.display = "block"; pI.style.display = "none"; }
+        });
       });
+      var logoPreBox = document.getElementById("logo-preview-box");
+      if (logoPreBox) logoPreBox.onclick = function () { document.getElementById("logo-file").click(); };
+
       document.getElementById("name-confirm").addEventListener("click", function () {
         var n = document.getElementById("name-inp").value.trim(); if (!n) return;
         BN = n; localStorage.setItem("biz_n", n);
+        localStorage.setItem("biz_l", BL || "");
+        applyLogo(BL || document.getElementById("tl-img").src);
         [document.getElementById("tb-biz"), document.getElementById("desk-biz-txt")].forEach(function (el) { if (el) el.textContent = n; });
         cM("name-modal");
+        toast("Profile updated!");
       });
       document.getElementById("name-cancel").addEventListener("click", function () { cM("name-modal"); });
-      var nameBtnEl = document.getElementById("name-btn"); if (nameBtnEl) nameBtnEl.addEventListener("click", function () { document.getElementById("name-inp").value = BN; oM("name-modal"); });
+      var nameBtnEl = document.getElementById("name-btn");
+      if (nameBtnEl) nameBtnEl.addEventListener("click", function () {
+        document.getElementById("name-inp").value = BN;
+        var pImg = document.getElementById("logo-preview-img"), pI = document.getElementById("logo-preview-icon");
+        if (BL && pImg && pI) { pImg.src = BL; pImg.style.display = "block"; pI.style.display = "none"; }
+        else if (pImg && pI) { pImg.style.display = "none"; pI.style.display = "block"; }
+        oM("name-modal");
+      });
       var deskedit = document.getElementById("desk-name-edit-btn");
-      if (deskedit) deskedit.addEventListener("click", function () { document.getElementById("name-inp").value = BN; oM("name-modal"); });
+      if (deskedit) deskedit.addEventListener("click", function () {
+        document.getElementById("name-inp").value = BN;
+        var pImg = document.getElementById("logo-preview-img"), pI = document.getElementById("logo-preview-icon");
+        if (BL && pImg && pI) { pImg.src = BL; pImg.style.display = "block"; pI.style.display = "none"; }
+        else if (pImg && pI) { pImg.style.display = "none"; pI.style.display = "block"; }
+        oM("name-modal");
+      });
 
       // ── MOBILE NAV ─────────────────────────────────────────────────────────────
       document.querySelectorAll(".ni[data-go]").forEach(function (n) {
@@ -6988,7 +7022,7 @@
         var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
         var adv = b.paid || 0, bal = total - adv;
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
-        var logoSrc = BL || "https://happenings.co/logo.png"; // Fallback logo path
+        var logoSrc = BL || document.getElementById("tl-img").src;
         
         var rows = invoiceLines.map(function (l) {
           return '<tr style="background:#F9DCC4; border-bottom:2px solid #fff;">' +
@@ -7125,7 +7159,7 @@
         var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
         var adv = b.paid || 0, bal = total - adv;
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
-        var logoSrc = BL || "https://happenings.co/logo.png";
+        var logoSrc = BL || document.getElementById("tl-img").src;
         var ps = document.getElementById("print-sheet");
         var rows = invoiceLines.map(function (l) {
           return '<tr style="background:#F9DCC4; border-bottom:1.5pt solid #fff;">' +
@@ -7145,7 +7179,7 @@
             '<div style="display:flex; align-items:center; justify-content:center; gap:15pt; margin-bottom:35pt;">' +
               '<img src="' + logoSrc + '" style="height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
               '<div style="text-align:center;">' +
-                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
+                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">' + BN + '</h1>' +
                 '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
                   '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
                   '<span style="font-size:12pt; letter-spacing:2pt; font-weight:500;">Event organiser</span>' +
@@ -7167,7 +7201,7 @@
                 '</div>' +
                 '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
                   '<span style="color:#777; font-weight:600;">LOCATION</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "-").toUpperCase() + '</span>' +
                 '</div>' +
               '</div>' +
               '<div>' +
