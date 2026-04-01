@@ -6988,57 +6988,134 @@
         var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
         var adv = b.paid || 0, bal = total - adv;
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
-        var logoSrc = BL || "";
-        var rows = invoiceLines.map(function (l, i) {
-          return '<tr style="border-bottom:1px solid #F0E6D3;"><td style="padding:15px 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:15px 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
+        var logoSrc = BL || "https://happenings.co/logo.png"; // Fallback logo path
+        
+        var rows = invoiceLines.map(function (l) {
+          return '<tr style="background:#F9DCC4; border-bottom:2px solid #fff;">' +
+                 '<td style="padding:12px 15px; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
+                 '<td style="padding:12px 15px; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
+                 '</tr>';
         }).join("");
 
-        var inv =
-          '<div style="font-family:\'Jost\',sans-serif;max-width:700px;margin:0 auto;background:#fff;padding:45px;color:#1A0F08;border:1px solid #EDE4D6;box-shadow:0 10px 40px rgba(0,0,0,0.06);">'
-          + '<!-- Header -->'
-          + '<div style="text-align:center;padding-bottom:25px;border-bottom:2px solid #C9A84C;margin-bottom:35px;position:relative;">'
-          + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute;left:0;top:-10px;height:80px;width:80px;object-fit:contain;border-radius:50%;">' : '')
-          + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:38pt;font-weight:700;color:#1A0F08;line-height:1;margin-bottom:6px;letter-spacing:-0.5px;">Happenings.co</div>'
-          + '<div style="font-size:10pt;color:#C9A84C;letter-spacing:5px;text-transform:uppercase;font-weight:500;">── Premium Event Planning ──</div></div>'
+        var inv = 
+          '<div style="font-family:\'Jost\', sans-serif; background:#fff; color:#1A0F08; position:relative; overflow:hidden; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 0 20px rgba(0,0,0,0.05);">' +
+          
+          '<!-- Watermark Logo -->' +
+          '<div style="position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:url(\'' + logoSrc + '\') no-repeat center; background-size:contain; opacity:0.04; pointer-events:none; z-index:0;"></div>' +
+          
+          '<div style="position:relative; z-index:1; padding:40px 50px;">' +
+            '<!-- Header -->' +
+            '<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:40px;">' +
+              '<img src="' + logoSrc + '" style="height:90px; width:90px; object-fit:contain; border-radius:50%; border:2px solid #8B6E32; padding:5px;">' +
+              '<div style="text-align:center;">' +
+                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:42pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
+                '<div style="display:flex; align-items:center; gap:10px; justify-content:center; color:#C9A84C; margin-top:5px;">' +
+                  '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
+                  '<span style="font-size:14pt; letter-spacing:2px; font-weight:500;">Event organiser</span>' +
+                  '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
 
-          + '<!-- Meta Info -->'
-          + '<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:40px;margin-bottom:40px;">'
-          + '<div><div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;">Client Details</div>'
-          + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20pt;font-weight:700;color:#1A0F08;margin-bottom:5px;">' + b.name.toUpperCase() + '</div>'
-          + '<div style="font-size:10.5pt;background:rgba(201,168,76,0.05);display:inline-block;padding:2px 8px;border-radius:4px;color:#7A6347;margin-bottom:8px;">' + (b.phone || "-") + '</div>'
-          + '<div style="font-size:10.5pt;color:#555;line-height:1.4;">' + (b.venue || "Location Not Specified") + '</div></div>'
-          + '<div style="text-align:right;"><div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600;">Statement Info</div>'
-          + '<div style="font-size:11pt;font-weight:700;margin-bottom:5px;color:#1A0F08;">REF ID: ' + b.ref + '</div>'
-          + '<div style="font-size:10pt;color:#555;margin-bottom:3px;">Date: ' + today + '</div>'
-          + '<div style="font-size:10pt;color:#1A0F08;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Event: ' + fD(b.date) + '</div></div></div>'
+            '<!-- Info Grid -->' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px; font-size:9pt; line-height:1.6;">' +
+              '<div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+                  '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + b.name.toUpperCase() + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+                  '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">-</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+                  '<span style="color:#777; font-weight:600;">LOCATION</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+                  '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + today + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+                  '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.phone || "-") + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+                  '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
+                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
 
-          + '<div style="font-size:11pt;color:#555;margin-bottom:25px;line-height:1.6;">Dear Client,<br>We are pleased to submit the professional invoice for your upcoming event. Thank you for choosing Happenings.co.</div>'
+            '<p style="font-size:11pt; color:#333; margin-bottom:20px;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
 
-          + '<!-- Table -->'
-          + '<table style="width:100%;border-collapse:collapse;margin-bottom:30px;"><thead><tr style="border-bottom:2.5pt solid #1A0F08;"><th style="padding:12px 0;text-align:left;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Service Description</th><th style="padding:12px 0;text-align:right;font-size:10pt;color:#1A0F08;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Amount</th></tr></thead>'
-          + '<tbody>' + rows
-          + '<tr><td style="padding:25px 0 6px;text-align:right;font-size:10.5pt;color:#7A6347;">Gross Total</td><td style="padding:25px 0 6px;text-align:right;font-size:10.5pt;font-weight:600;">' + total.toLocaleString() + '/-</td></tr>'
-          + '<tr><td style="padding:4px 0;text-align:right;font-size:10.5pt;color:#7A6347;">Advance Received</td><td style="padding:4px 0;text-align:right;font-size:10.5pt;font-weight:600;color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
-          + '<tr style="color:#C9A84C;"><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:20pt;font-weight:700;">Final Balance Due</td><td style="padding:18px 0;text-align:right;font-family:\'Cormorant Garamond\',serif;font-size:24pt;font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
-          + '</tbody></table>'
+            '<!-- Table -->' +
+            '<table style="width:100%; border-collapse:collapse; margin-bottom:25px;">' +
+              '<thead>' +
+                '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1px;">' +
+                  '<th style="padding:10px 15px; font-weight:600;">DESCRIPTION</th>' +
+                  '<th style="padding:10px 15px; text-align:right; font-weight:600;">TOTAL</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + rows + '</tbody>' +
+              '<tfoot>' +
+                '<tr>' +
+                  '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
+                  '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:12pt; border-bottom:2px solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:10pt;">ADVANCE PAID</td>' +
+                  '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:11pt;">' + adv.toLocaleString() + '/-</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:10pt; color:#B85C4A;">BALANCE</td>' +
+                  '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:11pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
+                '</tr>' +
+              '</tfoot>' +
+            '</table>' +
 
-          + '<!-- Words -->'
-          + '<div style="padding:22px;background:#FBF8F2;border-left:5px solid #C9A84C;margin-bottom:45px;border-radius:0 10px 10px 0;">'
-          + '<div style="font-size:8pt;color:#7A6347;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:600;">Total Amount in Words</div>'
-          + '<div style="font-size:12pt;font-weight:700;color:#1A0F08;text-transform:uppercase;letter-spacing:0.5px;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
+            '<!-- Balance Section -->' +
+            '<div style="margin-bottom:35px;">' +
+              '<div style="font-size:13pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:15pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
+            '</div>' +
 
-          + '<!-- Signoff -->'
-          + '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:45px;">'
-          + '<div style="font-size:11pt;color:#7A6347;font-style:italic;max-width:350px;line-height:1.6;">Thanking and assuring you for our best professional services at all times.</div>'
-          + '<div style="text-align:right;"><div style="font-size:10pt;margin-bottom:45px;color:#555;">Sincerely,</div><div style="font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\',serif;font-size:18pt;font-weight:700;color:#C9A84C;">Happenings.co</div></div></div>'
+            '<div style="font-size:11.5pt; font-weight:500; color:#333; margin-bottom:30px;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
 
-          + '<div style="text-align:center;font-size:8.5pt;color:#BBB;margin-bottom:30px;font-style:italic;border-top:1px solid #F0F0F0;padding-top:18px;">** This is a computer generated document and does not require a physical signature **</div>'
+            '<div style="margin-bottom:50px; font-size:11pt; line-height:1.4;">' +
+              '<div>Yours Truly</div>' +
+              '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
+              '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
+            '</div>' +
 
-          + '<!-- Footer -->'
-          + '<div style="background:#1A0F08;color:#FBF8F2;padding:22px 30px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;font-size:9pt;box-shadow:0 4px 15px rgba(26,15,8,0.2);">'
-          + '<div><span style="color:#C9A84C;margin-right:8px;">📍</span>Karachi, PK — Office SA-10 CMCHS, Bahadurabad.</div>'
-          + '<div style="display:flex;gap:25px;"><span><span style="color:#C9A84C;margin-right:6px;">📸</span>happenings.co</span><span><span style="color:#C9A84C;margin-right:6px;">📞</span>03302894915</span></div></div>'
-          + '</div>';
+            '<div style="font-size:9pt; color:#777; font-style:italic;">** System generated bill. Signature not required **</div>' +
+          '</div>' +
+
+          '<!-- Footer -->' +
+          '<div style="background:#5B4136; color:#fff; display:flex; gap:15px; align-items:stretch; padding:0; height:80px; position:relative; overflow:hidden;">' +
+            '<div style="background:#2C1A0E; padding:15px 30px; display:flex; align-items:center; gap:15px; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
+              '<div style="font-size:24pt;">📍</div>' +
+              '<div style="font-size:8pt; line-height:1.3; font-style:italic;">' +
+                'Shop no.1 SA-10 cmchs,<br>' +
+                'near Rangoonwala hall<br>' +
+                'Bahadurabad, Karachi.' +
+              '</div>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:20px; padding:0 30px 0 10px; flex:1;">' +
+              '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
+                '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📸</span>' +
+                '<span>Happenings.co</span>' +
+              '</div>' +
+              '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
+                '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📞</span>' +
+                '<span>03302894915</span>' +
+              '</div>' +
+            '</div>' +
+            '<div style="position:absolute; bottom:0; left:0; width:100%; height:5px; background:#C9A84C;"></div>' +
+          '</div>' +
+          
+        '</div>';
 
         el.innerHTML = inv;
         document.getElementById("print-sheet").innerHTML = inv;
@@ -7048,52 +7125,134 @@
         var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
         var adv = b.paid || 0, bal = total - adv;
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
-        var logoSrc = BL || "";
+        var logoSrc = BL || "https://happenings.co/logo.png";
         var ps = document.getElementById("print-sheet");
-        var rows = invoiceLines.map(function (l, i) {
-          return '<tr style="border-bottom: 0.5pt solid #F0E6D3;"><td style="padding:12pt 0;font-size:10pt;font-weight:500;color:#1A0F08;text-transform:uppercase;">' + l.desc + '</td><td style="padding:12pt 0;text-align:right;font-size:10pt;font-weight:600;color:#1A0F08;">' + parseInt(l.amt).toLocaleString() + '/-</td></tr>';
+        var rows = invoiceLines.map(function (l) {
+          return '<tr style="background:#F9DCC4; border-bottom:1.5pt solid #fff;">' +
+                 '<td style="padding:10pt 12pt; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
+                 '<td style="padding:10pt 12pt; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
+                 '</tr>';
         }).join("");
 
-        ps.innerHTML =
-          '<div style="font-family:\'Jost\', sans-serif; max-width:210mm; margin:0 auto; padding:15mm 20mm; color:#1A0F08; background:#fff;">'
-          + '<div style="text-align:center; padding-bottom:18pt; border-bottom:2.5pt solid #C9A84C; margin-bottom:30pt; position:relative;">'
-          + (logoSrc ? '<img src="' + logoSrc + '" style="position:absolute; left:0; top:0; height:65pt; width:65pt; object-fit:contain; border-radius:50%;">' : '')
-          + '<div style="font-family:\'Cormorant Garamond\', serif; font-size:36pt; font-weight:700; color:#1A0F08; line-height:1; margin-bottom:5pt;">Happenings.co</div>'
-          + '<div style="font-size:10pt; color:#C9A84C; letter-spacing:4pt; text-transform:uppercase; font-weight:500;">── Premium Event Planning ──</div></div>'
+        ps.innerHTML = 
+          '<div style="font-family:\'Jost\', sans-serif; background:#fff; color:#1A0F08; position:relative; overflow:hidden; width:210mm; min-height:280mm; padding:20mm; margin:0 auto; box-sizing:border-box;">' +
+          
+          '<!-- Watermark Logo -->' +
+          '<div style="position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); width:150mm; height:150mm; background:url(\'' + logoSrc + '\') no-repeat center; background-size:contain; opacity:0.04; pointer-events:none; z-index:0;"></div>' +
+          
+          '<div style="position:relative; z-index:1;">' +
+            '<!-- Header -->' +
+            '<div style="display:flex; align-items:center; justify-content:center; gap:15pt; margin-bottom:35pt;">' +
+              '<img src="' + logoSrc + '" style="height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
+              '<div style="text-align:center;">' +
+                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
+                '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
+                  '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
+                  '<span style="font-size:12pt; letter-spacing:2pt; font-weight:500;">Event organiser</span>' +
+                  '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
 
-          + '<div style="display:grid; grid-template-columns: 1.6fr 1fr; gap:35pt; margin-bottom:35pt;">'
-          + '<div><div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:8pt; font-weight:600;">Client Details</div>'
-          + '<div style="font-family:\'Cormorant Garamond\', serif; font-weight:700; font-size:18pt; color:#1A0F08; margin-bottom:4pt;">' + b.name.toUpperCase() + '</div>'
-          + '<div style="font-size:10pt; color:#555;">' + (b.phone || "-") + '</div>'
-          + '<div style="font-size:10pt; color:#555; margin-top:3pt;">' + (b.venue || "Location Not Specified") + '</div></div>'
-          + '<div style="text-align:right;"><div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:8pt; font-weight:600;">Statement Info</div>'
-          + '<div style="font-size:11pt; font-weight:700; margin-bottom:4pt; color:#1A0F08;">REF ID: ' + b.ref + '</div>'
-          + '<div style="font-size:10pt; color:#555; margin-bottom:3pt;">Date: ' + today + '</div>'
-          + '<div style="font-size:10pt; color:#1A0F08; font-weight:600; text-transform:uppercase;">Event: ' + fD(b.date) + '</div></div></div>'
+            '<!-- Info Grid -->' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5;">' +
+               '<div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+                  '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + b.name.toUpperCase() + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+                  '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">-</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
+                  '<span style="color:#777; font-weight:600;">LOCATION</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+                  '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + today + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+                  '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.phone || "-") + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
+                  '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
+                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
 
-          + '<div style="font-size:11pt; color:#555; margin-bottom:20pt; line-height:1.5;">Dear Client, we are pleased to submit the professional invoice for your scheduled event:</div>'
+            '<p style="font-size:10.5pt; color:#333; margin-bottom:15pt;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
 
-          + '<table style="width:100%; border-collapse:collapse; margin-bottom:25pt;"><thead><tr style="border-bottom:2pt solid #1A0F08;"><th style="padding:10pt 0; text-align:left; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Service Description</th><th style="padding:10pt 0; text-align:right; font-size:10pt; color:#1A0F08; text-transform:uppercase; letter-spacing:1.5pt; font-weight:700;">Amount</th></tr></thead>'
-          + '<tbody>' + rows
-          + '<tr><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; color:#7A6347;">Gross Total</td><td style="padding:20pt 0 5pt; text-align:right; font-size:10pt; font-weight:600;">' + total.toLocaleString() + '/-</td></tr>'
-          + '<tr><td style="padding:5pt 0; text-align:right; font-size:10pt; color:#7A6347;">Advance Received</td><td style="padding:5pt 0; text-align:right; font-size:10pt; font-weight:600; color:#6B9E63;">(' + adv.toLocaleString() + '/-)</td></tr>'
-          + '<tr style="color:#C9A84C;"><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:18pt; font-weight:700;">Final Balance Due</td><td style="padding:15pt 0; text-align:right; font-family:\'Cormorant Garamond\', serif; font-size:22pt; font-weight:700;">PKR ' + bal.toLocaleString() + '/-</td></tr>'
-          + '</tbody></table>'
+            '<!-- Table -->' +
+            '<table style="width:100%; border-collapse:collapse; margin-bottom:20pt;">' +
+              '<thead>' +
+                '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1pt;">' +
+                  '<th style="padding:8pt 12pt; font-weight:600;">DESCRIPTION</th>' +
+                  '<th style="padding:8pt 12pt; text-align:right; font-weight:600;">TOTAL</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + rows + '</tbody>' +
+              '<tfoot>' +
+                '<tr>' +
+                  '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
+                  '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:11.5pt; border-bottom:1.5pt solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:9.5pt;">ADVANCE PAID</td>' +
+                  '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:10.5pt;">' + adv.toLocaleString() + '/-</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:9.5pt; color:#B85C4A;">BALANCE</td>' +
+                  '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:10.5pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
+                '</tr>' +
+              '</tfoot>' +
+            '</table>' +
 
-          + '<div style="padding:18pt; background:#FBF8F2; border-left:4pt solid #C9A84C; margin-bottom:35pt; border-radius: 0 8pt 8pt 0;">'
-          + '<div style="font-size:8pt; color:#7A6347; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:6pt; font-weight:600;">Total Amount in Words</div>'
-          + '<div style="font-size:11pt; font-weight:700; color:#1A0F08; text-transform:uppercase;">' + numToWords(bal) + ' RUPEES ONLY</div></div>'
+            '<!-- Balance Section -->' +
+            '<div style="margin-bottom:30pt;">' +
+              '<div style="font-size:12pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:14pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
+            '</div>' +
 
-          + '<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:35pt;">'
-          + '<div style="font-size:10pt; color:#7A6347; font-style:italic; max-width:300px; line-height:1.5;">Thanking and assuring you for our best professional services at all times.</div>'
-          + '<div style="text-align:right;"><div style="font-size:10pt; margin-bottom:40pt; color:#555;">Sincerely,</div><div style="font-size:10pt; font-weight:700; text-transform:uppercase; letter-spacing:1.5pt; margin-bottom:2pt; color:#1A0F08;">Finance Director</div><div style="font-family:\'Cormorant Garamond\', serif; font-size:16pt; font-weight:700; color:#C9A84C;">Happenings.co</div></div></div>'
+            '<div style="font-size:11pt; font-weight:500; color:#333; margin-bottom:25pt;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
 
-          + '<div style="text-align:center; font-size:8pt; color:#AAA; margin-bottom:25pt; font-style:italic; border-top:1pt solid #F0F0F0; padding-top:15pt;">** Computer generated document. No signature required **</div>'
+            '<div style="margin-bottom:40pt; font-size:10pt; line-height:1.4;">' +
+              '<div>Yours Truly</div>' +
+              '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
+              '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
+            '</div>' +
 
-          + '<div style="background:#1A0F08; color:#FBF8F2; padding:15pt 25pt; border-radius:10pt; display:flex; justify-content:space-between; align-items:center; font-size:8pt;">'
-          + '<div>📍 Shop no.1 SA-10 cmchs, near Rangoonwala hall, Bahadurabad, Karachi.</div>'
-          + '<div style="display:flex; gap:18pt;"><span>📸 happenings.co</span><span>📞 03302894915</span></div></div>'
-          + '</div>';
+            '<div style="font-size:8.5pt; color:#777; font-style:italic; margin-bottom:20pt;">** System generated bill. Signature not required **</div>' +
+          '</div>' +
+
+          '<!-- Footer -->' +
+          '<div style="background:#5B4136; color:#fff; display:flex; gap:15pt; align-items:stretch; height:60pt; border-radius:3pt; overflow:hidden;">' +
+            '<div style="background:#2C1A0E; padding:10pt 20pt; display:flex; align-items:center; gap:10pt; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
+              '<div style="font-size:20pt;">📍</div>' +
+              '<div style="font-size:7pt; line-height:1.3; font-style:italic;">' +
+                'Shop no.1 SA-10 cmchs,<br>' +
+                'near Rangoonwala hall<br>' +
+                'Bahadurabad, Karachi.' +
+              '</div>' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:15pt; padding:0 20pt 0 5pt; flex:1;">' +
+              '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
+                '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📸</span>' +
+                '<span>Happenings.co</span>' +
+              '</div>' +
+              '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
+                '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📞</span>' +
+                '<span>03302894915</span>' +
+              '</div>' +
+            '</div>' +
+            '<div style="position:absolute; bottom:0; left:0; width:100%; height:4pt; background:#C9A84C;"></div>' +
+          '</div>' +
+          
+        '</div>';
 
         window.print();
         setTimeout(function () { ps.innerHTML = ""; }, 1000);
@@ -7106,11 +7265,13 @@
         var el = document.getElementById("media-body"); if (!el) return;
         var filtered = mediaFilter === "All" ? MEDIA : MEDIA.filter(function (m) { return m.cat === mediaFilter; });
         var h = "";
-        // Upload button + filter tabs
-        h += "<div style='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;'>";
-        h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='flex:1;min-width:120px;font-size:12px;padding:10px 14px;'>";
+        // Header with search on left and buttons on right
+        h += "<div style='display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;'>";
+        h += "<input class='fi' id='media-search' placeholder='&#128269; Search...' style='width:100%;max-width:250px;font-size:12px;padding:10px 14px;background:var(--mob-bm,#2C1A0E);'>";
+        h += "<div style='display:flex;gap:8px;flex-wrap:wrap;'>";
         h += "<button class='tbtn gold' id='media-upload-btn'>+ Add Photo</button>";
         h += "<button class='tbtn' id='media-cats-btn'><span style='margin-right:4px;'>⚙️</span>Categories</button>";
+        h += "</div>";
         h += "<input type='file' accept='image/*,video/*' id='media-file' style='display:none' multiple>";
         h += "</div>";
 
