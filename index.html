@@ -5243,7 +5243,8 @@
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
           db("media?order=created_at.desc"),
-          db("tasks?order=due_at.asc")
+          db("tasks?order=due_at.asc"),
+          db("staff?order=created_at.asc")
         ])
           .then(function (r) {
             clearTimeout(timeout);
@@ -5262,6 +5263,7 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
+            STAFF_LIST = Array.isArray(r[4]) ? r[4] : [];
             hd(); initBiz();
             var sc = localStorage.getItem("cur_screen") || "s-dash";
             curDetailId = localStorage.getItem("cur_detail_id");
@@ -6243,7 +6245,13 @@
       function confirmReserve() {
         if (!Object.keys(cart).length) { go("s-bkns"); return; }
         var di = []; Object.keys(cart).forEach(function (id) { di.push({ itemId: id, qty: cart[id] }); });
-        if (curBkg) { curBkg.dispatchItems = di; db("bookings?id=eq." + curBkg.id, "PATCH", { dispatch_items: di }); }
+        if (curBkg) {
+          curBkg.dispatchItems = di;
+          db("bookings?id=eq." + curBkg.id, "PATCH", {
+            dispatch_items: di,
+            staff_assigned: curStaffAssign || []
+          });
+        }
         toast("Inventory reserved!"); go("s-bkns");
       }
       var skipResEl = document.getElementById("skip-reserve-btn"); if (skipResEl) skipResEl.addEventListener("click", function () { go("s-bkns"); });
@@ -6368,7 +6376,13 @@
       function genSheet() {
         if (!Object.keys(cart).length) { alert("Add at least one item first."); return; }
         var di = []; Object.keys(cart).forEach(function (id) { di.push({ itemId: id, qty: cart[id] }); });
-        if (curBkg) { curBkg.dispatchItems = di; db("bookings?id=eq." + curBkg.id, "PATCH", { dispatch_items: di }); }
+        if (curBkg) {
+          curBkg.dispatchItems = di;
+          db("bookings?id=eq." + curBkg.id, "PATCH", {
+            dispatch_items: di,
+            staff_assigned: curStaffAssign || []
+          });
+        }
         buildSheet(); go("s-sheet");
       }
       function buildSheet() {
@@ -6635,10 +6649,15 @@
         var n = document.getElementById("staff-name-inp").value.trim(); if (!n) return;
         var roleEl = document.getElementById("staff-role-sel");
         var role = roleEl ? roleEl.value : "Labour";
-        STAFF_LIST.push({ name: n, role: role });
-        localStorage.setItem("ev_staff", JSON.stringify(STAFF_LIST));
-        document.getElementById("staff-name-inp").value = "";
-        renderStaffModal();
+        ld();
+        db("staff", "POST", { name: n, role: role }).then(function (newStaff) {
+          if (Array.isArray(newStaff)) newStaff = newStaff[0];
+          STAFF_LIST.push(newStaff);
+          document.getElementById("staff-name-inp").value = "";
+          hd(); renderStaffModal(); toast("Staff added to database.");
+        }).catch(function (err) {
+          hd(); toast("Add failed: " + err.message);
+        });
       });
       document.getElementById("staff-done-btn").addEventListener("click", function () { cM("staff-modal"); });
       document.getElementById("staff-assign-confirm").addEventListener("click", function () {
