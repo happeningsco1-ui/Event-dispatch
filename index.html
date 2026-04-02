@@ -5848,6 +5848,7 @@
           document.querySelectorAll(".echk").forEach(function (e) {
             if (exts.includes(e.getAttribute("data-v"))) e.classList.add("on");
           });
+          saveDraft();
         }, 100);
       }
 
@@ -5953,13 +5954,14 @@
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
           var av = availQ(item.id, date, curEditBknId);
+          var rem = av - inC;
           var dep = (av <= 0 && !inC);
           var imgH = item.photo ? "<img src='" + item.photo + "'>" : "&#128230;";
           h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-did='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : "Total " + item.qty + " | " + rem + " Avail | " + inC + " Res") + "</div></div>";
           h += "<div class='ibadge'>" + inC + "</div>";
-          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
         grid.innerHTML = h || "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>";
@@ -6010,13 +6012,14 @@
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
           var av = availQ(item.id, date, curEditBknId);
+          var rem = av - inC;
           var dep = (av <= 0 && !inC);
           var imgH = item.photo ? "<img src='" + item.photo + "' alt=''>" : "&#128230;";
           h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-nbid='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : "Total " + item.qty + " | " + rem + " Avail | " + inC + " Res") + "</div></div>";
           h += "<div class='ibadge'>" + inC + "</div>";
-          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
         grid.innerHTML = h; updNbBar();
@@ -6037,6 +6040,7 @@
             else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
             saveDraft();
             updNbBar();
+            rNbReserveGrid(cat);
           };
           if (m) m.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) - 1); });
           if (p) p.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) + 1); });
