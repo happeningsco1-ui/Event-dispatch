@@ -6150,7 +6150,7 @@
         else {
           h += "<div class='inv-reserve-grid'>";
           di.forEach(function (d) {
-            var item = INV.find(function (i) { return i.id === d.itemId; }); if (!item) return;
+            var item = INV.find(function (i) { return i.id == d.itemId; }); if (!item) return;
             h += "<div class='irc'><div class='irc-img'>" + (item.photo ? "<img src='" + item.photo + "'>" : "&#128230;") + "</div><div class='irc-name'>" + item.name + "</div><div class='irc-qty'>x" + d.qty + "</div></div>";
           });
           h += "</div>";
@@ -6234,11 +6234,11 @@
 
       // ── INVENTORY AVAILABILITY ──────────────────────────────────────────────────
       function availQ(itemId, date, exId) {
-        var item = INV.find(function (i) { return i.id === itemId; }); if (!item) return 0;
+        var item = INV.find(function (i) { return i.id == itemId; }); if (!item) return 0;
         if (!date) return item.qty;
         var used = 0;
         BKN.forEach(function (b) {
-          if (b.date === date && b.id !== exId && b.dispatchItems) b.dispatchItems.forEach(function (d) { if (d.itemId === itemId) used += d.qty; });
+          if (b.date === date && b.id !== exId && b.dispatchItems) b.dispatchItems.forEach(function (d) { if (d.itemId == itemId) used += d.qty; });
         });
         return Math.max(0, item.qty - used);
       }
@@ -6349,9 +6349,8 @@
       // ── QTY MODAL ───────────────────────────────────────────────────────────────
       function openQM(itemId, mode) {
         mItemId = itemId;
-        var item = INV.find(function (i) { return i.id === itemId; });
+        var item = INV.find(function (i) { return i.id == itemId; }); if (!item) return;
         var av = availQ(itemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        var mode = document.getElementById("q-confirm").getAttribute("data-mode");
         var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[itemId] || 0) : (cart[itemId] || 0);
         document.getElementById("m-name").textContent = item.name;
         document.getElementById("m-sub").textContent = item.cat + (item.subcat ? " — " + item.subcat : "") + " | " + item.qty + " total";
@@ -6570,7 +6569,7 @@
         if (!keys.length) { el.innerHTML = "<div class='empty'><div class='empty-ic'>&#128722;</div><div class='empty-tx'>Cart is empty.</div></div>"; return; }
         var h = "";
         keys.forEach(function (id) {
-          var item = INV.find(function (i) { return i.id === id; }); if (!item) return;
+          var item = INV.find(function (i) { return i.id == id; }); if (!item) return;
           var imgH = item.photo ? "<img src='" + item.photo + "'>" : "&#128230;";
           h += "<div class='citem'><div class='cimg'>" + imgH + "</div>";
           h += "<div class='cinfo'><div class='cname'>" + item.name + "</div><div class='ccat'>" + item.cat + (item.subcat ? " — " + item.subcat : "") + "</div></div>";
@@ -6632,7 +6631,7 @@
         }
         h += "</div>";
         CATS.forEach(function (cat) {
-          var items = Object.keys(cart).map(function (id) { return INV.find(function (i) { return i.id === id; }); }).filter(function (i) { return i && i.cat === cat; });
+          var items = Object.keys(cart).map(function (id) { return INV.find(function (i) { return i.id == id; }); }).filter(function (i) { return i && i.cat === cat; });
           if (!items.length) return;
           h += "<div class='sheet-cat'><div class='sheet-cat-hdr'>" + cat + "<span class='sheet-cat-cnt'>" + items.length + "</span></div><div class='sheet-items-grid'>";
           items.forEach(function (item) {
@@ -6657,7 +6656,7 @@
           ps += "</div>";
         }
         CATS.forEach(function (cat) {
-          var items = Object.keys(cart).map(function (id) { return INV.find(function (i) { return i.id === id; }); }).filter(function (i) { return i && i.cat === cat; });
+          var items = Object.keys(cart).map(function (id) { return INV.find(function (i) { return i.id == id; }); }).filter(function (i) { return i && i.cat === cat; });
           if (!items.length) return;
           ps += "<div class='ps-cat-block'><div class='ps-cat-title'>" + cat + " (" + items.length + ")</div><div class='ps-items'>";
           items.forEach(function (item) {
@@ -6679,7 +6678,7 @@
         msg += "*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + fD(b.date) + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + fT(b.ready) + "%0A*Pickup:* " + fT(b.pickup) + "%0A%0A";
         msg += "*Items (%22" + items.length + "%22):*%0A";
         items.forEach(function (id) {
-          var item = INV.find(function (i) { return i.id === id; });
+          var item = INV.find(function (i) { return i.id == id; });
           if (item) msg += "%E2%80%A2 " + item.name + " x" + cart[id] + "%0A";
         });
         if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
