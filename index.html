@@ -4844,6 +4844,11 @@
       function toast(m) { var t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); setTimeout(function () { t.classList.remove("show"); }, 2500); }
       function oM(id) { document.getElementById(id).classList.add("open"); }
       function cM(id) { document.getElementById(id).classList.remove("open"); }
+      function goWA(phone, msg) {
+        var isMo = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var url = phone ? (isMo ? "https://wa.me/" + phone + "?text=" + msg : "https://web.whatsapp.com/send?phone=" + phone + "&text=" + msg) : (isMo ? "https://wa.me/?text=" + msg : "https://web.whatsapp.com/send?text=" + msg);
+        window.open(url, "whatsapp_tab");
+      }
       function rF(f, cb) {
         var r = new FileReader();
         r.onload = function (e) {
@@ -5036,7 +5041,7 @@
             });
             if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
             msg += "%0AJazakAllah";
-            window.open("https://wa.me/?text=" + msg, "_blank");
+            goWA("", msg);
           });
           bind("d-add-item", openAddItem);
           bind("d-staff", function () { renderStaffModal(); oM("staff-modal"); });
@@ -5261,7 +5266,7 @@
               var p = b.phone ? b.phone.replace(/[^0-9]/g, "") : "";
               p = p.replace(/^0+/, "");
               if (!p.startsWith("92") && p.length > 0) p = "92" + p;
-              window.open(p ? "https://wa.me/" + p + "?text=" + msg : "https://wa.me/?text=" + msg, "whatsapp_tab");
+              goWA(p, msg);
             };
           }, 50);
           var dc3 = document.getElementById("desk-content");
@@ -6144,8 +6149,7 @@
         var p = b.phone ? b.phone.replace(/[^0-9]/g, "") : "";
         p = p.replace(/^0+/, "");
         if (!p.startsWith("92") && p.length > 0) p = "92" + p;
-        var url = p ? "https://wa.me/" + p + "?text=" + msg : "https://wa.me/?text=" + msg;
-        window.open(url, "whatsapp_tab");
+        goWA(p, msg);
       });
       var detDispEl = document.getElementById("detail-dispatch-btn"); if (detDispEl) detDispEl.addEventListener("click", function () { if (curDetailId) openDispatch(curDetailId); });
 
@@ -6153,7 +6157,7 @@
       function sendWhatsApp(id) {
         var b = BKN.find(function (x) { return x.id === id; }); if (!b) return;
         var msg = "Assalam o Alaikum Team,%0A%0A*New Booking Confirmed* %E2%9C%85%0A%0A*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + b.date + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + (b.ready || "-") + "%0A*Pickup:* " + (b.pickup || "-") + "%0A%0AJazakAllah";
-        window.open("https://wa.me/?text=" + msg, "_blank");
+        goWA("", msg);
       }
 
       // ── INVENTORY AVAILABILITY ──────────────────────────────────────────────────
@@ -6554,7 +6558,7 @@
         });
         if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
         msg += "%0AJazakAllah";
-        window.open("https://wa.me/?text=" + msg, "_blank");
+        goWA("", msg);
       });
 
       // ── INVENTORY ────────────────────────────────────────────────────────────────
