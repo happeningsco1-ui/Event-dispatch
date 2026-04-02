@@ -5882,7 +5882,7 @@
           };
         });
 
-        ["nb-name", "nb-phone", "nb-date", "nb-venue", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid", "nb-ed-notes", "ed-notes-d"].forEach(function (i) {
+        ["nb-name", "nb-phone", "nb-date", "nb-ready", "nb-pickup", "nb-notes", "nb-type", "nb-total", "nb-paid", "nb-ed-notes", "ed-notes-d"].forEach(function (i) {
           var el = document.getElementById(i);
           if (el) {
             el.oninput = saveDraft;
@@ -5895,7 +5895,14 @@
           var name = (document.getElementById("nb-name") || {}).value || "";
           var date = (document.getElementById("nb-date") || {}).value || "";
           if (!name.trim() || !date) { alert("Please enter client name and date."); return; }
-          showNbStep(2);
+          if (isDesk) {
+            var s1 = document.querySelector("#s-new-bkn [style*='max-width:700px']"); if (s1) s1.style.display = "none";
+            var s2d = document.getElementById("nb-step2-desk"); if (s2d) s2d.style.display = "block";
+            var bar2 = document.getElementById("step-bar-2"); if (bar2) bar2.style.background = "var(--gold)";
+            var dSub = document.getElementById("desk-page-sub"); if (dSub) dSub.textContent = "Step 2 of 3 — Event Details";
+          } else {
+            showNbStep(2);
+          }
           rNbEdThumbs();
         };
         // Save only (skip all)
@@ -6242,7 +6249,7 @@
         if (!date) return item.qty;
         var used = 0;
         BKN.forEach(function (b) {
-          if (b.date === date && b.id !== exId && b.dispatchItems) b.dispatchItems.forEach(function (d) { if (d.itemId == itemId) used += d.qty; });
+          if (b.date === date && b.id != exId && b.dispatchItems) b.dispatchItems.forEach(function (d) { if (d.itemId == itemId) used += d.qty; });
         });
         return Math.max(0, item.qty - used);
       }
@@ -7099,7 +7106,7 @@
         var keys = Object.keys(bids);
         var done = 0;
         keys.forEach(function (bid) {
-          var b = BKN.find(function (x) { return x.id === bid; }); if (!b) { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } return; }
+          var b = BKN.find(function (x) { return x.id == bid; }); if (!b) { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } return; }
           b.costs = bids[bid];
           db("bookings?id=eq." + bid, "PATCH", { costs: bids[bid] }).then(function () { done++; if (done === keys.length) { hd(); rFin(); toast("Costs saved!"); } }).catch(function () { hd(); });
         });
