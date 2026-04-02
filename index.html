@@ -6314,13 +6314,14 @@
         items.forEach(function (item) {
           var inC = cart[item.id] || 0;
           var av = availQ(item.id, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+          var rem = av - inC;
           var dep = (av <= 0 && !inC);
           var imgH = item.photo ? "<img src='" + item.photo + "' alt=''>" : "&#128230;";
           h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-id='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : "Total " + item.qty + " | " + Math.max(0, rem) + " Avail | " + inC + " Res") + "</div></div>";
           h += "<div class='ibadge'>" + inC + "</div>";
-          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
         grid.innerHTML = h; updBar();
@@ -6354,37 +6355,39 @@
       function openQM(itemId, mode) {
         mItemId = itemId;
         var item = INV.find(function (i) { return i.id == itemId; }); if (!item) return;
-        var av = availQ(itemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
+        var date = (mode && mode.startsWith("nb-")) ? (document.getElementById("nb-date") || {}).value : (curBkg ? curBkg.date : null);
+        var bId = (mode && mode.startsWith("nb-")) ? curEditBknId : (curBkg ? curBkg.id : null);
+        var av = availQ(itemId, date, bId);
         var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[itemId] || 0) : (cart[itemId] || 0);
         document.getElementById("m-name").textContent = item.name;
         document.getElementById("m-sub").textContent = item.cat + (item.subcat ? " — " + item.subcat : "") + " | " + item.qty + " total";
         var aEl = document.getElementById("m-avail");
-        aEl.textContent = "Available on this date: " + av;
+        aEl.textContent = "Available Capacity: " + av + " (Picked: " + currentQty + ", Remaining: " + Math.max(0, av - currentQty) + ")";
         aEl.className = "mavail" + (av < 5 ? " warn" : "");
-        var inp = document.getElementById("q-inp"); inp.value = currentQty || 1; inp.max = av + currentQty;
+        var inp = document.getElementById("q-inp"); inp.value = currentQty || (av > 0 ? 1 : 0); inp.max = av;
         document.getElementById("q-confirm").setAttribute("data-mode", mode || "dispatch");
         oM("qty-modal");
       }
       document.getElementById("q-minus").addEventListener("click", function () {
         var inp = document.getElementById("q-inp");
-        var mode = document.getElementById("q-confirm").getAttribute("data-mode");
-        var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[mItemId] || 0) : (cart[mItemId] || 0);
-        var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        inp.value = Math.max(1, Math.min(av + currentQty, (parseInt(inp.value) || 1) - 1));
+        inp.value = Math.max(0, (parseInt(inp.value) || 0) - 1);
       });
       document.getElementById("q-plus").addEventListener("click", function () {
         var inp = document.getElementById("q-inp");
         var mode = document.getElementById("q-confirm").getAttribute("data-mode");
-        var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[mItemId] || 0) : (cart[mItemId] || 0);
-        var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        inp.value = Math.max(1, Math.min(av + currentQty, (parseInt(inp.value) || 1) + 1));
+        var date = (mode && mode.startsWith("nb-")) ? (document.getElementById("nb-date") || {}).value : (curBkg ? curBkg.date : null);
+        var bId = (mode && mode.startsWith("nb-")) ? curEditBknId : (curBkg ? curBkg.id : null);
+        var av = availQ(mItemId, date, bId);
+        inp.value = Math.min(av, (parseInt(inp.value) || 0) + 1);
       });
       document.getElementById("q-cancel").addEventListener("click", function () { cM("qty-modal"); });
       document.getElementById("q-confirm").addEventListener("click", function () {
-        var qty = parseInt(document.getElementById("q-inp").value) || 1;
-        var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        var max = av + (cart[mItemId] || 0);
+        var qty = parseInt(document.getElementById("q-inp").value) || 0;
         var mode = this.getAttribute("data-mode");
+        var date = (mode && mode.startsWith("nb-")) ? (document.getElementById("nb-date") || {}).value : (curBkg ? curBkg.date : null);
+        var bId = (mode && mode.startsWith("nb-")) ? curEditBknId : (curBkg ? curBkg.id : null);
+        var av = availQ(mItemId, date, bId);
+        if (qty > av) qty = av;
         if (mode && mode.startsWith("nb-")) {
           draftCart[mItemId] = qty;
         } else {
