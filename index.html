@@ -847,10 +847,11 @@
     .iqtybar {
       display: flex;
       align-items: center;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.4);
       border-top: 1px solid var(--mob-brs);
       height: 38px;
     }
+
     .iqbtn {
       width: 40px;
       height: 100%;
@@ -860,7 +861,11 @@
       font-size: 20px;
       cursor: pointer;
     }
-    .iqbtn:hover { background: rgba(255, 255, 255, 0.05); }
+
+    .iqbtn:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     .iqinp {
       flex: 1;
       height: 100%;
@@ -3508,10 +3513,12 @@
       opacity: 1;
       background: rgba(184, 92, 74, 0.05) !important;
     }
+
     @media print {
-      body > :not(#print-sheet) {
+      body> :not(#print-sheet) {
         display: none !important;
       }
+
       #print-sheet {
         display: block !important;
         position: absolute;
@@ -3521,6 +3528,7 @@
         margin: 0;
         padding: 0;
       }
+
       @page {
         size: A4;
         margin: 0;
@@ -4676,7 +4684,9 @@
     <div class="modal" style="max-height:80vh; overflow-y:auto;">
       <div class="modal-handle"></div>
       <div class="mname">Cost Columns</div>
-      <div id="cols-list" style="margin-bottom:15px;display:flex;flex-direction:column;gap:8px; max-height: 300px; overflow-y: auto;"></div>
+      <div id="cols-list"
+        style="margin-bottom:15px;display:flex;flex-direction:column;gap:8px; max-height: 300px; overflow-y: auto;">
+      </div>
       <div class="fg" style="margin-bottom:20px; padding-top:16px; border-top: 1px solid rgba(0,0,0,0.1);">
         <input class="fi" id="new-col-inp" placeholder="e.g. Photography">
         <button class="btn-save" style="margin-top:8px;" id="add-col-btn">Add Column</button>
@@ -5319,7 +5329,7 @@
         var timeout = setTimeout(function () {
           hd(); go("s-dash"); toast("Connection slow - showing cached data.");
         }, 12000);
-        
+
         // Critical core data
         Promise.all([
           db("inventory?order=created_at.asc"),
@@ -5344,14 +5354,14 @@
             }) : [];
             MEDIA = Array.isArray(r[2]) ? r[2] : [];
             TASKS = Array.isArray(r[3]) ? r[3] : [];
-            
+
             // Try to load staff separately - don't crash if it fails (e.g. table doesn't exist yet)
             db("staff?order=created_at.asc").then(function (res) {
               STAFF_LIST = Array.isArray(res) ? res : [];
             }).catch(function (err) {
               console.warn("Staff table loading failed:", err.message);
               STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
-            }).finally(function() {
+            }).finally(function () {
               hd(); initBiz();
               var sc = localStorage.getItem("cur_screen") || "s-dash";
               curDetailId = localStorage.getItem("cur_detail_id");
@@ -5937,27 +5947,43 @@
 
       function rNbReserveGridD(cat) {
         var grid = document.getElementById("nb-reserve-grid-d"); if (!grid) return;
+        var date = (document.getElementById("nb-date") || {}).value || null;
         var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
         var h = "";
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
+          var av = availQ(item.id, date, curEditBknId);
+          var dep = (av <= 0 && !inC);
           var imgH = item.photo ? "<img src='" + item.photo + "'>" : "&#128230;";
-          h += "<div class='icard" + (inC > 0 ? " incart" : "") + "' data-did='" + item.id + "'>";
+          h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-did='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + item.qty + " total</div></div><div class='ibadge'>" + inC + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='ibadge'>" + inC + "</div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "</div>";
         });
         grid.innerHTML = h || "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>";
-        grid.querySelectorAll("[data-did]").forEach(function (c) {
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
           c.onclick = function () {
-            var id = this.getAttribute("data-did");
-            var item = INV.find(function (i) { return i.id === id; });
-            if (!item) return;
-            var cur = draftCart[id] || 0;
-            draftCart[id] = cur < item.qty ? cur + 1 : 0;
-            if (draftCart[id] === 0) delete draftCart[id];
+            mItemId = this.getAttribute("data-did");
+            openQM(mItemId, "nb-reserve");
+          };
+          var bar = c.querySelector(".iqtybar");
+          if (bar) bar.addEventListener("click", function (e) { e.stopPropagation(); });
+          var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-did");
+          var updateQ = function (val) {
+            var mx = parseInt(i.getAttribute("data-max")) || 0;
+            var nv = Math.max(0, Math.min(val, mx));
+            i.value = nv;
+            if (nv > 0) draftCart[id] = nv; else delete draftCart[id];
+            if (nv > 0) { c.classList.add("incart"); c.querySelector(".ibadge").textContent = nv; }
+            else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
             saveDraft();
             rNbReserveGridD(cat);
           };
+          if (m) m.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) - 1); });
+          if (p) p.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) + 1); });
+          if (i) i.addEventListener("change", function (e) { e.stopPropagation(); updateQ(parseInt(i.value) || 0); });
         });
       }
 
@@ -5977,28 +6003,44 @@
 
       function rNbReserveGrid(cat) {
         var grid = document.getElementById("nb-reserve-grid"); if (!grid) return;
+        var date = (document.getElementById("nb-date") || {}).value || null;
         var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
         if (!items.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>"; updNbBar(); return; }
         var h = "";
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
+          var av = availQ(item.id, date, curEditBknId);
+          var dep = (av <= 0 && !inC);
           var imgH = item.photo ? "<img src='" + item.photo + "' alt=''>" : "&#128230;";
-          h += "<div class='icard" + (inC > 0 ? " incart" : "") + "' data-nbid='" + item.id + "'>";
+          h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-nbid='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + item.qty + " total</div></div><div class='ibadge'>" + inC + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='ibadge'>" + inC + "</div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "</div>";
         });
         grid.innerHTML = h; updNbBar();
-        grid.querySelectorAll("[data-nbid]").forEach(function (c) {
-          c.onclick = function () {
-            var id = this.getAttribute("data-nbid");
-            var item = INV.find(function (i) { return i.id === id; });
-            if (!item) return;
-            var cur = draftCart[id] || 0;
-            draftCart[id] = cur < item.qty ? cur + 1 : 0;
-            if (draftCart[id] === 0) delete draftCart[id];
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
+          c.addEventListener("click", function () {
+            mItemId = this.getAttribute("data-nbid");
+            openQM(mItemId, "nb-reserve");
+          });
+          var bar = c.querySelector(".iqtybar");
+          if (bar) bar.addEventListener("click", function (e) { e.stopPropagation(); });
+          var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-nbid");
+          var updateQ = function (val) {
+            var mx = parseInt(i.getAttribute("data-max")) || 0;
+            var nv = Math.max(0, Math.min(val, mx));
+            i.value = nv;
+            if (nv > 0) draftCart[id] = nv; else delete draftCart[id];
+            if (nv > 0) { c.classList.add("incart"); c.querySelector(".ibadge").textContent = nv; }
+            else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
             saveDraft();
-            rNbReserveGrid(cat);
+            updNbBar();
           };
+          if (m) m.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) - 1); });
+          if (p) p.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) + 1); });
+          if (i) i.addEventListener("change", function (e) { e.stopPropagation(); updateQ(parseInt(i.value) || 0); });
         });
       }
 
@@ -6278,11 +6320,11 @@
           h += "</div>";
         });
         grid.innerHTML = h; updBar();
-        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { 
-          c.addEventListener("click", function () { openQM(this.getAttribute("data-id"), "dispatch"); }); 
-          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function(e) { e.stopPropagation(); });
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
+          c.addEventListener("click", function () { openQM(this.getAttribute("data-id"), "dispatch"); });
+          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function (e) { e.stopPropagation(); });
           var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-id");
-          var updateQ = function(val) {
+          var updateQ = function (val) {
             var mx = parseInt(i.getAttribute("data-max")) || 0;
             var nv = Math.max(0, Math.min(val, mx));
             i.value = nv;
@@ -6291,9 +6333,9 @@
             else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
             updBar();
           };
-          if (m) m.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) - 1); });
-          if (p) p.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) + 1); });
-          if (i) i.addEventListener("change", function(e) { e.stopPropagation(); updateQ(parseInt(i.value)||0); });
+          if (m) m.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) - 1); });
+          if (p) p.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) + 1); });
+          if (i) i.addEventListener("change", function (e) { e.stopPropagation(); updateQ(parseInt(i.value) || 0); });
         });
       }
 
@@ -6309,37 +6351,53 @@
         mItemId = itemId;
         var item = INV.find(function (i) { return i.id === itemId; });
         var av = availQ(itemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        var alr = cart[itemId] || 0;
+        var mode = document.getElementById("q-confirm").getAttribute("data-mode");
+        var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[itemId] || 0) : (cart[itemId] || 0);
         document.getElementById("m-name").textContent = item.name;
         document.getElementById("m-sub").textContent = item.cat + (item.subcat ? " — " + item.subcat : "") + " | " + item.qty + " total";
         var aEl = document.getElementById("m-avail");
         aEl.textContent = "Available on this date: " + av;
         aEl.className = "mavail" + (av < 5 ? " warn" : "");
-        var inp = document.getElementById("q-inp"); inp.value = alr || 1; inp.max = av + alr;
+        var inp = document.getElementById("q-inp"); inp.value = currentQty || 1; inp.max = av + currentQty;
         document.getElementById("q-confirm").setAttribute("data-mode", mode || "dispatch");
         oM("qty-modal");
       }
       document.getElementById("q-minus").addEventListener("click", function () {
         var inp = document.getElementById("q-inp");
+        var mode = document.getElementById("q-confirm").getAttribute("data-mode");
+        var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[mItemId] || 0) : (cart[mItemId] || 0);
         var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        inp.value = Math.max(1, Math.min(av + (cart[mItemId] || 0), (parseInt(inp.value) || 1) - 1));
+        inp.value = Math.max(1, Math.min(av + currentQty, (parseInt(inp.value) || 1) - 1));
       });
       document.getElementById("q-plus").addEventListener("click", function () {
         var inp = document.getElementById("q-inp");
+        var mode = document.getElementById("q-confirm").getAttribute("data-mode");
+        var currentQty = (mode && mode.startsWith("nb-")) ? (draftCart[mItemId] || 0) : (cart[mItemId] || 0);
         var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
-        inp.value = Math.max(1, Math.min(av + (cart[mItemId] || 0), (parseInt(inp.value) || 1) + 1));
+        inp.value = Math.max(1, Math.min(av + currentQty, (parseInt(inp.value) || 1) + 1));
       });
       document.getElementById("q-cancel").addEventListener("click", function () { cM("qty-modal"); });
       document.getElementById("q-confirm").addEventListener("click", function () {
         var qty = parseInt(document.getElementById("q-inp").value) || 1;
         var av = availQ(mItemId, curBkg ? curBkg.date : null, curBkg ? curBkg.id : null);
         var max = av + (cart[mItemId] || 0);
-        if (qty > max) { alert("Only " + max + " available."); return; }
-        cart[mItemId] = qty; cM("qty-modal");
+        var mode = this.getAttribute("data-mode");
+        if (mode && mode.startsWith("nb-")) {
+          draftCart[mItemId] = qty;
+        } else {
+          cart[mItemId] = qty;
+        }
+        cM("qty-modal");
         var mode = this.getAttribute("data-mode");
         if (mode === "reserve") {
           var t = document.querySelector("#reserve-cattabs .ctab.on");
           rReserveGrid(t ? t.getAttribute("data-cat") : "All");
+        } else if (mode === "nb-reserve") {
+          var t = document.querySelector("#nb-reserve-cattabs .ctab.on");
+          var td = document.querySelector("#nb-reserve-cattabs-d .ctab.on");
+          if (t) rNbReserveGrid(t.getAttribute("data-cat"));
+          if (td) rNbReserveGridD(td.getAttribute("data-cat"));
+          saveDraft();
         } else {
           var t = document.querySelector("#cattabs .ctab.on");
           rGrid(t ? t.getAttribute("data-cat") : "All");
@@ -6380,11 +6438,11 @@
           h += "</div>";
         });
         grid.innerHTML = h; updRBar();
-        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { 
-          c.addEventListener("click", function () { openQM(this.getAttribute("data-rid"), "reserve"); }); 
-          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function(e) { e.stopPropagation(); });
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
+          c.addEventListener("click", function () { openQM(this.getAttribute("data-rid"), "reserve"); });
+          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function (e) { e.stopPropagation(); });
           var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-rid");
-          var updateQ = function(val) {
+          var updateQ = function (val) {
             var mx = parseInt(i.getAttribute("data-max")) || 0;
             var nv = Math.max(0, Math.min(val, mx));
             i.value = nv;
@@ -6393,9 +6451,9 @@
             else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
             updRBar();
           };
-          if (m) m.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) - 1); });
-          if (p) p.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) + 1); });
-          if (i) i.addEventListener("change", function(e) { e.stopPropagation(); updateQ(parseInt(i.value)||0); });
+          if (m) m.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) - 1); });
+          if (p) p.addEventListener("click", function (e) { e.stopPropagation(); updateQ((parseInt(i.value) || 0) + 1); });
+          if (i) i.addEventListener("change", function (e) { e.stopPropagation(); updateQ(parseInt(i.value) || 0); });
         });
       }
       function updRBar() {
@@ -7158,133 +7216,133 @@
         var adv = b.paid || 0, bal = total - adv;
         var today = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
         var logoSrc = BL || document.getElementById("tl-img").src;
-        
+
         var rows = invoiceLines.map(function (l) {
           return '<tr style="background:#F9DCC4; border-bottom:2px solid #fff;">' +
-                 '<td style="padding:12px 15px; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
-                 '<td style="padding:12px 15px; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
-                 '</tr>';
+            '<td style="padding:12px 15px; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
+            '<td style="padding:12px 15px; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
+            '</tr>';
         }).join("");
 
-        var inv = 
+        var inv =
           '<div style="font-family:\'Jost\', sans-serif; background:#fff; color:#1A0F08; position:relative; overflow:hidden; border:1px solid #ddd; max-width:800px; margin:0 auto; box-shadow:0 0 20px rgba(0,0,0,0.05);">' +
-          
+
           '<!-- Watermark Logo -->' +
           '<div style="position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:url(\'' + logoSrc + '\') no-repeat center; background-size:contain; opacity:0.04; pointer-events:none; z-index:0;"></div>' +
-          
+
           '<div style="position:relative; z-index:1; padding:40px 50px;">' +
-            '<!-- Header -->' +
-            '<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:40px;">' +
-              '<img src="' + logoSrc + '" style="height:90px; width:90px; object-fit:contain; border-radius:50%; border:2px solid #8B6E32; padding:5px;">' +
-              '<div style="text-align:center;">' +
-                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:42pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
-                '<div style="display:flex; align-items:center; gap:10px; justify-content:center; color:#C9A84C; margin-top:5px;">' +
-                  '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
-                  '<span style="font-size:14pt; letter-spacing:2px; font-weight:500;">Event organiser</span>' +
-                  '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
+          '<!-- Header -->' +
+          '<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:40px;">' +
+          '<img src="' + logoSrc + '" style="height:90px; width:90px; object-fit:contain; border-radius:50%; border:2px solid #8B6E32; padding:5px;">' +
+          '<div style="text-align:center;">' +
+          '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:42pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
+          '<div style="display:flex; align-items:center; gap:10px; justify-content:center; color:#C9A84C; margin-top:5px;">' +
+          '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
+          '<span style="font-size:14pt; letter-spacing:2px; font-weight:500;">Event organiser</span>' +
+          '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
+          '</div>' +
+          '</div>' +
+          '</div>' +
 
-            '<!-- Info Grid -->' +
-            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px; font-size:9pt; line-height:1.6;">' +
-              '<div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
-                  '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + b.name.toUpperCase() + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
-                  '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">-</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
-                  '<span style="color:#777; font-weight:600;">LOCATION</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
-                '</div>' +
-              '</div>' +
-              '<div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
-                  '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + today + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
-                  '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.phone || "-") + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
-                  '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
-                  '<span style="font-weight:700; border-bottom:1px solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
+          '<!-- Info Grid -->' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px; font-size:9pt; line-height:1.6;">' +
+          '<div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + b.name.toUpperCase() + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">-</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+          '<span style="color:#777; font-weight:600;">LOCATION</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
+          '</div>' +
+          '</div>' +
+          '<div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + today + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.phone || "-") + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+          '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
+          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
+          '</div>' +
+          '</div>' +
+          '</div>' +
 
-            '<p style="font-size:11pt; color:#333; margin-bottom:20px;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
+          '<p style="font-size:11pt; color:#333; margin-bottom:20px;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
 
-            '<!-- Table -->' +
-            '<table style="width:100%; border-collapse:collapse; margin-bottom:25px;">' +
-              '<thead>' +
-                '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1px;">' +
-                  '<th style="padding:10px 15px; font-weight:600;">DESCRIPTION</th>' +
-                  '<th style="padding:10px 15px; text-align:right; font-weight:600;">TOTAL</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' + rows + '</tbody>' +
-              '<tfoot>' +
-                '<tr>' +
-                  '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
-                  '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:12pt; border-bottom:2px solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
-                '</tr>' +
-                '<tr>' +
-                  '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:10pt;">ADVANCE PAID</td>' +
-                  '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:11pt;">' + adv.toLocaleString() + '/-</td>' +
-                '</tr>' +
-                '<tr>' +
-                  '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:10pt; color:#B85C4A;">BALANCE</td>' +
-                  '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:11pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
-                '</tr>' +
-              '</tfoot>' +
-            '</table>' +
+          '<!-- Table -->' +
+          '<table style="width:100%; border-collapse:collapse; margin-bottom:25px;">' +
+          '<thead>' +
+          '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1px;">' +
+          '<th style="padding:10px 15px; font-weight:600;">DESCRIPTION</th>' +
+          '<th style="padding:10px 15px; text-align:right; font-weight:600;">TOTAL</th>' +
+          '</tr>' +
+          '</thead>' +
+          '<tbody>' + rows + '</tbody>' +
+          '<tfoot>' +
+          '<tr>' +
+          '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
+          '<td style="padding:10px 15px; text-align:right; font-weight:800; font-size:12pt; border-bottom:2px solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:10pt;">ADVANCE PAID</td>' +
+          '<td style="padding:5px 15px; text-align:right; font-weight:700; font-size:11pt;">' + adv.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:10pt; color:#B85C4A;">BALANCE</td>' +
+          '<td style="padding:5px 15px; text-align:right; font-weight:800; font-size:11pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '</tfoot>' +
+          '</table>' +
 
-            '<!-- Balance Section -->' +
-            '<div style="margin-bottom:35px;">' +
-              '<div style="font-size:13pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:15pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
-            '</div>' +
+          '<!-- Balance Section -->' +
+          '<div style="margin-bottom:35px;">' +
+          '<div style="font-size:13pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:15pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
+          '</div>' +
 
-            '<div style="font-size:11.5pt; font-weight:500; color:#333; margin-bottom:30px;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
+          '<div style="font-size:11.5pt; font-weight:500; color:#333; margin-bottom:30px;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
 
-            '<div style="margin-bottom:50px; font-size:11pt; line-height:1.4;">' +
-              '<div>Yours Truly</div>' +
-              '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
-              '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
-            '</div>' +
+          '<div style="margin-bottom:50px; font-size:11pt; line-height:1.4;">' +
+          '<div>Yours Truly</div>' +
+          '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
+          '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
+          '</div>' +
 
-            '<div style="font-size:9pt; color:#777; font-style:italic;">** System generated bill. Signature not required **</div>' +
+          '<div style="font-size:9pt; color:#777; font-style:italic;">** System generated bill. Signature not required **</div>' +
           '</div>' +
 
           '<!-- Footer -->' +
           '<div style="background:#5B4136; color:#fff; display:flex; gap:15px; align-items:stretch; padding:0; height:80px; position:relative; overflow:hidden;">' +
-            '<div style="background:#2C1A0E; padding:15px 30px; display:flex; align-items:center; gap:15px; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
-              '<div style="font-size:24pt;">📍</div>' +
-              '<div style="font-size:8pt; line-height:1.3; font-style:italic;">' +
-                'Shop no.1 SA-10 cmchs,<br>' +
-                'near Rangoonwala hall<br>' +
-                'Bahadurabad, Karachi.' +
-              '</div>' +
-            '</div>' +
-            '<div style="display:flex; align-items:center; gap:20px; padding:0 30px 0 10px; flex:1;">' +
-              '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
-                '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📸</span>' +
-                '<span>Happenings.co</span>' +
-              '</div>' +
-              '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
-                '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📞</span>' +
-                '<span>03302894915</span>' +
-              '</div>' +
-            '</div>' +
-            '<div style="position:absolute; bottom:0; left:0; width:100%; height:5px; background:#C9A84C;"></div>' +
+          '<div style="background:#2C1A0E; padding:15px 30px; display:flex; align-items:center; gap:15px; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
+          '<div style="font-size:24pt;">📍</div>' +
+          '<div style="font-size:8pt; line-height:1.3; font-style:italic;">' +
+          'Shop no.1 SA-10 cmchs,<br>' +
+          'near Rangoonwala hall<br>' +
+          'Bahadurabad, Karachi.' +
           '</div>' +
-          
-        '</div>';
+          '</div>' +
+          '<div style="display:flex; align-items:center; gap:20px; padding:0 30px 0 10px; flex:1;">' +
+          '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
+          '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📸</span>' +
+          '<span>Happenings.co</span>' +
+          '</div>' +
+          '<div style="display:flex; align-items:center; gap:8px; font-size:10pt;">' +
+          '<span style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14pt;">📞</span>' +
+          '<span>03302894915</span>' +
+          '</div>' +
+          '</div>' +
+          '<div style="position:absolute; bottom:0; left:0; width:100%; height:5px; background:#C9A84C;"></div>' +
+          '</div>' +
+
+          '</div>';
 
         el.innerHTML = inv;
       }
@@ -7297,130 +7355,130 @@
         var ps = document.getElementById("print-sheet");
         var rows = invoiceLines.map(function (l) {
           return '<tr style="background:#F9DCC4; border-bottom:1.5pt solid #fff;">' +
-                 '<td style="padding:10pt 12pt; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
-                 '<td style="padding:10pt 12pt; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
-                 '</tr>';
+            '<td style="padding:10pt 12pt; font-weight:700; color:#1A0F08; text-transform:uppercase; font-size:10pt;">' + l.desc + '</td>' +
+            '<td style="padding:10pt 12pt; text-align:right; font-weight:700; color:#1A0F08; font-size:11pt;">' + parseInt(l.amt).toLocaleString() + '/-</td>' +
+            '</tr>';
         }).join("");
 
-        ps.innerHTML = 
+        ps.innerHTML =
           '<div style="font-family:\'Jost\', sans-serif; background:#fff; color:#1A0F08; position:relative; overflow:hidden; width:210mm; min-height:280mm; padding:20mm; margin:0 auto; box-sizing:border-box;">' +
-          
+
           '<!-- Watermark Logo -->' +
           '<div style="position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); width:150mm; height:150mm; background:url(\'' + logoSrc + '\') no-repeat center; background-size:contain; opacity:0.04; pointer-events:none; z-index:0;"></div>' +
-          
+
           '<div style="position:relative; z-index:1;">' +
-            '<!-- Header -->' +
-            '<div style="position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:35pt;">' +
-              '<img src="' + logoSrc + '" style="position:absolute; left:0; height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
-              '<div style="text-align:center;">' +
-                '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">' + BN + '</h1>' +
-                '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
-                  '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
-                  '<span style="font-size:12pt; letter-spacing:2pt; font-weight:500;">Event organiser</span>' +
-                  '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
+          '<!-- Header -->' +
+          '<div style="position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:35pt;">' +
+          '<img src="' + logoSrc + '" style="position:absolute; left:0; height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
+          '<div style="text-align:center;">' +
+          '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">' + BN + '</h1>' +
+          '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
+          '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
+          '<span style="font-size:12pt; letter-spacing:2pt; font-weight:500;">Event organiser</span>' +
+          '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
+          '</div>' +
+          '</div>' +
+          '</div>' +
 
-            '<!-- Info Grid -->' +
-            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5;">' +
-               '<div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
-                  '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + b.name.toUpperCase() + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
-                  '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">-</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
-                  '<span style="color:#777; font-weight:600;">LOCATION</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "-").toUpperCase() + '</span>' +
-                '</div>' +
-              '</div>' +
-              '<div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
-                  '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + today + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
-                  '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.phone || "-") + '</span>' +
-                '</div>' +
-                '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
-                  '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
-                  '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
+          '<!-- Info Grid -->' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5;">' +
+          '<div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+          '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + b.name.toUpperCase() + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+          '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">-</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
+          '<span style="color:#777; font-weight:600;">LOCATION</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "-").toUpperCase() + '</span>' +
+          '</div>' +
+          '</div>' +
+          '<div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+          '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + today + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
+          '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.phone || "-") + '</span>' +
+          '</div>' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
+          '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
+          '</div>' +
+          '</div>' +
+          '</div>' +
 
-            '<p style="font-size:10.5pt; color:#333; margin-bottom:15pt;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
+          '<p style="font-size:10.5pt; color:#333; margin-bottom:15pt;">Dear Client, We are pleased to submit the invoice for the following:</p>' +
 
-            '<!-- Table -->' +
-            '<table style="width:100%; border-collapse:collapse; margin-bottom:20pt;">' +
-              '<thead>' +
-                '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1pt;">' +
-                  '<th style="padding:8pt 12pt; font-weight:600;">DESCRIPTION</th>' +
-                  '<th style="padding:8pt 12pt; text-align:right; font-weight:600;">TOTAL</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' + rows + '</tbody>' +
-              '<tfoot>' +
-                '<tr>' +
-                  '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
-                  '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:11.5pt; border-bottom:1.5pt solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
-                '</tr>' +
-                '<tr>' +
-                  '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:9.5pt;">ADVANCE PAID</td>' +
-                  '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:10.5pt;">' + adv.toLocaleString() + '/-</td>' +
-                '</tr>' +
-                '<tr>' +
-                  '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:9.5pt; color:#B85C4A;">BALANCE</td>' +
-                  '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:10.5pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
-                '</tr>' +
-              '</tfoot>' +
-            '</table>' +
+          '<!-- Table -->' +
+          '<table style="width:100%; border-collapse:collapse; margin-bottom:20pt;">' +
+          '<thead>' +
+          '<tr style="background:#555; color:#fff; text-align:left; font-size:9pt; letter-spacing:1pt;">' +
+          '<th style="padding:8pt 12pt; font-weight:600;">DESCRIPTION</th>' +
+          '<th style="padding:8pt 12pt; text-align:right; font-weight:600;">TOTAL</th>' +
+          '</tr>' +
+          '</thead>' +
+          '<tbody>' + rows + '</tbody>' +
+          '<tfoot>' +
+          '<tr>' +
+          '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:10pt;">TOTAL AMOUNT</td>' +
+          '<td style="padding:8pt 12pt; text-align:right; font-weight:800; font-size:11.5pt; border-bottom:1.5pt solid #1A0F08;">' + total.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:9.5pt;">ADVANCE PAID</td>' +
+          '<td style="padding:4pt 12pt; text-align:right; font-weight:700; font-size:10.5pt;">' + adv.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '<tr>' +
+          '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:9.5pt; color:#B85C4A;">BALANCE</td>' +
+          '<td style="padding:4pt 12pt; text-align:right; font-weight:800; font-size:10.5pt; color:#B85C4A;">' + bal.toLocaleString() + '/-</td>' +
+          '</tr>' +
+          '</tfoot>' +
+          '</table>' +
 
-            '<!-- Balance Section -->' +
-            '<div style="margin-bottom:30pt;">' +
-              '<div style="font-size:12pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:14pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
-            '</div>' +
+          '<!-- Balance Section -->' +
+          '<div style="margin-bottom:30pt;">' +
+          '<div style="font-size:12pt; font-weight:600; color:#1A0F08;">BALANCE AMOUNT: <span style="font-size:14pt; font-weight:800;">RS ' + bal.toLocaleString() + '/- ' + numToWords(bal).toUpperCase() + '</span></div>' +
+          '</div>' +
 
-            '<div style="font-size:11pt; font-weight:500; color:#333; margin-bottom:25pt;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
+          '<div style="font-size:11pt; font-weight:500; color:#333; margin-bottom:25pt;">Thanking and assuring you for our best services all time, Insha\'Allah</div>' +
 
-            '<div style="margin-bottom:40pt; font-size:10pt; line-height:1.4;">' +
-              '<div>Yours Truly</div>' +
-              '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
-              '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
-            '</div>' +
+          '<div style="margin-bottom:40pt; font-size:10pt; line-height:1.4;">' +
+          '<div>Yours Truly</div>' +
+          '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
+          '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
+          '</div>' +
 
-            '<div style="font-size:8.5pt; color:#777; font-style:italic; margin-bottom:20pt;">** System generated bill. Signature not required **</div>' +
+          '<div style="font-size:8.5pt; color:#777; font-style:italic; margin-bottom:20pt;">** System generated bill. Signature not required **</div>' +
           '</div>' +
 
           '<!-- Footer -->' +
           '<div style="background:#5B4136; color:#fff; display:flex; gap:15pt; align-items:stretch; height:60pt; border-radius:3pt; overflow:hidden;">' +
-            '<div style="background:#2C1A0E; padding:10pt 20pt; display:flex; align-items:center; gap:10pt; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
-              '<div style="font-size:20pt;">📍</div>' +
-              '<div style="font-size:7pt; line-height:1.3; font-style:italic;">' +
-                'Shop no.1 SA-10 cmchs,<br>' +
-                'near Rangoonwala hall<br>' +
-                'Bahadurabad, Karachi.' +
-              '</div>' +
-            '</div>' +
-            '<div style="display:flex; align-items:center; gap:15pt; padding:0 20pt 0 5pt; flex:1;">' +
-              '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
-                '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📸</span>' +
-                '<span>Happenings.co</span>' +
-              '</div>' +
-              '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
-                '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📞</span>' +
-                '<span>03302894915</span>' +
-              '</div>' +
-            '</div>' +
-            '<div style="position:absolute; bottom:0; left:0; width:100%; height:4pt; background:#C9A84C;"></div>' +
+          '<div style="background:#2C1A0E; padding:10pt 20pt; display:flex; align-items:center; gap:10pt; clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); flex:1.2;">' +
+          '<div style="font-size:20pt;">📍</div>' +
+          '<div style="font-size:7pt; line-height:1.3; font-style:italic;">' +
+          'Shop no.1 SA-10 cmchs,<br>' +
+          'near Rangoonwala hall<br>' +
+          'Bahadurabad, Karachi.' +
           '</div>' +
-          
-        '</div>';
+          '</div>' +
+          '<div style="display:flex; align-items:center; gap:15pt; padding:0 20pt 0 5pt; flex:1;">' +
+          '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
+          '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📸</span>' +
+          '<span>Happenings.co</span>' +
+          '</div>' +
+          '<div style="display:flex; align-items:center; gap:6pt; font-size:9pt;">' +
+          '<span style="background:rgba(255,255,255,0.2); width:24pt; height:24pt; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12pt;">📞</span>' +
+          '<span>03302894915</span>' +
+          '</div>' +
+          '</div>' +
+          '<div style="position:absolute; bottom:0; left:0; width:100%; height:4pt; background:#C9A84C;"></div>' +
+          '</div>' +
+
+          '</div>';
 
         window.print();
         setTimeout(function () { ps.innerHTML = ""; }, 1000);
@@ -7514,12 +7572,12 @@
                 })
                   .then(function (res) {
                     if (res.ok) return res.json();
-                    return res.text().then(function(text) {
+                    return res.text().then(function (text) {
                       var msg = "Server error " + res.status;
                       try {
                         var json = JSON.parse(text);
                         if (json.error) msg = json.error;
-                      } catch(e) {
+                      } catch (e) {
                         // Not JSON, probably HTML spill
                         if (text.indexOf("<!DOCTYPE") > -1) msg = "Server returned HTML error (check Vercel logs)";
                         else msg = text.substring(0, 100);
