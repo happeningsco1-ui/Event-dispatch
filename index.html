@@ -844,6 +844,36 @@
       pointer-events: none;
     }
 
+    .iqtybar {
+      display: flex;
+      align-items: center;
+      background: rgba(0,0,0,0.4);
+      border-top: 1px solid var(--mob-brs);
+      height: 38px;
+    }
+    .iqbtn {
+      width: 40px;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--gold);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .iqbtn:hover { background: rgba(255, 255, 255, 0.05); }
+    .iqinp {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: none;
+      border-left: 1px solid var(--mob-brs);
+      border-right: 1px solid var(--mob-brs);
+      color: #F0E6D3;
+      text-align: center;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
     .ithumb {
       width: 100%;
       aspect-ratio: 4/3;
@@ -6242,10 +6272,29 @@
           var imgH = item.photo ? "<img src='" + item.photo + "' alt=''>" : "&#128230;";
           h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-id='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div><div class='ibadge'>" + inC + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='ibadge'>" + inC + "</div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "</div>";
         });
         grid.innerHTML = h; updBar();
-        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { c.addEventListener("click", function () { openQM(this.getAttribute("data-id"), "dispatch"); }); });
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { 
+          c.addEventListener("click", function () { openQM(this.getAttribute("data-id"), "dispatch"); }); 
+          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function(e) { e.stopPropagation(); });
+          var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-id");
+          var updateQ = function(val) {
+            var mx = parseInt(i.getAttribute("data-max")) || 0;
+            var nv = Math.max(0, Math.min(val, mx));
+            i.value = nv;
+            if (nv > 0) cart[id] = nv; else delete cart[id];
+            if (nv > 0) { c.classList.add("incart"); c.querySelector(".ibadge").textContent = nv; }
+            else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
+            updBar();
+          };
+          if (m) m.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) - 1); });
+          if (p) p.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) + 1); });
+          if (i) i.addEventListener("change", function(e) { e.stopPropagation(); updateQ(parseInt(i.value)||0); });
+        });
       }
 
       function updBar() {
@@ -6325,10 +6374,29 @@
           var imgH = item.photo ? "<img src='" + item.photo + "' alt=''>" : "&#128230;";
           h += "<div class='icard" + (inC > 0 ? " incart" : "") + (dep ? " depleted" : "") + "' data-rid='" + item.id + "'>";
           h += "<div class='ithumb'>" + imgH + "</div><div class='ibody'><div class='iname'>" + item.name + "</div>";
-          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div><div class='ibadge'>" + inC + "</div></div>";
+          h += "<div class='istock'>" + (dep ? "Fully Booked" : av + " available") + "</div></div>";
+          h += "<div class='ibadge'>" + inC + "</div>";
+          h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
+          h += "</div>";
         });
         grid.innerHTML = h; updRBar();
-        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { c.addEventListener("click", function () { openQM(this.getAttribute("data-rid"), "reserve"); }); });
+        grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) { 
+          c.addEventListener("click", function () { openQM(this.getAttribute("data-rid"), "reserve"); }); 
+          var bar = c.querySelector(".iqtybar"); if (bar) bar.addEventListener("click", function(e) { e.stopPropagation(); });
+          var m = c.querySelector(".iminus"), p = c.querySelector(".iplus"), i = c.querySelector(".iqinp"), id = c.getAttribute("data-rid");
+          var updateQ = function(val) {
+            var mx = parseInt(i.getAttribute("data-max")) || 0;
+            var nv = Math.max(0, Math.min(val, mx));
+            i.value = nv;
+            if (nv > 0) cart[id] = nv; else delete cart[id];
+            if (nv > 0) { c.classList.add("incart"); c.querySelector(".ibadge").textContent = nv; }
+            else { c.classList.remove("incart"); c.querySelector(".ibadge").textContent = "0"; }
+            updRBar();
+          };
+          if (m) m.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) - 1); });
+          if (p) p.addEventListener("click", function(e) { e.stopPropagation(); updateQ((parseInt(i.value)||0) + 1); });
+          if (i) i.addEventListener("change", function(e) { e.stopPropagation(); updateQ(parseInt(i.value)||0); });
+        });
       }
       function updRBar() {
         var n = Object.keys(cart).length;
@@ -6811,11 +6879,14 @@
       document.getElementById("pkg-cancel").addEventListener("click", function () { cM("pkg-modal"); });
 
       // ── FINANCE ───────────────────────────────────────────────────────────────────
+      var financeUnlocked = false;
+
       function goFin() {
+        if (financeUnlocked) { go("s-fin"); return; }
         document.getElementById("fin-inp").value = ""; document.getElementById("fin-err").style.display = "none"; oM("fin-modal");
       }
       document.getElementById("fin-confirm").addEventListener("click", function () {
-        if (document.getElementById("fin-inp").value.trim() === FP) { cM("fin-modal"); go("s-fin"); }
+        if (document.getElementById("fin-inp").value.trim() === FP) { financeUnlocked = true; cM("fin-modal"); go("s-fin"); }
         else { document.getElementById("fin-err").style.display = "block"; }
       });
       document.getElementById("fin-cancel").addEventListener("click", function () { cM("fin-modal"); });
