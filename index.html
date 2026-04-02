@@ -7433,9 +7433,22 @@
                   method: "POST",
                   body: formData
                 })
-                  .then(function (res) { return res.json(); })
+                  .then(function (res) {
+                    if (res.ok) return res.json();
+                    return res.text().then(function(text) {
+                      var msg = "Server error " + res.status;
+                      try {
+                        var json = JSON.parse(text);
+                        if (json.error) msg = json.error;
+                      } catch(e) {
+                        // Not JSON, probably HTML spill
+                        if (text.indexOf("<!DOCTYPE") > -1) msg = "Server returned HTML error (check Vercel logs)";
+                        else msg = text.substring(0, 100);
+                      }
+                      throw new Error(msg);
+                    });
+                  })
                   .then(function (result) {
-                    if (result.error) throw new Error(result.error);
                     if (result.success && result.data) {
                       MEDIA.unshift(result.data);
                       cM("media-add-modal");
