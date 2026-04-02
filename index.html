@@ -3478,22 +3478,29 @@
       opacity: 1;
       background: rgba(184, 92, 74, 0.05) !important;
     }
-  </style>
-  <style>
-    @media (min-width: 768px) {
-      #s-login {
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 9999 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #F8F4F0 !important;
+    @media print {
+      body > :not(#print-sheet) {
+        display: none !important;
+      }
+      #print-sheet {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      @page {
+        size: A4;
+        margin: 0;
       }
     }
   </style>
 </head>
 
 <body>
+  <div id="print-sheet" style="display:none;"></div>
 
   <!-- DESKTOP SIDEBAR (hidden on mobile) -->
   <div class="desk-sidebar" id="desk-sidebar" style="display:none;">
@@ -5243,7 +5250,7 @@
           document.getElementById("desk-topbar-acts").innerHTML = '<button class="desk-btn" id="d-inv-print">&#128424; Print</button><button class="desk-btn" id="d-inv-wa">&#128172; WhatsApp</button><button class="desk-btn" id="d-back-inv-prev">&#8592; Edit</button>';
           setTimeout(function () {
             var bp = document.getElementById("d-back-inv-prev"); if (bp) bp.onclick = function () { go("s-invoice"); };
-            var pp = document.getElementById("d-inv-print"); if (pp) pp.onclick = function () { window.print(); };
+            var pp = document.getElementById("d-inv-print"); if (pp) pp.onclick = function () { var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (b) printInvoice(b); };
             var wa = document.getElementById("d-inv-wa"); if (wa) wa.onclick = function () {
               var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (!b) return;
               var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
@@ -5256,7 +5263,7 @@
             };
           }, 50);
           var dc3 = document.getElementById("desk-content");
-          dc3.innerHTML = '<div id="invoice-preview-body"></div><div style="margin-top:16px;display:none;" id="print-sheet"></div>';
+          dc3.innerHTML = '<div id="invoice-preview-body"></div>';
           rInvoicePreview();
         }
         else if (id === "s-media") { dc.innerHTML = '<div id="media-body" style="padding:0;"></div>'; rMedia(); }
@@ -6123,7 +6130,7 @@
       var mEditDetailEl = document.getElementById("m-edit-detail"); if (mEditDetailEl) mEditDetailEl.addEventListener("click", function () { if (curDetailId) openEditBkn(curDetailId); });
       var backInvEl = document.getElementById("back-invoice"); if (backInvEl) backInvEl.addEventListener("click", function () { go("s-bkns"); });
       var backInvPrevEl = document.getElementById("back-invoice-preview"); if (backInvPrevEl) backInvPrevEl.addEventListener("click", function () { go("s-invoice"); });
-      var invPrintEl = document.getElementById("invoice-print-btn"); if (invPrintEl) invPrintEl.addEventListener("click", function () { window.print(); });
+      var invPrintEl = document.getElementById("invoice-print-btn"); if (invPrintEl) invPrintEl.addEventListener("click", function () { var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (b) printInvoice(b); });
       var invWAEl = document.getElementById("invoice-whatsapp-btn");
       if (invWAEl) invWAEl.addEventListener("click", function () {
         var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (!b) return;
@@ -7201,7 +7208,6 @@
         '</div>';
 
         el.innerHTML = inv;
-        document.getElementById("print-sheet").innerHTML = inv;
       }
 
       function printInvoice(b) {
@@ -7225,8 +7231,8 @@
           
           '<div style="position:relative; z-index:1;">' +
             '<!-- Header -->' +
-            '<div style="display:flex; align-items:center; justify-content:center; gap:15pt; margin-bottom:35pt;">' +
-              '<img src="' + logoSrc + '" style="height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
+            '<div style="position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:35pt;">' +
+              '<img src="' + logoSrc + '" style="position:absolute; left:0; height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
               '<div style="text-align:center;">' +
                 '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">' + BN + '</h1>' +
                 '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
