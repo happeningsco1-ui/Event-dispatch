@@ -6984,28 +6984,45 @@
 
       function rFin() {
         var MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        var currY = new Date().getFullYear();
         var h = "";
 
         h += "<div class='fin-tabs' style='margin-bottom:15px;'><div class='fin-tab" + (finTab === "payments" ? " on" : "") + "' data-ft='payments'>Client Payments</div><div class='fin-tab" + (finTab === "costs" ? " on" : "") + "' data-ft='costs'>Internal Costs</div></div>";
 
-        var currM = new Date().getMonth();
-        if (finM < 0 || finM > currM || finY !== currY) { finM = currM; finY = currY; }
+        // Build month list from all bookings (past + present + future)
+        var monthSet = {};
+        var today = new Date();
+        // Always include current month
+        monthSet[today.getFullYear() + "-" + today.getMonth()] = { y: today.getFullYear(), m: today.getMonth() };
+        BKN.forEach(function (b) {
+          if (!b.date) return;
+          var ds = String(b.date).substring(0, 10); // Always use YYYY-MM-DD, strip any time/tz part
+          var d = new Date(ds + "T00:00:00");
+          if (isNaN(d.getTime())) return; // Skip if date is invalid
+          var key = d.getFullYear() + "-" + d.getMonth();
+          monthSet[key] = { y: d.getFullYear(), m: d.getMonth() };
+        });
+        var months = Object.values(monthSet).sort(function (a, b) {
+          return a.y !== b.y ? a.y - b.y : a.m - b.m;
+        });
+
+        // If finY/finM not in list, default to current month
+        var validMonth = months.find(function (x) { return x.y === finY && x.m === finM; });
+        if (!validMonth) { finY = today.getFullYear(); finM = today.getMonth(); }
 
         h += "<div style='display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--mob-brs);padding-bottom:10px;margin-bottom:15px;'>";
-        for (var m = 0; m <= currM; m++) {
-          var isOn = (m === finM && currY === finY);
+        months.forEach(function (mo) {
+          var isOn = (mo.m === finM && mo.y === finY);
           var bg = isOn ? "background:var(--gold);color:#0F0905;" : "background:#F0E6D3;color:#5B4136;border:1px solid #D9C5A3;";
-          h += "<div class='fin-month-btn' data-m='" + m + "' data-y='" + currY + "' style='padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;" + bg + "'>" + MN[m].substring(0, 3) + " " + currY + "</div>";
-        }
+          h += "<div class='fin-month-btn' data-m='" + mo.m + "' data-y='" + mo.y + "' style='padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;" + bg + "'>" + MN[mo.m].substring(0, 3) + " " + mo.y + "</div>";
+        });
         h += "</div>";
 
-        var mBkns = BKN.filter(function (b) { var d = new Date(b.date + "T00:00:00"); return d.getMonth() === finM && d.getFullYear() === currY; });
+        var mBkns = BKN.filter(function (b) { if (!b.date) return false; var ds = String(b.date).substring(0, 10); var d = new Date(ds + "T00:00:00"); return !isNaN(d.getTime()) && d.getMonth() === finM && d.getFullYear() === finY; });
         var rev = mBkns.reduce(function (s, b) { return s + (b.total || 0); }, 0);
         var rec = mBkns.reduce(function (s, b) { return s + (b.paid || 0); }, 0);
         var tc = mBkns.reduce(function (s, b) { return s + COST_COLS.reduce(function (cs, k) { return k !== "Note" ? cs + (parseFloat((b.costs || {})[k]) || 0) : cs; }, 0); }, 0);
 
-        h += "<div class='fin-month-row' data-m='" + finM + "' data-y='" + currY + "'>";
+        h += "<div class='fin-month-row' data-m='" + finM + "' data-y='" + finY + "'>";
 
         h += "<div class='fstats'>";
         h += "<div class='fstat'><div class='fslbl'>Revenue</div><div class='fsval'>PKR " + rev.toLocaleString() + "</div></div>";
