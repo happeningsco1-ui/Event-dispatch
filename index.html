@@ -4180,6 +4180,7 @@
       </div>
       <div class="tb-acts">
         <button class="tbtn" id="staff-mgmt-btn">&#128100; Staff</button>
+        <button class="tbtn" id="inv-cats-btn">⚙️ Categories</button>
         <button class="tbtn gold" id="add-item-btn">+ Add</button>
       </div>
     </div>
@@ -4190,13 +4191,6 @@
     <div class="cattabs" id="inv-cattabs"
       style="background:var(--mob-bg2,#1A0F08);border-bottom:1px solid var(--mob-brs);">
       <div class="ctab on" data-icat="All">All</div>
-      <div class="ctab" data-icat="Decor Rental">Decor</div>
-      <div class="ctab" data-icat="Backdrops">Backdrops</div>
-      <div class="ctab" data-icat="Florals">Florals</div>
-      <div class="ctab" data-icat="Crockery and Cutlery">Crockery</div>
-      <div class="ctab" data-icat="Detailing">Detailing</div>
-      <div class="ctab" data-icat="Setup">Setup</div>
-      <div class="ctab" data-icat="Lighting">Lighting</div>
     </div>
     <div class="inv-mgr" id="imlist"></div>
     <div class="bnav">
@@ -4239,13 +4233,6 @@
     </div>
     <div class="cattabs" id="reserve-cattabs">
       <div class="ctab on" data-cat="All">All</div>
-      <div class="ctab" data-cat="Decor Rental">Decor Rental</div>
-      <div class="ctab" data-cat="Backdrops">Backdrops</div>
-      <div class="ctab" data-cat="Florals">Florals</div>
-      <div class="ctab" data-cat="Crockery and Cutlery">Crockery</div>
-      <div class="ctab" data-cat="Detailing">Detailing</div>
-      <div class="ctab" data-cat="Setup">Setup</div>
-      <div class="ctab" data-cat="Lighting">Lighting</div>
     </div>
     <div class="inv-grid" id="reserve-inv-grid"></div>
     <div style="padding:12px;">
@@ -4430,13 +4417,7 @@
       <div class="fg" style="margin-bottom:10px;">
         <div class="fl">Category</div>
         <select class="fs" id="ai-cat" onchange="updateSubcatOptions()">
-          <option>Decor Rental</option>
-          <option>Backdrops</option>
-          <option>Florals</option>
-          <option>Crockery and Cutlery</option>
-          <option>Detailing</option>
-          <option>Setup</option>
-          <option>Lighting</option>
+          <!-- Populated dynamically -->
         </select>
       </div>
       <div class="fg" style="margin-bottom:10px;" id="ai-subcat-wrap" style="display:none;">
@@ -4653,6 +4634,24 @@
     </div>
   </div>
 
+  <!-- INVENTORY CATEGORIES MODAL -->
+  <div class="overlay" id="inv-cats-modal">
+    <div class="modal">
+      <div class="mname">Inventory Categories</div>
+      <div class="msub">Add or remove item categories</div>
+      <div id="inv-cats-list"
+        style="margin-bottom:14px; max-height:250px; overflow-y:auto; border: 1px solid var(--mob-brs); border-radius: 8px; padding: 5px;">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input class="fi" id="new-invcat-inp" placeholder="New Category" style="flex:1;">
+        <button class="mbtn-a" id="add-invcat-btn" style="flex:none;padding:10px 14px;">Add</button>
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-a" onclick="cM('inv-cats-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
 
   <div class="loading" id="loading">
     <div class="spinner"></div>
@@ -4744,7 +4743,7 @@
       var isDesk = window.innerWidth >= 768;
       var curInvCat = "All", curInvSearch = "", curStaffAssign = [], invoiceBkgId = null;
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
-      var CATS = ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
+      var CATS = JSON.parse(localStorage.getItem("inv_cats") || '["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"]');
       var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
       var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
@@ -5169,10 +5168,8 @@
             + '<div id="nb-step3-desk" style="display:none;max-width:700px;">'
             + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:16px;margin-bottom:16px;">'
             + '<div class="cattabs" id="nb-reserve-cattabs-d" style="background:transparent;border:none;margin-bottom:12px;">'
-            + '<div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor</div>'
-            + '<div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div>'
-            + '<div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div>'
-            + '<div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div>'
+            + '<div class="ctab on" data-cat="All">All</div>'
+            + CATS.map(function (c) { return "<div class='ctab' data-cat='" + c + "'>" + c + "</div>"; }).join("")
             + '</div>'
             + '<div class="inv-grid" id="nb-reserve-grid-d" style="height:350px;"></div>'
             + '</div>'
@@ -5236,7 +5233,9 @@
         else if (id === "s-dispatch-hub") { dc.innerHTML = '<div class="list" id="dispatch-hub-list" style="padding:0;overflow:visible;flex:none;"></div>'; rDispatchHub(); }
         else if (id === "s-dispatch") {
           dc.innerHTML = '<div class="dinfo" id="dinfo"></div>'
-            + '<div class="cattabs" id="cattabs"><div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor Rental</div><div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div><div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div><div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div></div>'
+            + '<div class="cattabs" id="cattabs"><div class="ctab on" data-cat="All">All</div>'
+            + CATS.map(function (c) { return "<div class='ctab' data-cat='" + c + "'>" + c + "</div>"; }).join("")
+            + '</div>'
             + '<div class="inv-grid" id="inv-grid" style="height:450px;"></div>'
             + '<div class="cart-bar" id="cart-bar" style="display:none;border-radius:10px;margin-top:12px;"><div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Cart</span></div><div class="cb-r">Review &#8594;</div></div>';
           bindDispatchCattabs();
@@ -5259,7 +5258,10 @@
         else if (id === "s-sheet") { dc.innerHTML = '<div class="sheet-body" id="sheet-body" style="flex:none;overflow:visible;"></div>'; buildSheet(); }
         else if (id === "s-inv") {
           dc.innerHTML = '<div style="padding:0 0 10px;"><input class="fi" id="inv-search" placeholder="&#128269; Search inventory..." style="font-size:12px;padding:9px 12px;"></div>'
-            + '<div class="cattabs" id="inv-cattabs" style="background:transparent;border:none;margin-bottom:12px;"><div class="ctab on" data-icat="All">All</div><div class="ctab" data-icat="Decor Rental">Decor</div><div class="ctab" data-icat="Backdrops">Backdrops</div><div class="ctab" data-icat="Florals">Florals</div><div class="ctab" data-icat="Crockery and Cutlery">Crockery</div><div class="ctab" data-icat="Detailing">Detailing</div><div class="ctab" data-icat="Setup">Setup</div><div class="ctab" data-icat="Lighting">Lighting</div></div>'
+            + '<div class="cattabs" id="inv-cattabs" style="background:transparent;border:none;margin-bottom:12px;">'
+            + '<div class="ctab on" data-icat="All">All</div>'
+            + CATS.map(function (c) { return "<div class='ctab' data-icat='" + c + "'>" + c + "</div>"; }).join("")
+            + '</div>'
             + '<div class="inv-mgr" id="imlist" style="padding:0;overflow:visible;flex:none;"></div>'
             + '<div class="add-fab" id="add-fab-desk">+ Add New Item</div>';
           bindInvSearch();
@@ -5306,7 +5308,10 @@
           };
         }
         else if (id === "s-inv-reserve") {
-          dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;"><div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor Rental</div><div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div><div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div><div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div></div>'
+          dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;">'
+            + '<div class="ctab on" data-cat="All">All</div>'
+            + CATS.map(function (c) { return "<div class='ctab' data-cat='" + c + "'>" + c + "</div>"; }).join("")
+            + '</div>'
             + '<div class="inv-grid" id="reserve-inv-grid" style="height:400px;"></div>'
             + '<div style="margin-top:12px;"><div class="cart-bar" id="reserve-cart-bar" style="display:none;border-radius:10px;margin-bottom:8px;"><div class="cb-l"><span class="cb-cnt" id="reserve-cart-cnt">0</span><span class="cb-txt">Items Selected</span></div><div class="cb-r"></div></div><button class="btn-save" id="confirm-reserve-btn2">Confirm Reservation</button></div>';
           bindReserveCattabs();
@@ -6760,6 +6765,7 @@
 
       function openAddItem() {
         curItemPhoto = null;
+        populateInvCatSelect();
         document.getElementById("ai-name").value = "";
         document.getElementById("ai-qty").value = "";
         document.getElementById("ai-photo-icon").innerHTML = "&#128247;";
@@ -6767,6 +6773,8 @@
         updateSubcatOptions();
         oM("add-modal");
       }
+      var invCatsBtn = document.getElementById("inv-cats-btn");
+      if (invCatsBtn) invCatsBtn.addEventListener("click", function () { rInvCats(); oM("inv-cats-modal"); });
       function updateSubcatOptions() {
         var cat = document.getElementById("ai-cat"); if (!cat) return;
         var wrap = document.getElementById("ai-subcat-wrap");
@@ -7769,6 +7777,87 @@
         toast("Category added.");
       };
 
+      // ── INVENTORY CATEGORIES ──────────────────────────────────────────────────────────
+      function rInvCats() {
+        var list = document.getElementById("inv-cats-list");
+        if (!list) return;
+        var hArr = [];
+        CATS.forEach(function (c, i) {
+          var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
+          row += "<div style='font-size:14px; color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
+          row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delinvcat='" + i + "'>&#10005;</div>";
+          row += "</div>";
+          hArr.push(row);
+        });
+        list.innerHTML = hArr.join("") || "<div style='padding:25px; text-align:center; font-size:12px; opacity:0.6; color:#7A6347;'>No categories.</div>";
+
+        list.querySelectorAll("[data-delinvcat]").forEach(function (btn) {
+          btn.onclick = function () {
+            var idx = parseInt(this.getAttribute("data-delinvcat"));
+            CATS.splice(idx, 1);
+            localStorage.setItem("inv_cats", JSON.stringify(CATS));
+            rInvCats();
+            refreshAllCats();
+          };
+        });
+      }
+
+      document.getElementById("add-invcat-btn").onclick = function () {
+        var inp = document.getElementById("new-invcat-inp");
+        var val = inp.value.trim();
+        if (!val) return;
+        if (CATS.indexOf(val) > -1) { toast("Category exists."); return; }
+        CATS.push(val);
+        localStorage.setItem("inv_cats", JSON.stringify(CATS));
+        inp.value = "";
+        rInvCats();
+        refreshAllCats();
+        toast("Category added.");
+      };
+
+      function refreshAllCats() {
+        // Update all UI elements that depend on CATS
+        updateInvCatTabs();
+        populateInvCatSelect();
+        // If on inventory screen, re-render
+        if (curScreen === "s-inv") rINV();
+        if (curScreen === "s-inv-reserve") rReserveGrid("All");
+      }
+
+      function updateInvCatTabs() {
+        // Mobile Inventory Tabs
+        var mit = document.getElementById("inv-cattabs");
+        if (mit) {
+          var h = "<div class='ctab" + (curInvCat === "All" ? " on" : "") + "' data-icat='All'>All</div>";
+          CATS.forEach(function (c) { h += "<div class='ctab" + (curInvCat === c ? " on" : "") + "' data-icat='" + c + "'>" + c + "</div>"; });
+          mit.innerHTML = h;
+          bindInvCattabs(); // Re-bind events
+        }
+        // Reservation Tabs
+        var rt = document.getElementById("reserve-cattabs");
+        if (rt) {
+          var h = "<div class='ctab on' data-cat='All'>All</div>";
+          CATS.forEach(function (c) { h += "<div class='ctab' data-cat='" + c + "'>" + c + "</div>"; });
+          rt.innerHTML = h;
+        }
+        // Desktop Tabs (if they exist in DOM)
+        var dt = document.getElementById("inv-cattabs"); // Desk uses same ID often
+        // Desktop wizard tabs
+        var dwt = document.getElementById("nb-reserve-cattabs-d");
+        if (dwt) {
+          var h = "<div class='ctab on' data-cat='All'>All</div>";
+          CATS.forEach(function (c) { h += "<div class='ctab' data-cat='" + c + "'>" + c + "</div>"; });
+          dwt.innerHTML = h;
+        }
+      }
+
+      function populateInvCatSelect() {
+        var sel = document.getElementById("ai-cat");
+        if (sel) {
+          sel.innerHTML = CATS.map(function (c) { return "<option>" + c + "</option>"; }).join("");
+        }
+      }
+
       // ── OVERLAY CLOSE ────────────────────────────────────────────────────────────
       document.querySelectorAll(".overlay").forEach(function (el) {
         el.addEventListener("click", function (e) { if (e.target === this) this.classList.remove("open"); });
@@ -7778,6 +7867,7 @@
       // Supabase connected - data loads via loadAll()
 
       // ── INIT ─────────────────────────────────────────────────────────────────────
+      updateInvCatTabs();
       sessionStorage.removeItem("auth");
       document.getElementById("desk-sidebar").style.display = "none";
       document.getElementById("desk-main").style.display = "none";
