@@ -1160,6 +1160,23 @@
       margin-top: 1px;
     }
 
+    .sh-event-details {
+      background: rgba(201, 168, 76, 0.06);
+      border-left: 2px solid var(--gold);
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .sh-event-details span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #F0E6D3;
+      line-height: 1.5;
+      margin-top: 4px;
+      white-space: pre-wrap;
+    }
+
     .sh-inspo-lbl {
       font-size: 9px;
       color: var(--gold);
@@ -2799,6 +2816,23 @@
 
       .sh-f {
         color: var(--desk-mut);
+      }
+
+      .sh-f span {
+        color: var(--desk-text);
+      }
+
+      .sh-event-details {
+        background: #FDF9F2;
+        border-left: 3px solid var(--gold);
+        padding: 12px 16px;
+      }
+
+      .sh-event-details span {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--desk-text);
+        white-space: pre-wrap;
       }
 
       .sh-f span {
@@ -6621,8 +6655,8 @@
       function buildSheet() {
         var b = curBkg; if (!b) return;
         var h = "";
-        // Use event inspos from event details if available, otherwise cart inspos
-        var allInspos = (b.eventInspos && b.eventInspos.length > 0) ? b.eventInspos.concat(curInspos) : curInspos;
+        // Use curInspos as the primary source for the current sheet build
+        var allInspos = curInspos;
         var eventNotes = b.eventNotes || b.reminder || "";
         h += "<div class='sh-hdr'>";
         h += "<div class='sh-biz'>" + BN + " — Dispatch Sheet</div>";
@@ -6635,7 +6669,7 @@
         h += "<div class='sh-f'>Ready Time<span>" + fT(b.ready) + "</span></div>";
         h += "<div class='sh-f'>Pickup Time<span>" + fT(b.pickup) + "</span></div>";
         if (b.notes) h += "<div class='sh-f' style='grid-column:1/-1'>Booking Notes<span>" + b.notes + "</span></div>";
-        if (eventNotes) h += "<div class='sh-f' style='grid-column:1/-1'>Event Details<span>" + eventNotes + "</span></div>";
+        if (eventNotes) h += "<div class='sh-f sh-event-details' style='grid-column:1/-1'>Event Details<span>" + eventNotes + "</span></div>";
         if (curStaffAssign && curStaffAssign.length > 0) h += "<div class='sh-f' style='grid-column:1/-1'>Team<span>" + curStaffAssign.join(", ") + "</span></div>";
         h += "</div>";
         if (allInspos.length > 0) {
