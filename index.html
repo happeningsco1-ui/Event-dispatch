@@ -4792,6 +4792,15 @@
         inp.value = ""; renderCols(); rFin(); toast("Column Added");
       });
 
+      // Helper for dynamic category tabs
+      function getCattabsHtml(activeCat, attrName) {
+        attrName = attrName || "data-cat";
+        var h = '<div class="ctab ' + (activeCat === "All" ? "on" : "") + '" ' + attrName + '="All">All</div>';
+        CATS.forEach(function (c) {
+          h += '<div class="ctab ' + (activeCat === c ? "on" : "") + '" ' + attrName + '="' + c + '">' + c.split(" ")[0] + '</div>';
+        });
+        return h;
+      }
       async function handleForgotPassword() {
         const email = document.getElementById("auth-email").value.trim();
         const msgEl = document.getElementById("auth-msg");
@@ -5092,7 +5101,7 @@
         else if (id === "s-dispatch") acts = '<button class="desk-btn" id="d-back-dispatch">&#8592; Back</button>';
         else if (id === "s-cart") acts = '<button class="desk-btn" id="d-back-cart">&#8592; Edit</button>';
         else if (id === "s-sheet") acts = '<button class="desk-btn" id="d-print">&#128424; Print</button><button class="desk-btn" id="d-sheet-wa" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25d366;">&#128172; WhatsApp</button><button class="desk-btn" id="d-done-sheet">Done</button>';
-        else if (id === "s-inv") acts = '<button class="desk-btn" id="d-staff">&#128100; Staff</button><button class="desk-btn gold" id="d-add-item">+ Add Item</button>';
+        else if (id === "s-inv") acts = '<button class="desk-btn" id="d-staff">&#128100; Staff</button><button class="desk-btn" id="d-inv-cats">⚙️ Categories</button><button class="desk-btn gold" id="d-add-item">+ Add Item</button>';
         else if (id === "s-inv-reserve") acts = '<button class="desk-btn" id="d-skip-reserve">Skip for now</button>';
         document.getElementById("desk-topbar-acts").innerHTML = acts;
 
@@ -5124,6 +5133,7 @@
           });
           bind("d-add-item", openAddItem);
           bind("d-staff", function () { renderStaffModal(); oM("staff-modal"); });
+          bind("d-inv-cats", function () { rInvCats(); oM("inv-cats-modal"); });
           bind("d-skip-reserve", function () { go("s-bkns"); });
         }, 50);
 
@@ -5217,13 +5227,17 @@
               document.getElementById("nb-step3-desk").style.display = "block";
               document.getElementById("step-bar-3").style.background = "var(--gold)";
               document.getElementById("desk-page-sub").textContent = "Step 3 of 3 — Inventory";
+              document.getElementById("desk-page-sub").textContent = "Step 3 of 3 — Inventory";
               rNbReserveGridD("All");
               var cats = document.getElementById("nb-reserve-cattabs-d");
-              if (cats) cats.onclick = function (e) {
-                var t = e.target.closest(".ctab"); if (!t) return;
-                cats.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-                t.classList.add("on"); rNbReserveGridD(t.getAttribute("data-cat"));
-              };
+              if (cats) {
+                cats.innerHTML = getCattabsHtml("All");
+                cats.onclick = function (e) {
+                  var t = e.target.closest(".ctab"); if (!t) return;
+                  cats.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
+                  t.classList.add("on"); rNbReserveGridD(t.getAttribute("data-cat"));
+                };
+              }
             };
             var backInv = document.getElementById("back-inv-d");
             if (backInv) backInv.onclick = function () {
@@ -5241,7 +5255,7 @@
         else if (id === "s-dispatch-hub") { dc.innerHTML = '<div class="list" id="dispatch-hub-list" style="padding:0;overflow:visible;flex:none;"></div>'; rDispatchHub(); }
         else if (id === "s-dispatch") {
           dc.innerHTML = '<div class="dinfo" id="dinfo"></div>'
-            + '<div class="cattabs" id="cattabs"><div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor Rental</div><div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div><div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div><div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div></div>'
+            + '<div class="cattabs" id="cattabs">' + getCattabsHtml("All") + '</div>'
             + '<div class="inv-grid" id="inv-grid" style="height:450px;"></div>'
             + '<div class="cart-bar" id="cart-bar" style="display:none;border-radius:10px;margin-top:12px;"><div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Cart</span></div><div class="cb-r">Review &#8594;</div></div>';
           bindDispatchCattabs();
@@ -5264,7 +5278,7 @@
         else if (id === "s-sheet") { dc.innerHTML = '<div class="sheet-body" id="sheet-body" style="flex:none;overflow:visible;"></div>'; buildSheet(); }
         else if (id === "s-inv") {
           dc.innerHTML = '<div style="padding:0 0 10px;"><input class="fi" id="inv-search" placeholder="&#128269; Search inventory..." style="font-size:12px;padding:9px 12px;"></div>'
-            + '<div class="cattabs" id="inv-cattabs" style="background:transparent;border:none;margin-bottom:12px;"><div class="ctab on" data-icat="All">All</div><div class="ctab" data-icat="Decor Rental">Decor</div><div class="ctab" data-icat="Backdrops">Backdrops</div><div class="ctab" data-icat="Florals">Florals</div><div class="ctab" data-icat="Crockery and Cutlery">Crockery</div><div class="ctab" data-icat="Detailing">Detailing</div><div class="ctab" data-icat="Setup">Setup</div><div class="ctab" data-icat="Lighting">Lighting</div></div>'
+            + '<div class="cattabs" id="inv-cattabs" style="background:transparent;border:none;margin-bottom:12px;">' + getCattabsHtml("All", "data-icat") + '</div>'
             + '<div class="inv-mgr" id="imlist" style="padding:0;overflow:visible;flex:none;"></div>'
             + '<div class="add-fab" id="add-fab-desk">+ Add New Item</div>';
           bindInvSearch();
@@ -5311,7 +5325,7 @@
           };
         }
         else if (id === "s-inv-reserve") {
-          dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;"><div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor Rental</div><div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div><div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div><div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div></div>'
+          dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;">' + getCattabsHtml("All") + '</div>'
             + '<div class="inv-grid" id="reserve-inv-grid" style="height:400px;"></div>'
             + '<div style="margin-top:12px;"><div class="cart-bar" id="reserve-cart-bar" style="display:none;border-radius:10px;margin-bottom:8px;"><div class="cb-l"><span class="cb-cnt" id="reserve-cart-cnt">0</span><span class="cb-txt">Items Selected</span></div><div class="cb-r"></div></div><button class="btn-save" id="confirm-reserve-btn2">Confirm Reservation</button></div>';
           bindReserveCattabs();
@@ -6742,11 +6756,7 @@
       // ── INVENTORY ────────────────────────────────────────────────────────────────
       function rInvTabs() {
         var el = document.getElementById("inv-cattabs"); if (!el) return;
-        var h = '<div class="ctab ' + (curInvCat === "All" ? "on" : "") + '" data-icat="All">All</div>';
-        CATS.forEach(function (c) {
-          h += '<div class="ctab ' + (curInvCat === c ? "on" : "") + '" data-icat="' + c + '">' + c.split(" ")[0] + '</div>';
-        });
-        el.innerHTML = h;
+        el.innerHTML = getCattabsHtml(curInvCat, "data-icat");
       }
       function rInvCatSelect() {
         var el = document.getElementById("ai-cat"); if (!el) return;
@@ -6769,7 +6779,8 @@
           btn.onclick = function () {
             var idx = parseInt(this.getAttribute("data-delicat"));
             if (confirm("Remove category '" + CATS[idx] + "'? Items in this category will still exist but might not show up correctly until reassigned.")) {
-              CATS.splice(idx, 1);
+              var removed = CATS.splice(idx, 1)[0];
+              if (curInvCat === removed) curInvCat = "All";
               localStorage.setItem("ev_cats", JSON.stringify(CATS));
               rInvCats(); rInvTabs(); rInvCatSelect(); rINV();
             }
