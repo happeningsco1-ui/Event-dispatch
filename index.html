@@ -4750,7 +4750,6 @@
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
       var CATS = JSON.parse(localStorage.getItem("ev_cats")) || ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
       var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
-      var mItemId = null; // Used for editing items
       var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
       var STAFF_ROLES = ["Florist", "Labour", "Supervisor", "Driver", "Other"];
@@ -4761,7 +4760,13 @@
       // ── DB (localStorage) ──────────────────────────────────────────────────────
       var SU = "https://oqxlzyimondgwbqslibw.supabase.co";
       var SK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGx6eWltb25kZ3dicXNsaWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzM1NDYsImV4cCI6MjA4OTQwOTU0Nn0.Sd9rK-l_eqmBF_sx7_FysGxmV5xY7x7e8idST3Ctc1k";
-      var _sb = supabase.createClient(SU, SK);
+      var _sb = supabase.createClient(SU, SK, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
       var authMode = "signin";
 
       // Manage cols globally
@@ -4853,7 +4858,9 @@
             }
             throw error;
           }
-          location.reload();
+          // Removed location.reload() to maintain non-persistent session state
+          // onAuthStateChange will handle transition automatically
+          toast("Signed in successfully");
         } catch (e) {
           msgEl.style.color = "var(--red)";
           msgEl.textContent = e.message;
@@ -5226,7 +5233,6 @@
               document.getElementById("nb-step2-desk").style.display = "none";
               document.getElementById("nb-step3-desk").style.display = "block";
               document.getElementById("step-bar-3").style.background = "var(--gold)";
-              document.getElementById("desk-page-sub").textContent = "Step 3 of 3 — Inventory";
               document.getElementById("desk-page-sub").textContent = "Step 3 of 3 — Inventory";
               rNbReserveGridD("All");
               var cats = document.getElementById("nb-reserve-cattabs-d");
@@ -7872,7 +7878,6 @@
       // Supabase connected - data loads via loadAll()
 
       // ── INIT ─────────────────────────────────────────────────────────────────────
-      sessionStorage.removeItem("auth");
       document.getElementById("desk-sidebar").style.display = "none";
       document.getElementById("desk-main").style.display = "none";
       document.querySelectorAll(".screen").forEach(function (s) { s.style.display = "none"; });
