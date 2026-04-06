@@ -1421,6 +1421,26 @@
       color: #F0E6D3;
     }
 
+    .imdel, .imedit {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 6px;
+      color: #7A6347;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .imdel:hover {
+      color: var(--red);
+    }
+    
+    .imedit:hover {
+      color: var(--gold);
+    }
+
     .imqty {
       font-size: 10px;
       color: var(--gold);
@@ -4180,7 +4200,8 @@
       </div>
       <div class="tb-acts">
         <button class="tbtn" id="staff-mgmt-btn">&#128100; Staff</button>
-        <button class="tbtn gold" id="add-item-btn">+ Add</button>
+        <button class="tbtn" id="inv-cats-btn">⚙️ Categories</button>
+        <button class="tbtn gold" id="add-item-btn">+ Add Item</button>
       </div>
     </div>
     <div style="padding:10px 12px;background:var(--mob-bg2,#1A0F08);border-bottom:1px solid var(--mob-brs);">
@@ -4189,14 +4210,7 @@
     </div>
     <div class="cattabs" id="inv-cattabs"
       style="background:var(--mob-bg2,#1A0F08);border-bottom:1px solid var(--mob-brs);">
-      <div class="ctab on" data-icat="All">All</div>
-      <div class="ctab" data-icat="Decor Rental">Decor</div>
-      <div class="ctab" data-icat="Backdrops">Backdrops</div>
-      <div class="ctab" data-icat="Florals">Florals</div>
-      <div class="ctab" data-icat="Crockery and Cutlery">Crockery</div>
-      <div class="ctab" data-icat="Detailing">Detailing</div>
-      <div class="ctab" data-icat="Setup">Setup</div>
-      <div class="ctab" data-icat="Lighting">Lighting</div>
+      <!-- Dynamic tabs rendered by JS -->
     </div>
     <div class="inv-mgr" id="imlist"></div>
     <div class="bnav">
@@ -4430,13 +4444,7 @@
       <div class="fg" style="margin-bottom:10px;">
         <div class="fl">Category</div>
         <select class="fs" id="ai-cat" onchange="updateSubcatOptions()">
-          <option>Decor Rental</option>
-          <option>Backdrops</option>
-          <option>Florals</option>
-          <option>Crockery and Cutlery</option>
-          <option>Detailing</option>
-          <option>Setup</option>
-          <option>Lighting</option>
+          <!-- Dynamic options -->
         </select>
       </div>
       <div class="fg" style="margin-bottom:10px;" id="ai-subcat-wrap" style="display:none;">
@@ -4461,6 +4469,22 @@
       <div class="mbtns">
         <button class="mbtn-c" id="add-cancel">Cancel</button>
         <button class="mbtn-a" id="add-confirm">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY CATEGORIES MODAL -->
+  <div class="overlay" id="inv-cats-modal">
+    <div class="modal">
+      <div class="mname">Inventory Categories</div>
+      <div class="msub">Add or remove item categories</div>
+      <div id="inv-cats-list" style="margin-bottom:14px; max-height:250px; overflow-y:auto; border: 1px solid var(--mob-brs); border-radius: 8px; padding: 5px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input class="fi" id="new-icat-inp" placeholder="New Category Name" style="flex:1;">
+        <button class="mbtn-a" id="add-icat-btn" style="flex:none;padding:10px 14px;">Add</button>
+      </div>
+      <div class="mbtns">
+        <button class="mbtn-a" onclick="cM('inv-cats-modal')">Done</button>
       </div>
     </div>
   </div>
@@ -4744,8 +4768,9 @@
       var isDesk = window.innerWidth >= 768;
       var curInvCat = "All", curInvSearch = "", curStaffAssign = [], invoiceBkgId = null;
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
-      var CATS = ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
-      var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
+      var CATS = JSON.parse(localStorage.getItem("ev_cats")) || ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
+      var CAT_SUBS = JSON.parse(localStorage.getItem("ev_cat_subs")) || { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
+      var curEditingItemId = null;
       var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
       var STAFF_ROLES = ["Florist", "Labour", "Supervisor", "Driver", "Other"];
@@ -6747,6 +6772,21 @@
           t.classList.add("on"); curInvCat = t.getAttribute("data-icat"); rINV();
         });
       }
+      function rInvTabs() {
+        var el = document.getElementById("inv-cattabs"); if (!el) return;
+        var h = '<div class="ctab ' + (curInvCat === 'All' ? 'on' : '') + '" data-icat="All">All</div>';
+        CATS.forEach(function (cat) {
+          var short = cat.split(" ")[0];
+          h += '<div class="ctab ' + (curInvCat === cat ? 'on' : '') + '" data-icat="' + cat + '">' + short + '</div>';
+        });
+        el.innerHTML = h;
+      }
+      function rInvCatSelect() {
+        var sel = document.getElementById("ai-cat"); if (!sel) return;
+        var h = "";
+        CATS.forEach(function (cat) { h += '<option>' + cat + '</option>'; });
+        sel.innerHTML = h;
+      }
 
       // Mobile inv bindings
       var mobInvSearch = document.getElementById("inv-search");
@@ -6759,12 +6799,38 @@
       });
 
       function openAddItem() {
+        curEditingItemId = null;
         curItemPhoto = null;
+        document.querySelector("#add-modal .mname").textContent = "Add Inventory Item";
+        document.getElementById("add-confirm").textContent = "Save Item";
         document.getElementById("ai-name").value = "";
         document.getElementById("ai-qty").value = "";
         document.getElementById("ai-photo-icon").innerHTML = "&#128247;";
         document.getElementById("ai-photo-lbl").textContent = "Tap to upload photo";
+        rInvCatSelect();
         updateSubcatOptions();
+        oM("add-modal");
+      }
+      function openEditItem(id) {
+        var item = INV.find(function(i) { return i.id === id; });
+        if (!item) return;
+        curEditingItemId = id;
+        curItemPhoto = item.photo;
+        document.querySelector("#add-modal .mname").textContent = "Edit Inventory Item";
+        document.getElementById("add-confirm").textContent = "Update Item";
+        document.getElementById("ai-name").value = item.name || "";
+        document.getElementById("ai-qty").value = item.qty || "";
+        rInvCatSelect();
+        document.getElementById("ai-cat").value = item.cat || CATS[0];
+        updateSubcatOptions();
+        if (item.subcat) document.getElementById("ai-subcat").value = item.subcat;
+        if (item.photo) {
+          document.getElementById("ai-photo-icon").innerHTML = "<img src='" + item.photo + "' style='width:40px;height:40px;object-fit:cover;border-radius:6px;'>";
+          document.getElementById("ai-photo-lbl").textContent = "Photo added";
+        } else {
+          document.getElementById("ai-photo-icon").innerHTML = "&#128247;";
+          document.getElementById("ai-photo-lbl").textContent = "Tap to upload photo";
+        }
         oM("add-modal");
       }
       function updateSubcatOptions() {
@@ -6802,16 +6868,29 @@
         if (!name) { alert("Please enter item name."); return; }
         var subcatEl = document.getElementById("ai-subcat");
         var subcat = subcatEl ? subcatEl.value : "";
-        var item = { id: "i" + Date.now(), name: name, qty: qty, cat: document.getElementById("ai-cat").value, subcat: subcat || null, photo: curItemPhoto };
-        ld();
-        db("inventory", "POST", item).then(function () { INV.push(item); hd(); cM("add-modal"); rINV(); toast("Item saved!"); }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        var cat = document.getElementById("ai-cat").value;
+        
+        if (curEditingItemId) {
+          var itemIdx = INV.findIndex(function(i) { return i.id === curEditingItemId; });
+          if (itemIdx > -1) {
+            var updatedData = { name: name, qty: qty, cat: cat, subcat: subcat || null, photo: curItemPhoto };
+            ld();
+            db("inventory?id=eq." + curEditingItemId, "PATCH", updatedData).then(function() {
+              Object.assign(INV[itemIdx], updatedData);
+              hd(); cM("add-modal"); rINV(); toast("Item updated!");
+            }).catch(function(err) { hd(); alert("Error: " + err.message); });
+          }
+        } else {
+          var item = { id: "i" + Date.now(), name: name, qty: qty, cat: cat, subcat: subcat || null, photo: curItemPhoto };
+          ld();
+          db("inventory", "POST", item).then(function () { INV.push(item); hd(); cM("add-modal"); rINV(); toast("Item saved!"); }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        }
       });
 
       function rINV() {
         var el = document.getElementById("imlist"); if (!el) return;
         if (!INV.length) { el.innerHTML = "<div class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items yet.</div></div>"; return; }
-        var catsToShow = (curInvCat === "All") ? CATS : [curInvCat];
-        var h = "";
+        rInvTabs();
         catsToShow.forEach(function (cat) {
           var items = INV.filter(function (i) {
             if (i.cat !== cat) return false;
@@ -6828,7 +6907,7 @@
             h += "<div class='imcard'><div class='imimg' data-uid='" + item.id + "'>" + imgH + "<div class='uh'>&#128247;</div><input type='file' accept='image/*' id='upd" + item.id + "' style='display:none'></div>";
             h += "<div class='iminfo'><div class='imname'>" + item.name + "</div>";
             h += "<div class='imqty'>" + (item.subcat ? "<span style='font-size:8px;padding:1px 6px;border-radius:10px;background:var(--gdim);color:var(--gold);margin-right:4px;'>" + item.subcat + "</span>" : "") + "Total: " + item.qty + "</div></div>";
-            h += "<button class='imdel' data-did='" + item.id + "'>&#128465;</button></div>";
+            h += "<div style='display:flex;gap:4px;'><button class='imedit' data-eid='" + item.id + "'>&#9998;</button><button class='imdel' data-did='" + item.id + "'>&#128465;</button></div></div>";
           });
           h += "</div></div>";
         });
@@ -6840,6 +6919,7 @@
           });
         });
         el.querySelectorAll("[data-uid]").forEach(function (img) { img.addEventListener("click", function () { document.getElementById("upd" + this.getAttribute("data-uid")).click(); }); });
+        el.querySelectorAll("[data-eid]").forEach(function (btn) { btn.addEventListener("click", function () { openEditItem(this.getAttribute("data-eid")); }); });
         el.querySelectorAll("[data-did]").forEach(function (btn) {
           btn.addEventListener("click", function (e) {
             e.stopPropagation();
