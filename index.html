@@ -5352,127 +5352,62 @@
 
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
-      function parseBKN(arr) {
-        return Array.isArray(arr) ? arr.map(function (b) {
-          b.dispatchItems = b.dispatch_items || null;
-          b.extItems = b.pending_items || [];
-          b.costs = b.costs || {};
-          b.reminder = b.reminder_notes || "";
-          b.eventInspos = b.event_inspos || [];
-          b.ref = b.ref || "";
-          b.discussionLog = b.discussion_log || [];
-          b.staffAssigned = b.staff_assigned || [];
-          b.invoiceItems = b.invoice_items || [];
-          return b;
-        }) : [];
-      }
-
-      function saveCache() {
-        try {
-          localStorage.setItem("ev_inv_cache", JSON.stringify(INV));
-          localStorage.setItem("ev_bkn_cache", JSON.stringify(BKN));
-          localStorage.setItem("ev_tasks_cache", JSON.stringify(TASKS));
-          localStorage.setItem("ev_staff_cache", JSON.stringify(STAFF_LIST));
-          localStorage.setItem("ev_cache_time", Date.now().toString());
-        } catch(e) { console.warn("Cache write failed:", e); }
-      }
-
-      function loadCache() {
-        try {
-          var ci = localStorage.getItem("ev_inv_cache");
-          var cb = localStorage.getItem("ev_bkn_cache");
-          var ct = localStorage.getItem("ev_tasks_cache");
-          var cs = localStorage.getItem("ev_staff_cache");
-          if (ci) INV = JSON.parse(ci);
-          if (cb) BKN = JSON.parse(cb);
-          if (ct) TASKS = JSON.parse(ct);
-          if (cs) STAFF_LIST = JSON.parse(cs);
-        } catch(e) { console.warn("Cache read failed:", e); }
-      }
-
       function loadAll() {
-        // ── INSTANT: show cached data immediately, no spinner ──
-        loadCache();
-        var cacheTime = parseInt(localStorage.getItem("ev_cache_time") || "0");
-        var cacheAgeSec = (Date.now() - cacheTime) / 1000;
-
-        if (BKN.length > 0) {
-          // We have cached data — show it NOW, refresh silently in background
-          initBiz();
-          var sc = localStorage.getItem("cur_screen") || "s-dash";
-          curDetailId = localStorage.getItem("cur_detail_id");
-          invoiceBkgId = localStorage.getItem("inv_bkg_id");
-          curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-          go(sc);
-          loadDraft();
-          // If cache is very fresh (< 3 min), skip the Supabase refresh entirely
-          if (cacheAgeSec < 180) { return; }
-          // Otherwise silently refresh in background (no loading spinner, no blocking)
-          _silentRefresh();
-          return;
-        }
-
-        // No cache at all — show spinner and do a full load
-        ld();
+        if (BKN.length === 0) ld();
         var timeout = setTimeout(function () {
-          hd(); go("s-dash"); toast("Connection slow — please wait or check internet.");
-        }, 20000);
+          hd(); go("s-dash"); toast("Connection slow - showing cached data.");
+        }, 12000);
 
+        // Critical core data
         Promise.all([
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
-          db("tasks?order=due_at.asc"),
-          db("staff?order=created_at.asc").catch(function(e){
-            console.warn("Staff table loading failed:", e.message);
-            return JSON.parse(localStorage.getItem("ev_staff") || "[]");
-          })
-          // NOTE: media is NOT loaded here — it loads lazily when Gallery is opened
-        ]).then(function (r) {
-          clearTimeout(timeout);
-          INV = Array.isArray(r[0]) ? r[0] : [];
-          BKN = parseBKN(r[1]);
-          TASKS = Array.isArray(r[2]) ? r[2] : [];
-          STAFF_LIST = Array.isArray(r[3]) ? r[3] : [];
-          saveCache();
-          hd(); initBiz();
-          var sc = localStorage.getItem("cur_screen") || "s-dash";
-          curDetailId = localStorage.getItem("cur_detail_id");
-          invoiceBkgId = localStorage.getItem("inv_bkg_id");
-          curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-          go(sc);
-          loadDraft();
-        }).catch(function (e) {
-          clearTimeout(timeout); hd();
-          var sc = localStorage.getItem("cur_screen") || "s-dash";
-          curDetailId = localStorage.getItem("cur_detail_id");
-          invoiceBkgId = localStorage.getItem("inv_bkg_id");
-          curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-          go(sc);
-          loadDraft();
-          toast("Load error: " + e.message);
-        });
-      }
+          db("media?order=created_at.desc"),
+          db("tasks?order=due_at.asc")
+        ])
+          .then(function (r) {
+            clearTimeout(timeout);
+            INV = Array.isArray(r[0]) ? r[0] : [];
+            BKN = Array.isArray(r[1]) ? r[1].map(function (b) {
+              b.dispatchItems = b.dispatch_items || null;
+              b.extItems = b.pending_items || [];
+              b.costs = b.costs || {};
+              b.reminder = b.reminder_notes || "";
+              b.eventInspos = b.event_inspos || [];
+              b.ref = b.ref || "";
+              b.discussionLog = b.discussion_log || [];
+              b.staffAssigned = b.staff_assigned || [];
+              b.invoiceItems = b.invoice_items || [];
+              return b;
+            }) : [];
+            MEDIA = Array.isArray(r[2]) ? r[2] : [];
+            TASKS = Array.isArray(r[3]) ? r[3] : [];
 
-      // Silent background refresh — updates cache without blocking the UI
-      function _silentRefresh() {
-        Promise.all([
-          db("inventory?order=created_at.asc"),
-          db("bookings?order=date.asc"),
-          db("tasks?order=due_at.asc"),
-          db("staff?order=created_at.asc").catch(function(){ return STAFF_LIST; })
-        ]).then(function(r) {
-          var newINV = Array.isArray(r[0]) ? r[0] : INV;
-          var newBKN = parseBKN(r[1]);
-          var newTASKS = Array.isArray(r[2]) ? r[2] : TASKS;
-          var newSTAFF = Array.isArray(r[3]) ? r[3] : STAFF_LIST;
-          INV = newINV; BKN = newBKN; TASKS = newTASKS; STAFF_LIST = newSTAFF;
-          saveCache();
-          // Silently re-render current screen with fresh data
-          var sc = localStorage.getItem("cur_screen") || curScreen;
-          if (sc === "s-dash") rDash();
-          else if (sc === "s-bkns") rBkns();
-          else if (sc === "s-cal") rCal();
-        }).catch(function(e){ console.warn("Silent refresh failed:", e.message); });
+            // Try to load staff separately - don't crash if it fails (e.g. table doesn't exist yet)
+            db("staff?order=created_at.asc").then(function (res) {
+              STAFF_LIST = Array.isArray(res) ? res : [];
+            }).catch(function (err) {
+              console.warn("Staff table loading failed:", err.message);
+              STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
+            }).finally(function () {
+              hd(); initBiz();
+              var sc = localStorage.getItem("cur_screen") || "s-dash";
+              curDetailId = localStorage.getItem("cur_detail_id");
+              invoiceBkgId = localStorage.getItem("inv_bkg_id");
+              curEditBknId = localStorage.getItem("cur_edit_bkn_id");
+              go(sc);
+              loadDraft();
+            });
+          }).catch(function (e) {
+            clearTimeout(timeout); hd();
+            var sc = localStorage.getItem("cur_screen") || "s-dash";
+            curDetailId = localStorage.getItem("cur_detail_id");
+            invoiceBkgId = localStorage.getItem("inv_bkg_id");
+            curEditBknId = localStorage.getItem("cur_edit_bkn_id");
+            go(sc);
+            loadDraft();
+            toast("Major load error: " + e.message);
+          });
       }
 
       // Global invoice button handler - works on any render
@@ -7713,8 +7648,6 @@
       // ── EVENT MEDIA GALLERY ──────────────────────────────────────────────────────────
       var MEDIA_CATS = JSON.parse(localStorage.getItem("ev_m_cats") || '["All", "Nikkah", "Engagement", "Bridal Shower", "Birthday", "Mehendi", "Backdrop", "Florals", "Setup", "Other"]');
 
-      var _mediaLoaded = false;
-
       function rMedia() {
         var el = document.getElementById("media-body"); if (!el) return;
         var h = "";
@@ -7776,23 +7709,7 @@
 
           el.dataset.delegated = "true";
         }
-
-        // ── LAZY LOAD: only call Supabase on the first Gallery visit per session ──
-        if (!_mediaLoaded) {
-          _mediaLoaded = true;
-          var mgrid = document.getElementById("media-grid");
-          if (mgrid) mgrid.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:40px;color:var(--gold);font-size:13px;'>Loading gallery…</div>";
-          db("media?order=created_at.desc").then(function(r) {
-            MEDIA = Array.isArray(r) ? r : [];
-            updateMediaGrid("");
-          }).catch(function(e) {
-            _mediaLoaded = false;
-            var mg2 = document.getElementById("media-grid");
-            if (mg2) mg2.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-tx'>Gallery load failed. Tap '+' to retry.</div></div>";
-          });
-        } else {
-          updateMediaGrid("");
-        }
+        updateMediaGrid("");
       }
 
       function updateMediaGrid(q) {
