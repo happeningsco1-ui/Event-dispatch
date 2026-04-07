@@ -6765,7 +6765,7 @@
         var hArr = [];
         CATS.forEach(function (c, i) {
           var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
-          row += "<div style='font-size:14px; color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
+          row += "<div style='font-size:14px; color:#333333;'>" + c + "</div>";
           row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delicat='" + i + "'>&#10005;</div>";
           row += "</div>";
           hArr.push(row);
@@ -7762,10 +7762,51 @@
             document.getElementById("media-preview").innerHTML = isVideo ? "<video src='" + src + "' style='width:100%;max-height:200px;border-radius:8px;' controls></video>" : "<img src='" + src + "' style='width:100%;max-height:200px;object-fit:cover;border-radius:8px;'>";
             document.getElementById("media-save-btn").onclick = function () {
               var t2 = document.getElementById("media-title-inp").value.trim() || f.name, c = catSel.value, tg = document.getElementById("media-tags-inp").value;
-              ld(); var fd = new FormData(); fd.append("file", f); fd.append("title", t2); fd.append("cat", c); fd.append("tags", tg);
-              fetch("/api/upload", { method: "POST", body: fd }).then(function(r){ if(r.ok) return r.json(); throw new Error("Upload failed"); }).then(function(res){
-                if(res.success){ MEDIA.unshift(res.data); cM("media-add-modal"); rMedia(); toast("Success!"); } hd();
-              }).catch(function(e){ hd(); toast(e.message); });
+              ld();
+              
+              var uploadFile = function(fileToUpload) {
+                var fd = new FormData(); 
+                fd.append("file", fileToUpload); 
+                fd.append("title", t2); 
+                fd.append("cat", c); 
+                fd.append("tags", tg);
+                fetch("/api/upload", { method: "POST", body: fd })
+                .then(function(r) { 
+                  if (r.ok) return r.json(); 
+                  return r.text().then(function(txt) {
+                    var msg = "Upload failed (" + r.status + ")";
+                    if (r.status === 413) msg = "File too large (Max 4.5MB). Please upload a smaller file.";
+                    try { var j = JSON.parse(txt); if(j.error) msg = j.error; } catch(e){}
+                    throw new Error(msg);
+                  });
+                })
+                .then(function(res){
+                  if(res && res.success){ MEDIA.unshift(res.data); cM("media-add-modal"); rMedia(); toast("Success!"); } 
+                  hd();
+                }).catch(function(e){ hd(); toast(e.message); });
+              };
+
+              if (isVideo) {
+                 uploadFile(f);
+              } else {
+                 var img = new Image();
+                 img.onload = function() {
+                    var cvs = document.createElement("canvas");
+                    var maxW = 1920, maxH = 1080;
+                    var w = img.width, h = img.height;
+                    if (w > h) { if (w > maxW) { h *= maxW / w; w = maxW; } }
+                    else { if (h > maxH) { w *= maxH / h; h = maxH; } }
+                    cvs.width = w; cvs.height = h;
+                    var ctx = cvs.getContext("2d");
+                    ctx.drawImage(img, 0, 0, w, h);
+                    cvs.toBlob(function(blob) {
+                       var newF = new File([blob], f.name, { type: "image/jpeg", lastModified: Date.now() });
+                       uploadFile(newF);
+                    }, "image/jpeg", 0.85);
+                 };
+                 img.onerror = function() { uploadFile(f); };
+                 img.src = src;
+              }
             };
           });
         });
@@ -7780,7 +7821,7 @@
         MEDIA_CATS.forEach(function (c, i) {
           if (c === "All") return;
           var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
-          row += "<div style='font-size:14px; color:var(--mob-cream,#F0E6D3);'>" + c + "</div>";
+          row += "<div style='font-size:14px; color:#333333;'>" + c + "</div>";
           row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delcat='" + i + "'>&#10005;</div>";
           row += "</div>";
           hArr.push(row);
