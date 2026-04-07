@@ -6704,31 +6704,8 @@
           h += "</div></div>";
         });
         var el = document.getElementById("sheet-body"); if (el) el.innerHTML = h;
-        // Print version
-        var ps = "<div class='ps-biz'>" + BN + " — Dispatch Sheet</div><div class='ps-name'>" + b.name + "</div>";
-        ps += "<div class='ps-meta'>";
-        ps += "<div class='ps-field'>Date<span>" + fD(b.date) + "</span></div><div class='ps-field'>Event<span>" + b.type + "</span></div>";
-        ps += "<div class='ps-field'>Venue<span>" + (b.venue || "-") + "</span></div><div class='ps-field'>Contact<span>" + (b.phone || "-") + "</span></div>";
-        ps += "<div class='ps-field'>Ready<span>" + fT(b.ready) + "</span></div><div class='ps-field'>Pickup<span>" + fT(b.pickup) + "</span></div>";
-        if (b.notes) ps += "<div class='ps-field' style='grid-column:1/-1'>Notes<span>" + b.notes + "</span></div>";
-        if (curStaffAssign && curStaffAssign.length > 0) ps += "<div class='ps-field' style='grid-column:1/-1'>Team<span>" + curStaffAssign.join(", ") + "</span></div>";
-        ps += "</div>";
-        if (curInspos.length > 0) {
-          ps += "<div class='ps-inspo-title'>Setup Reference Photos</div><div class='ps-inspo-wrap'>";
-          curInspos.forEach(function (s) { ps += "<img src='" + s + "'>"; });
-          ps += "</div>";
-        }
-        CATS.forEach(function (cat) {
-          var items = Object.keys(cart).map(function (id) { return INV.find(function (i) { return i.id == id; }); }).filter(function (i) { return i && i.cat === cat; });
-          if (!items.length) return;
-          ps += "<div class='ps-cat-block'><div class='ps-cat-title'>" + cat + " (" + items.length + ")</div><div class='ps-items'>";
-          items.forEach(function (item) {
-            ps += "<div class='ps-item'>" + (item.photo ? "<img class='ps-item-img' src='" + item.photo + "'>" : "<div class='ps-item-emoji'>&#128230;</div>");
-            ps += "<div class='ps-item-body'><div class='ps-item-name'>" + item.name + "</div><div class='ps-item-qty'>Qty: " + cart[item.id] + "</div></div></div>";
-          });
-          ps += "</div></div>";
-        });
-        document.getElementById("print-sheet").innerHTML = ps;
+        // Print version (mirrors original UI design)
+        document.getElementById("print-sheet").innerHTML = h;
       }
       var doneSheetEl = document.getElementById("done-sheet"); if (doneSheetEl) doneSheetEl.addEventListener("click", function () { go("s-bkns"); });
       var editSheetEl = document.getElementById("edit-sheet"); if (editSheetEl) editSheetEl.addEventListener("click", function () { go("s-cart"); });
