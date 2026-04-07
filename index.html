@@ -4753,8 +4753,9 @@
       var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
       var STAFF_ROLES = ["Florist", "Labour", "Supervisor", "Driver", "Other"];
-      var MEDIA = JSON.parse(localStorage.getItem("ev_media") || "[]");
+      var MEDIA = [];
       var mediaFilter = "All";
+      var mediaLimit = 30, mediaOffset = 0, hasMoreMedia = true, loadingMedia = false;
       var PACKAGES = JSON.parse(localStorage.getItem("ev_pkgs") || "[]");
 
       // ── DB (localStorage) ──────────────────────────────────────────────────────
@@ -5352,62 +5353,72 @@
 
 
       // ── LOAD DATA ──────────────────────────────────────────────────────────────
-      function loadAll() {
-        if (BKN.length === 0) ld();
-        var timeout = setTimeout(function () {
-          hd(); go("s-dash"); toast("Connection slow - showing cached data.");
-        }, 12000);
+      function prepareBooking(b) {
+        b.dispatchItems = b.dispatch_items || null;
+        b.extItems = b.pending_items || [];
+        b.costs = b.costs || {};
+        b.reminder = b.reminder_notes || "";
+        b.eventInspos = b.event_inspos || [];
+        b.ref = b.ref || "";
+        b.discussionLog = b.discussion_log || [];
+        b.staffAssigned = b.staff_assigned || [];
+        b.invoiceItems = b.invoice_items || [];
+        return b;
+      }
 
-        // Critical core data
+      function loadMedia(reset) {
+        if (loadingMedia) return;
+        if (reset) { mediaOffset = 0; MEDIA = []; hasMoreMedia = true; }
+        if (!hasMoreMedia) return Promise.resolve([]);
+
+        loadingMedia = true;
+        var query = "media?order=created_at.desc&limit=" + mediaLimit + "&offset=" + mediaOffset;
+        return db(query).then(function (res) {
+          if (res.length < mediaLimit) hasMoreMedia = false;
+          MEDIA = MEDIA.concat(res);
+          mediaOffset += res.length;
+          if (curScreen === 's-media') renderMediaGridOnly();
+          return res;
+        }).finally(function () {
+          loadingMedia = false;
+        });
+      }
+
+      function loadAll() {
+        ld();
+        // Priority 1: Critical data needed for the Dashboard/Bookings
         Promise.all([
           db("inventory?order=created_at.asc"),
           db("bookings?order=date.asc"),
-          db("media?order=created_at.desc"),
           db("tasks?order=due_at.asc")
-        ])
-          .then(function (r) {
-            clearTimeout(timeout);
-            INV = Array.isArray(r[0]) ? r[0] : [];
-            BKN = Array.isArray(r[1]) ? r[1].map(function (b) {
-              b.dispatchItems = b.dispatch_items || null;
-              b.extItems = b.pending_items || [];
-              b.costs = b.costs || {};
-              b.reminder = b.reminder_notes || "";
-              b.eventInspos = b.event_inspos || [];
-              b.ref = b.ref || "";
-              b.discussionLog = b.discussion_log || [];
-              b.staffAssigned = b.staff_assigned || [];
-              b.invoiceItems = b.invoice_items || [];
-              return b;
-            }) : [];
-            MEDIA = Array.isArray(r[2]) ? r[2] : [];
-            TASKS = Array.isArray(r[3]) ? r[3] : [];
+        ]).then(function (r) {
+          INV = Array.isArray(r[0]) ? r[0] : [];
+          BKN = Array.isArray(r[1]) ? r[1].map(prepareBooking) : [];
+          TASKS = Array.isArray(r[2]) ? r[2] : [];
 
-            // Try to load staff separately - don't crash if it fails (e.g. table doesn't exist yet)
-            db("staff?order=created_at.asc").then(function (res) {
-              STAFF_LIST = Array.isArray(res) ? res : [];
-            }).catch(function (err) {
-              console.warn("Staff table loading failed:", err.message);
-              STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
-            }).finally(function () {
-              hd(); initBiz();
-              var sc = localStorage.getItem("cur_screen") || "s-dash";
-              curDetailId = localStorage.getItem("cur_detail_id");
-              invoiceBkgId = localStorage.getItem("inv_bkg_id");
-              curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-              go(sc);
-              loadDraft();
-            });
-          }).catch(function (e) {
-            clearTimeout(timeout); hd();
-            var sc = localStorage.getItem("cur_screen") || "s-dash";
-            curDetailId = localStorage.getItem("cur_detail_id");
-            invoiceBkgId = localStorage.getItem("inv_bkg_id");
-            curEditBknId = localStorage.getItem("cur_edit_bkn_id");
-            go(sc);
-            loadDraft();
-            toast("Major load error: " + e.message);
+          initBiz();
+          var sc = localStorage.getItem("cur_screen") || "s-dash";
+          curDetailId = localStorage.getItem("cur_detail_id");
+          invoiceBkgId = localStorage.getItem("inv_bkg_id");
+          curEditBknId = localStorage.getItem("cur_edit_bkn_id");
+          go(sc);
+          loadDraft();
+          hd();
+
+          // Priority 2: Staff and Media (load in background)
+          loadMedia(true);
+          db("staff?order=created_at.asc").then(function (res) {
+            STAFF_LIST = Array.isArray(res) ? res : [];
+          }).catch(function (err) {
+            console.warn("Staff table loading failed:", err.message);
+            STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
           });
+        }).catch(function (e) {
+          hd();
+          var sc = localStorage.getItem("cur_screen") || "s-dash";
+          go(sc);
+          toast("Major load error: " + e.message);
+        });
       }
 
       // Global invoice button handler - works on any render
@@ -7665,6 +7676,7 @@
         h += "</div>";
 
         h += "<div id='media-grid' style='display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;'></div>";
+        h += "<div id='media-more-cnt' style='text-align:center;margin-top:20px;margin-bottom:40px;'></div>";
         el.innerHTML = h;
 
         if (!el.dataset.delegated) {
@@ -7709,7 +7721,7 @@
 
           el.dataset.delegated = "true";
         }
-        updateMediaGrid("");
+        renderMediaGridOnly();
       }
 
       function updateMediaGrid(q) {
@@ -7747,6 +7759,20 @@
         lb.onclick = function (e) { if (e.target === lb) document.body.removeChild(lb); };
       }
 
+      function renderMediaGridOnly() {
+        var q = document.getElementById("media-search") ? document.getElementById("media-search").value.toLowerCase().trim() : "";
+        updateMediaGrid(q);
+        var moreCnt = document.getElementById("media-more-cnt");
+        if (moreCnt) {
+          if (hasMoreMedia) {
+            moreCnt.innerHTML = "<button class='tbtn gold' id='load-more-media-btn' style='padding:8px 24px;'>" + (loadingMedia ? "Loading..." : "Load More") + "</button>";
+            document.getElementById("load-more-media-btn").onclick = function() { this.textContent = "Loading..."; loadMedia(); };
+          } else {
+            moreCnt.innerHTML = "<div style='font-size:11px;color:var(--mob-mut);'>Showing all " + MEDIA.length + " items</div>";
+          }
+        }
+      }
+
       function handleMediaUpload() {
         var files = Array.from(this.files);
         if (!files.length) return;
@@ -7762,30 +7788,51 @@
             catSel.value = MEDIA_CATS[1] || "Other";
             document.getElementById("media-tags-inp").value = "";
             document.getElementById("media-preview").innerHTML = isVideo ? "<video src='" + src + "' style='width:100%;max-height:200px;border-radius:8px;' controls></video>" : "<img src='" + src + "' style='width:100%;max-height:200px;object-fit:cover;border-radius:8px;'>";
-            document.getElementById("media-save-btn").onclick = function () {
+            document.getElementById("media-save-btn").onclick = async function () {
               var t2 = document.getElementById("media-title-inp").value.trim() || f.name, c = catSel.value, tg = document.getElementById("media-tags-inp").value;
               ld();
               
-              var uploadFile = function(fileToUpload) {
-                var fd = new FormData(); 
-                fd.append("file", fileToUpload); 
-                fd.append("title", t2); 
-                fd.append("cat", c); 
-                fd.append("tags", tg);
-                fetch("/api/upload", { method: "POST", body: fd })
-                .then(function(r) { 
-                  if (r.ok) return r.json(); 
-                  return r.text().then(function(txt) {
-                    var msg = "Upload failed (" + r.status + ")";
-                    if (r.status === 413) msg = "File too large (Max 4.5MB). Please upload a smaller file.";
-                    try { var j = JSON.parse(txt); if(j.error) msg = j.error; } catch(e){}
-                    throw new Error(msg);
+              var uploadFile = async function(fileToUpload) {
+                try {
+                  // 1. Get presigned URL
+                  const resUrl = await fetch("/api/get-upload-url", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ filename: fileToUpload.name, contentType: fileToUpload.type })
                   });
-                })
-                .then(function(res){
-                  if(res && res.success){ MEDIA.unshift(res.data); cM("media-add-modal"); rMedia(); toast("Success!"); } 
+                  if (!resUrl.ok) throw new Error("Failed to get upload URL");
+                  const { uploadUrl, publicUrl } = await resUrl.json();
+
+                  // 2. Upload directly to R2
+                  const putRes = await fetch(uploadUrl, {
+                    method: "PUT",
+                    body: fileToUpload,
+                    headers: { "Content-Type": fileToUpload.type }
+                  });
+                  if (!putRes.ok) throw new Error("Direct upload failed");
+
+                  // 3. Update Supabase record
+                  const dbRes = await db("media", "POST", {
+                    src: publicUrl,
+                    type: fileToUpload.type.startsWith("video") ? "video" : "image",
+                    title: t2,
+                    cat: c,
+                    tags: tg ? tg.split(",").map(t => t.trim()) : [],
+                    date: new Date().toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }),
+                    created_at: new Date().toISOString()
+                  });
+
+                  const savedData = Array.isArray(dbRes) ? dbRes[0] : dbRes;
+                  MEDIA.unshift(savedData);
+                  cM("media-add-modal");
+                  rMedia();
+                  toast("Success!");
+                } catch (e) {
+                  console.error("Upload error:", e);
+                  toast("Upload failed: " + e.message);
+                } finally {
                   hd();
-                }).catch(function(e){ hd(); toast(e.message); });
+                }
               };
 
               if (isVideo) {
