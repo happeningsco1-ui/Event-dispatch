@@ -5133,19 +5133,8 @@
           bind("d-print", function () { window.print(); });
           bind("d-done-sheet", function () { go("s-bkns"); });
           bind("d-sheet-wa", function () {
-            if (!curBkg) return;
-            var b = curBkg;
-            var items = Object.keys(cart);
-            var msg = "Assalam o Alaikum Team,%0A%0A*Dispatch Sheet Ready* %F0%9F%9A%9A%0A%0A";
-            msg += "*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + fD(b.date) + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + fT(b.ready) + "%0A*Pickup:* " + fT(b.pickup) + "%0A%0A";
-            msg += "*Items (" + items.length + "):*%0A";
-            items.forEach(function (id) {
-              var item = INV.find(function (i) { return i.id === id; });
-              if (item) msg += "%E2%80%A2 " + item.name + " x" + cart[id] + "%0A";
-            });
-            if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
-            msg += "%0AJazakAllah";
-            goWA("", msg);
+            if (!curBkg) return toast("No booking active");
+            sendPdfToWhatsApp("sheet-body", curBkg.id, "Dispatch-Sheet");
           });
           bind("d-add-item", openAddItem);
           bind("d-staff", function () { renderStaffModal(); oM("staff-modal"); });
@@ -5364,17 +5353,9 @@
           setTimeout(function () {
             var bp = document.getElementById("d-back-inv-prev"); if (bp) bp.onclick = function () { go("s-invoice"); };
             var pp = document.getElementById("d-inv-print"); if (pp) pp.onclick = function () { var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (b) printInvoice(b); };
-            var wa = document.getElementById("d-inv-wa"); if (wa) wa.onclick = function () {
-              var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (!b) return;
-              var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
-              var bal = total - (b.paid || 0);
-              var msg = "Assalam o Alaikum *" + b.name + "*,%0A%0APlease find your invoice:%0A%0A";
-              invoiceLines.forEach(function (l) { msg += "• " + l.desc + ": PKR " + parseInt(l.amt).toLocaleString() + "/%0A"; });
-              msg += "%0A*Total: PKR " + total.toLocaleString() + "*%0AAdvance: PKR " + (b.paid || 0).toLocaleString() + "%0A*Balance: PKR " + bal.toLocaleString() + "*%0A%0AJazakAllah";
-              var p = b.phone ? b.phone.replace(/[^0-9]/g, "") : "";
-              p = p.replace(/^0+/, "");
-              if (!p.startsWith("92") && p.length > 0) p = "92" + p;
-              goWA(p, msg);
+            var wa = document.getElementById("d-inv-wa");
+            if (wa) wa.onclick = function () {
+              sendPdfToWhatsApp("invoice-preview-body", invoiceBkgId, "Invoice");
             };
           }, 50);
           var dc3 = document.getElementById("desk-content");
