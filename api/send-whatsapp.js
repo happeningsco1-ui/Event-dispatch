@@ -65,6 +65,7 @@ export default async function handler(req, res) {
     const pdfUrl = `${R2_PUBLIC_URL.replace(/\/$/, "")}/temp-pdf/${fileName}`;
 
     const filenameStr = Array.isArray(fields.filename) ? fields.filename[0] : fields.filename;
+    const finalPhone = Array.isArray(fields.phone) ? fields.phone[0] : fields.phone;
 
     // 2. Send via WhatsApp Cloud API
     const whatsappResponse = await fetch(`https://graph.facebook.com/v19.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`, {
@@ -75,11 +76,11 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         messaging_product: "whatsapp",
-        to: phoneNumber,
+        to: String(finalPhone || ""),
         type: "document",
         document: {
           link: pdfUrl,
-          filename: filenameStr || "Invoice.pdf"
+          filename: String(filenameStr || "Invoice.pdf")
         }
       }),
     });
