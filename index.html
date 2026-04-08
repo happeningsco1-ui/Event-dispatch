@@ -14,6 +14,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap"
     rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* ─── TOKENS ─── */
     :root {
@@ -4945,6 +4946,44 @@
         var url = phone ? (isMo ? "https://wa.me/" + phone + "?text=" + msg : "https://web.whatsapp.com/send?phone=" + phone + "&text=" + msg) : (isMo ? "https://wa.me/?text=" + msg : "https://web.whatsapp.com/send?text=" + msg);
         window.open(url, "whatsapp_tab");
       }
+      async function sendPdfToWhatsApp(elementId, bId, filenamePrefix) {
+        const b = BKN.find(function(x) { return x.id == bId; });
+        if (!b) return toast("Booking not found");
+        let phone = b.phone || "";
+        const targetPhone = prompt("Enter WhatsApp number (with country code, e.g. 923302894915):", phone);
+        if (!targetPhone) return;
+        ld();
+        try {
+          const element = document.getElementById(elementId);
+          const opt = {
+            margin: 10,
+            filename: filenamePrefix + '-' + (b.ref || 'doc') + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
+          const formData = new FormData();
+          formData.append('file', pdfBlob, opt.filename);
+          formData.append('phone', targetPhone);
+          formData.append('filename', opt.filename);
+          const res = await fetch('/api/send-whatsapp', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await res.json();
+          if (result.success) {
+            toast("PDF Sent Successfully to WhatsApp!");
+          } else {
+            throw new Error(result.error + (result.details ? ": " + JSON.stringify(result.details) : ""));
+          }
+        } catch (err) {
+          console.error("WhatsApp Send Error:", err);
+          toast("Error: " + err.message);
+        } finally {
+          hd();
+        }
+      }
       function rF(f, cb) {
         var r = new FileReader();
         r.onload = function (e) {
@@ -7924,6 +7963,17 @@
       if (atb) atb.onclick = handleForgotPassword;
       var snp = document.getElementById("save-new-pass-btn");
       if (snp) snp.onclick = handleUpdatePassword;
+
+      // WhatsApp PDF Integration
+      var invWaBtn = document.getElementById("invoice-whatsapp-btn");
+      if (invWaBtn) invWaBtn.onclick = function() {
+        sendPdfToWhatsApp("invoice-preview-body", invoiceBkgId, "Invoice");
+      };
+      var sheetWaBtn = document.getElementById("sheet-wa-btn");
+      if (sheetWaBtn) sheetWaBtn.onclick = function() {
+        if (!curBkg) return toast("No booking active");
+        sendPdfToWhatsApp("sheet-body", curBkg.id, "Dispatch-Sheet");
+      };
 
     } catch (e) { console.warn("Init Error:", e.message); }</script>
 </body>
