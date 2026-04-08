@@ -6263,19 +6263,7 @@
       var backInvEl = document.getElementById("back-invoice"); if (backInvEl) backInvEl.addEventListener("click", function () { go("s-bkns"); });
       var backInvPrevEl = document.getElementById("back-invoice-preview"); if (backInvPrevEl) backInvPrevEl.addEventListener("click", function () { go("s-invoice"); });
       var invPrintEl = document.getElementById("invoice-print-btn"); if (invPrintEl) invPrintEl.addEventListener("click", function () { var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (b) printInvoice(b); });
-      var invWAEl = document.getElementById("invoice-whatsapp-btn");
-      if (invWAEl) invWAEl.addEventListener("click", function () {
-        var b = BKN.find(function (x) { return x.id === invoiceBkgId; }); if (!b) return;
-        var total = invoiceLines.reduce(function (s, l) { return s + (parseFloat(l.amt) || 0); }, 0);
-        var bal = total - (b.paid || 0);
-        var msg = "Assalam o Alaikum *" + b.name + "*,%0A%0APlease find your invoice details:%0A%0A*Event:* " + b.type + "%0A*Date:* " + b.date + "%0A*Ref:* " + b.ref + "%0A%0A";
-        invoiceLines.forEach(function (l) { msg += "• " + l.desc + ": PKR " + parseInt(l.amt).toLocaleString() + "/-" + "%0A"; });
-        msg += "%0A*Total: PKR " + total.toLocaleString() + "/-*%0AAdvance Paid: PKR " + (b.paid || 0).toLocaleString() + "/-" + "%0A*Balance Due: PKR " + bal.toLocaleString() + "/-*%0A%0AJazakAllah";
-        var p = b.phone ? b.phone.replace(/[^0-9]/g, "") : "";
-        p = p.replace(/^0+/, "");
-        if (!p.startsWith("92") && p.length > 0) p = "92" + p;
-        goWA(p, msg);
-      });
+      // Old Text WhatsApp removed to favor PDF sending
       var detDispEl = document.getElementById("detail-dispatch-btn"); if (detDispEl) detDispEl.addEventListener("click", function () { if (curDetailId) openDispatch(curDetailId); });
 
       // ── WHATSAPP ────────────────────────────────────────────────────────────────
@@ -6785,21 +6773,7 @@
       var doneSheetEl = document.getElementById("done-sheet"); if (doneSheetEl) doneSheetEl.addEventListener("click", function () { go("s-bkns"); });
       var editSheetEl = document.getElementById("edit-sheet"); if (editSheetEl) editSheetEl.addEventListener("click", function () { go("s-cart"); });
       var printBtnEl = document.getElementById("print-btn"); if (printBtnEl) printBtnEl.addEventListener("click", function () { window.print(); });
-      var sheetWaEl = document.getElementById("sheet-wa-btn"); if (sheetWaEl) sheetWaEl.addEventListener("click", function () {
-        if (!curBkg) return;
-        var b = curBkg;
-        var items = Object.keys(cart);
-        var msg = "Assalam o Alaikum Team,%0A%0A*Dispatch Sheet Ready* %F0%9F%9A%9A%0A%0A";
-        msg += "*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + fD(b.date) + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + fT(b.ready) + "%0A*Pickup:* " + fT(b.pickup) + "%0A%0A";
-        msg += "*Items (%22" + items.length + "%22):*%0A";
-        items.forEach(function (id) {
-          var item = INV.find(function (i) { return i.id == id; });
-          if (item) msg += "%E2%80%A2 " + item.name + " x" + cart[id] + "%0A";
-        });
-        if (curStaffAssign && curStaffAssign.length > 0) msg += "%0A*Team:* " + curStaffAssign.join(", ") + "%0A";
-        msg += "%0AJazakAllah";
-        goWA("", msg);
-      });
+      // Old Text WhatsApp removed to favor PDF sending
 
       // ── INVENTORY ────────────────────────────────────────────────────────────────
       function rInvTabs() {
