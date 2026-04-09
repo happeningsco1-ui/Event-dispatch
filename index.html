@@ -4767,6 +4767,9 @@
     try {
       var AP = null, FP = localStorage.getItem("ev_fin_p") || "12345678";
       var INV = [], BKN = [], TASKS = [];
+      var PAGE_SIZE = 20;
+      var visibleLimits = {};
+
       var BN = localStorage.getItem("biz_n") || "Happenings.co";
       var BL = localStorage.getItem("biz_l") || null;
       var cart = {}, curBkg = null, curInspos = [], curEventInspos = [], curEventNotes = "", curItemPhoto = null, mItemId = null, payBkgId = null;
@@ -5059,6 +5062,8 @@
 
       // ── NAVIGATION ─────────────────────────────────────────────────────────────
       function go(id, forceRef) {
+        visibleLimits = {}; // Reset pagination limits when switching screens
+
         curScreen = id;
         localStorage.setItem("cur_screen", id);
         if (curDetailId) localStorage.setItem("cur_detail_id", curDetailId);
@@ -5266,7 +5271,8 @@
                 cats.onclick = function (e) {
                   var t = e.target.closest(".ctab"); if (!t) return;
                   cats.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-                  t.classList.add("on"); rNbReserveGridD(t.getAttribute("data-cat"));
+                  t.classList.add("on"); visibleLimits["nb-reserve-grid-d"] = PAGE_SIZE; rNbReserveGridD(t.getAttribute("data-cat"));
+
                 };
               }
             };
@@ -5913,7 +5919,7 @@
         if (titleEl) titleEl.textContent = titles[step] || "";
         if (subEl) subEl.textContent = subs[step] || "";
         // Refresh reserve grid on step 3
-        if (step === 3) rNbReserveGrid("All");
+        if (step === 3) { visibleLimits["nb-reserve-grid"] = PAGE_SIZE; rNbReserveGrid("All"); }
       }
       function bindNewBkn() {
         document.querySelectorAll(".echk").forEach(function (e) {
@@ -5982,7 +5988,8 @@
         if (nbCattabs) nbCattabs.onclick = function (e) {
           var t = e.target.closest(".ctab"); if (!t) return;
           nbCattabs.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-          t.classList.add("on"); rNbReserveGrid(t.getAttribute("data-cat"));
+          t.classList.add("on"); visibleLimits["nb-reserve-grid"] = PAGE_SIZE; rNbReserveGrid(t.getAttribute("data-cat"));
+
         };
       }
 
@@ -5997,7 +6004,12 @@
       function rNbReserveGridD(cat) {
         var grid = document.getElementById("nb-reserve-grid-d"); if (!grid) return;
         var date = (document.getElementById("nb-date") || {}).value || null;
-        var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>"; return; }
+        
+        var limit = visibleLimits["nb-reserve-grid-d"] || PAGE_SIZE;
+        var items = filtered.slice(0, limit);
+        
         var h = "";
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
@@ -6012,7 +6024,19 @@
           h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
-        grid.innerHTML = h || "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>";
+        grid.innerHTML = h;
+
+        if (filtered.length > limit) {
+          var moreDiv = document.createElement("div");
+          moreDiv.style.cssText = "grid-column: 1/-1; padding: 15px; text-align: center;";
+          moreDiv.innerHTML = "<button class='tbtn gold' style='width: 100%; max-width: 300px; padding: 12px; font-size: 14px;'>Show More Items (" + limit + " of " + filtered.length + ")</button>";
+          moreDiv.onclick = function(e) {
+            e.stopPropagation();
+            visibleLimits["nb-reserve-grid-d"] = limit + PAGE_SIZE;
+            rNbReserveGridD(cat);
+          };
+          grid.appendChild(moreDiv);
+        }
         grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
           c.onclick = function () {
             mItemId = this.getAttribute("data-did");
@@ -6054,8 +6078,12 @@
       function rNbReserveGrid(cat) {
         var grid = document.getElementById("nb-reserve-grid"); if (!grid) return;
         var date = (document.getElementById("nb-date") || {}).value || null;
-        var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
-        if (!items.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>"; updNbBar(); return; }
+        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>"; updNbBar(); return; }
+        
+        var limit = visibleLimits["nb-reserve-grid"] || PAGE_SIZE;
+        var items = filtered.slice(0, limit);
+        
         var h = "";
         items.forEach(function (item) {
           var inC = draftCart[item.id] || 0;
@@ -6070,7 +6098,21 @@
           h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
-        grid.innerHTML = h; updNbBar();
+        grid.innerHTML = h;
+
+        if (filtered.length > limit) {
+          var moreDiv = document.createElement("div");
+          moreDiv.style.cssText = "grid-column: 1/-1; padding: 15px; text-align: center;";
+          moreDiv.innerHTML = "<button class='tbtn gold' style='width: 100%; max-width: 300px; padding: 12px; font-size: 14px;'>Show More Items (" + limit + " of " + filtered.length + ")</button>";
+          moreDiv.onclick = function(e) {
+            e.stopPropagation();
+            visibleLimits["nb-reserve-grid"] = limit + PAGE_SIZE;
+            rNbReserveGrid(cat);
+          };
+          grid.appendChild(moreDiv);
+        }
+        
+        updNbBar();
         grid.querySelectorAll(".icard:not(.depleted)").forEach(function (c) {
           c.addEventListener("click", function () {
             mItemId = this.getAttribute("data-nbid");
@@ -6347,7 +6389,7 @@
         el.addEventListener("click", function (e) {
           var t = e.target.closest(".ctab"); if (!t) return;
           el.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-          t.classList.add("on"); rGrid(t.getAttribute("data-cat"));
+          t.classList.add("on"); visibleLimits["inv-grid"] = PAGE_SIZE; rGrid(t.getAttribute("data-cat"));
         });
         var cb = document.getElementById("cart-bar"); if (cb) cb.addEventListener("click", function () { go("s-cart"); });
       }
@@ -6356,7 +6398,7 @@
       if (mobCattabs) mobCattabs.addEventListener("click", function (e) {
         var t = e.target.closest(".ctab"); if (!t) return;
         mobCattabs.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-        t.classList.add("on"); rGrid(t.getAttribute("data-cat"));
+        t.classList.add("on"); visibleLimits["inv-grid"] = PAGE_SIZE; rGrid(t.getAttribute("data-cat"));
       });
       var mobCartBar = document.getElementById("cart-bar");
       if (mobCartBar) mobCartBar.addEventListener("click", function () { go("s-cart"); });
@@ -6364,8 +6406,12 @@
 
       function rGrid(cat) {
         var grid = document.getElementById("inv-grid"); if (!grid) return;
-        var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
-        if (!items.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updBar(); return; }
+        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updBar(); return; }
+        
+        var limit = visibleLimits["inv-grid"] || PAGE_SIZE;
+        var items = filtered.slice(0, limit);
+        
         var h = "";
         items.forEach(function (item) {
           var inC = cart[item.id] || 0;
@@ -6380,7 +6426,21 @@
           h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + av + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
-        grid.innerHTML = h; updBar();
+        grid.innerHTML = h;
+
+        if (filtered.length > limit) {
+          var moreDiv = document.createElement("div");
+          moreDiv.style.cssText = "grid-column: 1/-1; padding: 15px; text-align: center;";
+          moreDiv.innerHTML = "<button class='tbtn gold' style='width: 100%; max-width: 300px; padding: 12px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);'>Show More Items (" + limit + " of " + filtered.length + ")</button>";
+          moreDiv.onclick = function(e) {
+            e.stopPropagation();
+            visibleLimits["inv-grid"] = limit + PAGE_SIZE;
+            rGrid(cat);
+          };
+          grid.appendChild(moreDiv);
+        }
+        
+        updBar();
 
         if (!grid.dataset.delegated) {
           grid.addEventListener("click", function(e) {
@@ -6496,20 +6556,26 @@
         el.addEventListener("click", function (e) {
           var t = e.target.closest(".ctab"); if (!t) return;
           el.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-          t.classList.add("on"); rReserveGrid(t.getAttribute("data-cat"));
+          t.classList.add("on"); visibleLimits["reserve-inv-grid"] = PAGE_SIZE; rReserveGrid(t.getAttribute("data-cat"));
+
         });
       }
       var mobResCattabs = document.getElementById("reserve-cattabs");
       if (mobResCattabs) mobResCattabs.addEventListener("click", function (e) {
         var t = e.target.closest(".ctab"); if (!t) return;
         mobResCattabs.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
-        t.classList.add("on"); rReserveGrid(t.getAttribute("data-cat"));
+        t.classList.add("on"); visibleLimits["reserve-inv-grid"] = PAGE_SIZE; rReserveGrid(t.getAttribute("data-cat"));
+
       });
 
       function rReserveGrid(cat) {
         var grid = document.getElementById("reserve-inv-grid"); if (!grid) return;
-        var items = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
-        if (!items.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updRBar(); return; }
+        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updRBar(); return; }
+        
+        var limit = visibleLimits["reserve-inv-grid"] || PAGE_SIZE;
+        var items = filtered.slice(0, limit);
+        
         var h = "";
         items.forEach(function (item) {
           var inC = cart[item.id] || 0;
@@ -6523,7 +6589,21 @@
           h += "<div class='iqtybar'><button class='iqbtn iminus'>-</button><input class='iqinp' type='number' min='0' data-max='" + (av + inC) + "' value='" + inC + "'><button class='iqbtn iplus'>+</button></div>";
           h += "</div>";
         });
-        grid.innerHTML = h; updRBar();
+        grid.innerHTML = h;
+
+        if (filtered.length > limit) {
+          var moreDiv = document.createElement("div");
+          moreDiv.style.cssText = "grid-column: 1/-1; padding: 15px; text-align: center;";
+          moreDiv.innerHTML = "<button class='tbtn gold' style='width: 100%; max-width: 300px; padding: 12px; font-size: 14px;'>Show More Items (" + limit + " of " + filtered.length + ")</button>";
+          moreDiv.onclick = function(e) {
+            e.stopPropagation();
+            visibleLimits["reserve-inv-grid"] = limit + PAGE_SIZE;
+            rReserveGrid(cat);
+          };
+          grid.appendChild(moreDiv);
+        }
+        
+        updRBar();
 
         if (!grid.dataset.delegated) {
           grid.addEventListener("click", function(e) {
