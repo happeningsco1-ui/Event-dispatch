@@ -57,6 +57,22 @@
       font-weight: 300;
     }
 
+/* CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gl);
+    }
+
     /* ══════════════════════════════════════
    MOBILE STYLES (default)
 ══════════════════════════════════════ */
@@ -67,8 +83,10 @@
 
     .screen {
       display: none;
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .screen.active {
@@ -830,10 +848,16 @@
     .icard {
       background: #1A0F08;
       border: 1px solid var(--mob-brs);
-      border-radius: 10px;
+      border-radius: 11px;
       overflow: hidden;
       cursor: pointer;
       position: relative;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .icard:active {
+      transform: scale(0.96);
+      background: var(--mob-bm);
     }
 
     .icard.incart {
@@ -4004,7 +4028,7 @@
     </div>
 
     <!-- STEP 3: INVENTORY -->
-    <div id="nb-step3" style="display:none;">
+    <div id="nb-step3" style="display:none; flex: 1; flex-direction: column; overflow: hidden;">
       <div class="cattabs" id="nb-reserve-cattabs">
         <div class="ctab on" data-cat="All">All</div>
         <div class="ctab" data-cat="Decor Rental">Decor</div>
@@ -4014,6 +4038,9 @@
         <div class="ctab" data-cat="Detailing">Detailing</div>
         <div class="ctab" data-cat="Setup">Setup</div>
         <div class="ctab" data-cat="Lighting">Lighting</div>
+      </div>
+      <div style="padding:0 12px 10px;">
+        <input class="fi" id="nb-reserve-search" placeholder="Search items..." style="font-size:12px;padding:8px 12px;background:var(--mob-bm);border-radius:8px;color:var(--mob-cream);">
       </div>
       <div class="inv-grid" id="nb-reserve-grid"></div>
       <div style="padding:12px;">
