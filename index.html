@@ -4774,7 +4774,8 @@
     try {
       var AP = null, FP = localStorage.getItem("ev_fin_p") || "12345678";
       var INV = [], BKN = [], TASKS = [];
-      var PAGE_SIZE = 12;
+      var PAGE_SIZE = 24;
+
 
       var currentPages = {};
 
@@ -5228,7 +5229,8 @@
             + '<button class="desk-btn" id="back-ed-d">&#8592; Back</button>'
             + '<button class="desk-btn gold" id="next-ed-d">Next — Inventory &#8594;</button>'
             + '</div></div>'
-            + '<div id="nb-step3-desk" style="display:none;max-width:700px;">'
+            + '<div id="nb-step3-desk" style="display:none;max-width:1200px;">'
+
             + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:16px;margin-bottom:16px;">'
             + '<div class="cattabs" id="nb-reserve-cattabs-d" style="background:transparent;border:none;margin-bottom:12px;">'
             + '<div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor</div>'
@@ -5236,7 +5238,8 @@
             + '<div class="ctab" data-cat="Crockery and Cutlery">Crockery</div><div class="ctab" data-cat="Detailing">Detailing</div>'
             + '<div class="ctab" data-cat="Setup">Setup</div><div class="ctab" data-cat="Lighting">Lighting</div>'
             + '</div>'
-            + '<div class="inv-grid" id="nb-reserve-grid-d" style="height:450px;"></div>'
+            + '<div class="inv-grid" id="nb-reserve-grid-d" style="height:750px;"></div>'
+
 
             + '</div>'
             + '<div style="display:flex;gap:8px;">'
@@ -5251,7 +5254,8 @@
               var name = (document.getElementById("nb-name") || {}).value || "";
               var date = (document.getElementById("nb-date") || {}).value || "";
               if (!name.trim() || !date) { alert("Enter client name and date."); return; }
-              document.querySelector("[style*='max-width:700px']").style.display = "none";
+              document.querySelector("[style*='max-width:1200px']").style.display = "none";
+
               document.getElementById("nb-step2-desk").style.display = "block";
               document.getElementById("step-bar-2").style.background = "var(--gold)";
               document.getElementById("desk-page-sub").textContent = "Step 2 of 3 — Event Details";
@@ -5265,7 +5269,8 @@
             var backEd = document.getElementById("back-ed-d");
             if (backEd) backEd.onclick = function () {
               document.getElementById("nb-step2-desk").style.display = "none";
-              document.querySelector("[style*='max-width:700px']").style.display = "block";
+              document.querySelector("[style*='max-width:1200px']").style.display = "block";
+
               document.getElementById("step-bar-2").style.background = "var(--desk-brd)";
             };
             var nextEd = document.getElementById("next-ed-d");
@@ -5305,7 +5310,8 @@
         else if (id === "s-dispatch") {
           dc.innerHTML = '<div class="dinfo" id="dinfo"></div>'
             + '<div class="cattabs" id="cattabs">' + getCattabsHtml("All") + '</div>'
-            + '<div class="inv-grid" id="inv-grid" style="height:500px;"></div>'
+            + '<div class="inv-grid" id="inv-grid" style="height:750px;"></div>'
+
 
             + '<div class="cart-bar" id="cart-bar" style="display:none;border-radius:10px;margin-top:12px;"><div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Cart</span></div><div class="cb-r">Review &#8594;</div></div>';
           bindDispatchCattabs();
@@ -5376,7 +5382,8 @@
         }
         else if (id === "s-inv-reserve") {
           dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;">' + getCattabsHtml("All") + '</div>'
-            + '<div class="inv-grid" id="reserve-inv-grid" style="height:500px;"></div>'
+            + '<div class="inv-grid" id="reserve-inv-grid" style="height:750px;"></div>'
+
 
             + '<div style="margin-top:12px;"><div class="cart-bar" id="reserve-cart-bar" style="display:none;border-radius:10px;margin-bottom:8px;"><div class="cb-l"><span class="cb-cnt" id="reserve-cart-cnt">0</span><span class="cb-txt">Items Selected</span></div><div class="cb-r"></div></div><button class="btn-save" id="confirm-reserve-btn2">Confirm Reservation</button></div>';
           bindReserveCattabs();
