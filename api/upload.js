@@ -99,6 +99,16 @@ export default async function handler(req, res) {
       return val || def;
     };
 
+    const skipDb = getField("skipDb", false);
+
+    if (skipDb === "true" || skipDb === true) {
+      console.info(`Upload successful (DB skipped): ${publicUrl}`);
+      return res.status(200).json({ 
+        success: true, 
+        url: publicUrl
+      });
+    }
+
     const { data, error: dbError } = await supabase
       .from("media")
       .insert([
