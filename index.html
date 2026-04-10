@@ -3633,8 +3633,6 @@
       <div class="desk-nav-item" data-fin="1"><span class="dni-ic">&#128176;</span> Finance</div>
       <div class="desk-nav-section">Content</div>
       <div class="desk-nav-item" data-screen="s-media"><span class="dni-ic">&#128247;</span> Event Gallery</div>
-      <div class="desk-nav-section">System</div>
-      <div class="desk-nav-item" id="d-migrate-btn"><span class="dni-ic">&#9881;</span> Storage Migration</div>
 
     </div>
     <div style="padding:16px 16px 12px;border-top:1px solid rgba(201,168,76,0.08);text-align:center;">
@@ -3711,7 +3709,7 @@
         </div>
       </div>
       <div class="tb-acts">
-        <button class="tbtn" id="m-migrate-btn">&#9881;</button>
+
         <button class="tbtn" id="fin-dash-btn">&#128176;</button>
       </div>
     </div>
@@ -5056,6 +5054,50 @@
         };
         r.readAsDataURL(f);
       }
+      // ── R2 UPLOAD HELPER ─────────────────────────────────────────────────────
+      async function uploadToR2(file) {
+        return new Promise(function(resolve, reject) {
+          var doUpload = async function(fileToUpload) {
+            try {
+              var resUrl = await fetch("/api/get-upload-url", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filename: fileToUpload.name, contentType: fileToUpload.type })
+              });
+              if (!resUrl.ok) throw new Error("Failed to get upload URL");
+              var urlData = await resUrl.json();
+              var putRes = await fetch(urlData.uploadUrl, {
+                method: "PUT",
+                body: fileToUpload,
+                headers: { "Content-Type": fileToUpload.type }
+              });
+              if (!putRes.ok) throw new Error("Upload to R2 failed");
+              resolve(urlData.publicUrl);
+            } catch(e) { reject(e); }
+          };
+          if (file.type.startsWith("image/")) {
+            var objectUrl = URL.createObjectURL(file);
+            var img = new Image();
+            img.onload = function() {
+              var cvs = document.createElement("canvas");
+              var maxW = 1200, maxH = 1200, w = img.width, h = img.height;
+              if (w > h) { if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; } }
+              else { if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; } }
+              cvs.width = w; cvs.height = h;
+              cvs.getContext("2d").drawImage(img, 0, 0, w, h);
+              URL.revokeObjectURL(objectUrl);
+              cvs.toBlob(function(blob) {
+                doUpload(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+              }, "image/jpeg", 0.85);
+            };
+            img.onerror = function() { URL.revokeObjectURL(objectUrl); doUpload(file); };
+            img.src = objectUrl;
+          } else {
+            doUpload(file);
+          }
+        });
+      }
+
       function fD(d) { if (!d) return "-"; return new Date(d + "T00:00:00").toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" }); }
       function fT(t) { if (!t) return "-"; var p = t.split(":"); var h = parseInt(p[0]); return (h % 12 || 12) + ":" + p[1] + " " + (h >= 12 ? "PM" : "AM"); }
 
@@ -6190,7 +6232,7 @@
       var backNewEl = document.getElementById("back-new-bkn"); if (backNewEl) backNewEl.addEventListener("click", function () { go("s-bkns"); });
       // save buttons bound in bindNewBkn() only
 
-      async function doFinalSave(withInventory) {
+      function doFinalSave(withInventory) {
         var nameEl = document.getElementById("nb-name"), dateEl = document.getElementById("nb-date");
         var name = nameEl ? nameEl.value.trim() : "", date = dateEl ? dateEl.value : "";
         if (!name || !date) { alert("Please enter client name and date."); showNbStep(1); return; }
@@ -6199,38 +6241,24 @@
 
         var di = withInventory ? Object.keys(draftCart).map(function (id) { return { itemId: id, qty: draftCart[id] }; }) : null;
 
-        ld();
-        try {
-          // Upload any new base64 inspos to R2
-          var finalInspos = [];
-          for (var i = 0; i < curEventInspos.length; i++) {
-             var inspo = curEventInspos[i];
-             if (inspo && inspo.startsWith("data:image/")) {
-                var newUrl = await uploadBase64ToR2(inspo, "bkg_inspo_" + Date.now() + "_" + i);
-                finalInspos.push(newUrl);
-             } else {
-                finalInspos.push(inspo);
-             }
-          }
-          curEventInspos = finalInspos;
+        if (curEditBknId) {
+          var ex = BKN.find(function (x) { return x.id === curEditBknId; });
+          if (!ex) return;
+          var pd = {
+            name: name, date: date, phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+            type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+            venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+            ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+            pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+            notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+            total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+            paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+            pending_items: ext, reminder_notes: curEventNotes || "", event_inspos: curEventInspos || []
+          };
+          if (withInventory) pd.dispatch_items = di;
 
-          if (curEditBknId) {
-            var ex = BKN.find(function (x) { return x.id === curEditBknId; });
-            if (!ex) { hd(); return; }
-            var pd = {
-              name: name, date: date, phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
-              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
-              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
-              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
-              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
-              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
-              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
-              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
-              pending_items: ext, reminder_notes: curEventNotes || "", event_inspos: curEventInspos || []
-            };
-            if (withInventory) pd.dispatch_items = di;
-
-            await db("bookings?id=eq." + curEditBknId, "PATCH", pd);
+          ld();
+          db("bookings?id=eq." + curEditBknId, "PATCH", pd).then(function () {
             Object.assign(ex, {
               name: pd.name, date: pd.date, phone: pd.phone, type: pd.type, venue: pd.venue,
               ready: pd.ready, pickup: pd.pickup, notes: pd.notes, total: pd.total, paid: pd.paid,
@@ -6242,24 +6270,26 @@
             hd(); toast("Booking updated!");
             clearNewBkn(); go("s-bkn-detail");
             rDetail(curEditBknId);
-          } else {
-            bknCounter++;
-            var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
-            var b = {
-              id: "b" + Date.now(), name: name, date: date, ref: refNum,
-              phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
-              type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
-              venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
-              ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
-              pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
-              status: "Confirmed",
-              notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
-              total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
-              paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
-              dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
-              discussion_log: [], staff_assigned: [], invoice_items: [], event_inspos: curEventInspos || []
-            };
-            await db("bookings", "POST", b);
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        } else {
+          bknCounter++;
+          var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
+          var b = {
+            id: "b" + Date.now(), name: name, date: date, ref: refNum,
+            phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
+            type: (document.getElementById("nb-type") || { value: "Other" }).value || "Other",
+            venue: (document.getElementById("nb-venue") || { value: "" }).value || "",
+            ready: (document.getElementById("nb-ready") || { value: "" }).value || "",
+            pickup: (document.getElementById("nb-pickup") || { value: "" }).value || "",
+            status: "Confirmed",
+            notes: (document.getElementById("nb-notes") || { value: "" }).value || "",
+            total: parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0,
+            paid: parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0,
+            dispatch_items: di, pending_items: ext, costs: {}, reminder_notes: curEventNotes || "",
+            discussion_log: [], staff_assigned: [], invoice_items: [], event_inspos: curEventInspos || []
+          };
+          ld();
+          db("bookings", "POST", b).then(function () {
             b.dispatchItems = di; b.extItems = ext; b.costs = {}; b.reminder = curEventNotes || "";
             b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
             b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
@@ -6267,9 +6297,7 @@
             hd(); toast("Booking saved! Ref: " + refNum);
             clearNewBkn();
             go("s-bkns");
-          }
-        } catch (err) {
-          hd(); alert("Error processing booking: " + err.message);
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
         }
       }
 
@@ -6733,28 +6761,11 @@
       }
       var skipResEl = document.getElementById("skip-reserve-btn"); if (skipResEl) skipResEl.addEventListener("click", function () { go("s-bkns"); });
       var skipEdEl = document.getElementById("skip-event-details"); if (skipEdEl) skipEdEl.addEventListener("click", function () { go("s-inv-reserve"); });
-      var saveEdEl = document.getElementById("save-event-details-btn"); if (saveEdEl) saveEdEl.addEventListener("click", async function () {
+      var saveEdEl = document.getElementById("save-event-details-btn"); if (saveEdEl) saveEdEl.addEventListener("click", function () {
         curEventNotes = document.getElementById("ed-notes").value.trim();
         if (curBkg) {
-          ld();
-          try {
-            var finalInspos = [];
-            for (var i = 0; i < curEventInspos.length; i++) {
-               var inspo = curEventInspos[i];
-               if (inspo && inspo.startsWith("data:image/")) {
-                  var newUrl = await uploadBase64ToR2(inspo, "bkg_inspo_" + Date.now() + "_" + i);
-                  finalInspos.push(newUrl);
-               } else {
-                  finalInspos.push(inspo);
-               }
-            }
-            curEventInspos = finalInspos;
-            curBkg.eventNotes = curEventNotes; curBkg.eventInspos = curEventInspos;
-            await db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos });
-            hd();
-          } catch(e) {
-            hd(); alert("Error uploading photos: " + e.message); return;
-          }
+          curBkg.eventNotes = curEventNotes; curBkg.eventInspos = curEventInspos;
+          db("bookings?id=eq." + curBkg.id, "PATCH", { reminder_notes: curEventNotes, event_inspos: curEventInspos });
         }
         go("s-inv-reserve");
       });
@@ -7021,6 +7032,7 @@
       function openAddItem() {
         mItemId = null;
         curItemPhoto = null;
+        curItemPhotoFile = null;
         document.getElementById("ai-name").value = "";
         document.getElementById("ai-qty").value = "";
         document.getElementById("ai-photo-icon").innerHTML = "&#128247;";
@@ -7035,6 +7047,7 @@
         if (!item) return;
         mItemId = id;
         curItemPhoto = item.photo;
+        curItemPhotoFile = null;
         document.getElementById("ai-name").value = item.name;
         document.getElementById("ai-qty").value = item.qty;
         document.getElementById("ai-cat").value = item.cat || CATS[0];
@@ -7074,11 +7087,11 @@
       document.getElementById("ai-photo-box").addEventListener("click", function () { document.getElementById("ai-photo").click(); });
       document.getElementById("ai-photo").addEventListener("change", function () {
         var f = this.files[0]; if (!f) return;
-        rF(f, function (s) {
-          curItemPhoto = s;
-          document.getElementById("ai-photo-icon").innerHTML = "<img src='" + s + "' style='width:40px;height:40px;object-fit:cover;border-radius:6px;'>";
-          document.getElementById("ai-photo-lbl").textContent = "Photo added";
-        });
+        curItemPhotoFile = f;
+        var previewUrl = URL.createObjectURL(f);
+        document.getElementById("ai-photo-icon").innerHTML = "<img src='" + previewUrl + "' style='width:40px;height:40px;object-fit:cover;border-radius:6px;'>";
+        document.getElementById("ai-photo-lbl").textContent = "Photo ready (will upload on save)";
+        this.value = "";
       });
       document.getElementById("add-cancel").addEventListener("click", function () { cM("add-modal"); });
       document.getElementById("add-confirm").addEventListener("click", async function () {
@@ -7088,31 +7101,33 @@
         var cat = document.getElementById("ai-cat").value;
         var subcatEl = document.getElementById("ai-subcat");
         var subcat = subcatEl ? subcatEl.value : "";
-        
-        ld();
-        try {
-          var finalPhotoUrl = curItemPhoto;
-          // Upload to R2 if it's a new Base64 string
-          if (finalPhotoUrl && finalPhotoUrl.startsWith("data:image/")) {
-             finalPhotoUrl = await uploadBase64ToR2(finalPhotoUrl, "inv_new_" + Date.now());
-             curItemPhoto = finalPhotoUrl;
-          }
 
-          if (mItemId) {
-            // Update
-            var item = INV.find(function (i) { return i.id == mItemId; });
-            var updateData = { name: name, qty: qty, cat: cat, subcat: subcat || null, photo: finalPhotoUrl };
-            await db("inventory?id=eq." + mItemId, "PATCH", updateData);
+        ld();
+
+        // Upload new photo to R2 if one was selected
+        if (curItemPhotoFile) {
+          try {
+            curItemPhoto = await uploadToR2(curItemPhotoFile);
+            curItemPhotoFile = null;
+          } catch(e) {
+            hd(); alert("Photo upload to R2 failed: " + e.message); return;
+          }
+        }
+
+        if (mItemId) {
+          // Update
+          var item = INV.find(function (i) { return i.id == mItemId; });
+          var updateData = { name: name, qty: qty, cat: cat, subcat: subcat || null, photo: curItemPhoto };
+          db("inventory?id=eq." + mItemId, "PATCH", updateData).then(function () {
             Object.assign(item, updateData);
             hd(); cM("add-modal"); rINV(); toast("Item updated!");
-          } else {
-            // Add
-            var item = { id: "i" + Date.now(), name: name, qty: qty, cat: cat, subcat: subcat || null, photo: finalPhotoUrl };
-            await db("inventory", "POST", item);
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
+        } else {
+          // Add
+          var item = { id: "i" + Date.now(), name: name, qty: qty, cat: cat, subcat: subcat || null, photo: curItemPhoto };
+          db("inventory", "POST", item).then(function () {
             INV.push(item); hd(); cM("add-modal"); rINV(); toast("Item saved!");
-          }
-        } catch (err) {
-          hd(); alert("Error saving item: " + err.message);
+          }).catch(function (err) { hd(); alert("Error: " + err.message); });
         }
       });
 
@@ -7171,9 +7186,13 @@
               var f = e.target.files[0]; if (!f) return;
               var id = e.target.id.replace("upd", "");
               var item = INV.find(function(i){ return i.id == id; }); if (!item) return;
-              rF(f, function (s) { 
-                item.photo = s; ld(); db("inventory?id=eq." + id, "PATCH", { photo: s }).then(function () { hd(); rINV(); toast("Photo updated!"); }).catch(function (err) { hd(); toast("Update failed: " + err.message); }); 
-              });
+              ld();
+              uploadToR2(f).then(function(publicUrl) {
+                item.photo = publicUrl;
+                db("inventory?id=eq." + id, "PATCH", { photo: publicUrl })
+                  .then(function () { hd(); rINV(); toast("Photo updated!"); })
+                  .catch(function (err) { hd(); toast("Update failed: " + err.message); });
+              }).catch(function(err) { hd(); toast("Photo upload failed: " + err.message); });
             }
           });
           el.dataset.delegated = "true";
@@ -8132,162 +8151,7 @@
         sendPdfToWhatsApp("sheet-body", curBkg.id, "Dispatch-Sheet");
       };
 
-      // ── MIGRATION TOOL ─────────────────────────────────────────────────────────
-      var dMigrateBtn = document.getElementById("d-migrate-btn");
-      if (dMigrateBtn) dMigrateBtn.onclick = function() { oM("migration-modal"); };
-      var mMigrateBtn = document.getElementById("m-migrate-btn");
-      if (mMigrateBtn) mMigrateBtn.onclick = function() { oM("migration-modal"); };
-
     } catch (e) { console.warn("Init Error:", e.message); }</script>
-    
-  <!-- MIGRATION MODAL -->
-  <div class="overlay" id="migration-modal">
-    <div class="modal">
-      <div class="mname">Storage Optimization Migration</div>
-      <div class="msub" style="margin-bottom:12px;">This tool scans the database for large Base64 images and moves them to Cloudflare R2 storage to reduce load times and bandwidth. This process cannot be interrupted.</div>
-      <div id="migration-log" style="background:#f5f5f5; color:#333; font-family:monospace; font-size:11px; padding:10px; height:150px; overflow-y:auto; border-radius:6px; margin-bottom:12px; white-space:pre-wrap;">Ready to start...</div>
-      <div id="migration-progress-bar" style="height:6px; background:var(--desk-brd); border-radius:3px; margin-bottom:16px; overflow:hidden;">
-        <div id="migration-progress-fill" style="height:100%; width:0%; background:var(--gold); transition:width 0.3s ease;"></div>
-      </div>
-      <div class="mbtns">
-        <button class="mbtn-c" onclick="cM('migration-modal')">Close</button>
-        <button class="mbtn-a" id="start-migration-btn" onclick="startR2Migration()">Start Migration</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function logMig(msg) {
-      var logEl = document.getElementById("migration-log");
-      if (!logEl) return;
-      logEl.innerHTML += "\n" + msg;
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    function base64ToBlob(base64, mime) {
-      const bstr = atob(base64);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      while (n--) { u8arr[n] = bstr.charCodeAt(n); }
-      return new Blob([u8arr], { type: mime });
-    }
-
-    async function uploadBase64ToR2(dataUri, originalName) {
-        if (!dataUri.startsWith("data:image/")) return dataUri; // Not base64
-        const parts = dataUri.split(',');
-        const mime = parts[0].match(/:(.*?);/)[1];
-        const b64 = parts[1];
-        const blob = base64ToBlob(b64, mime);
-        const ext = mime.split('/')[1] || "jpeg";
-        const filename = `${originalName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.${ext}`;
-
-        const file = new File([blob], filename, { type: mime });
-
-        // Get upload URL
-        const resUrl = await fetch("/api/get-upload-url", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filename, contentType: mime })
-        });
-        const urlData = await resUrl.json();
-        if (!resUrl.ok) throw new Error(urlData.error || "Failed to get upload URL");
-
-        // Upload to R2
-        const resUp = await fetch(urlData.uploadUrl, {
-            method: "PUT",
-            body: file,
-            headers: { "Content-Type": file.type }
-        });
-        if (!resUp.ok) throw new Error("Failed to upload file to R2");
-
-        return urlData.publicUrl;
-    }
-
-    async function startR2Migration() {
-        const btn = document.getElementById("start-migration-btn");
-        const fill = document.getElementById("migration-progress-fill");
-        btn.disabled = true;
-        btn.textContent = "Scanning...";
-        logMig("Starting database scan...");
-
-        try {
-            // 1. Scan Inventory
-            logMig("Scanning Inventory...");
-            // We need to fetch the full inventory including the 'photo' column for migration
-            const invItems = await db("inventory?order=created_at.asc");
-            const b64InvItems = invItems.filter(i => i.photo && i.photo.startsWith("data:image/"));
-            logMig(`Found ${b64InvItems.length} inventory items to migrate.`);
-
-            // 2. Scan Bookings
-            logMig("Scanning Bookings (Inspo Photos)...");
-            const bkgItems = await db("bookings?order=date.asc");
-            const b64BkgItems = bkgItems.filter(b => b.event_inspos && b.event_inspos.some(p => p.startsWith("data:image/")));
-            logMig(`Found ${b64BkgItems.length} bookings with Base64 photos.`);
-
-            const total = b64InvItems.length + b64BkgItems.length;
-            if (total === 0) {
-                logMig("SUCCESS: No Base64 data found. Database is clean!");
-                btn.textContent = "Migrated";
-                fill.style.width = "100%";
-                return;
-            }
-
-            let done = 0;
-            btn.textContent = "Migrating... Do not close";
-
-            // Process Inventory
-            for (let item of b64InvItems) {
-                try {
-                    logMig(`Migrating: [Inventory] ${item.name}`);
-                    const newUrl = await uploadBase64ToR2(item.photo, `inv_${item.id}`);
-                    await db(`inventory?id=eq.${item.id}`, "PATCH", { photo: newUrl });
-                    
-                    // Update local state if currently viewing
-                    const localItem = INV.find(i => i.id === item.id);
-                    if (localItem) localItem.photo = newUrl;
-
-                    logMig(`✓ Success: ${item.name}`);
-                } catch (err) {
-                    logMig(`✗ Failed (${item.name}): ${err.message}`);
-                }
-                done++;
-                fill.style.width = `${(done/total)*100}%`;
-            }
-
-            // Process Bookings
-            for (let bkg of b64BkgItems) {
-                try {
-                    logMig(`Migrating: [Booking Inspo] ${bkg.name}`);
-                    const newInspos = [];
-                    for (let p of bkg.event_inspos) {
-                        if (p.startsWith("data:image/")) {
-                            newInspos.push(await uploadBase64ToR2(p, `bkg_${bkg.id}`));
-                        } else {
-                            newInspos.push(p);
-                        }
-                    }
-                    await db(`bookings?id=eq.${bkg.id}`, "PATCH", { event_inspos: newInspos });
-                    logMig(`✓ Success: ${bkg.name}`);
-                } catch (err) {
-                    logMig(`✗ Failed (${bkg.name}): ${err.message}`);
-                }
-                done++;
-                fill.style.width = `${(done/total)*100}%`;
-            }
-
-            logMig("===============================");
-            logMig("MIGRATION COMPLETE!");
-            logMig("Note: Please refresh the page. Local variables need to be reloaded.");
-            btn.textContent = "Done";
-
-        } catch (e) {
-            logMig(`CRITICAL ERROR: ${e.message}`);
-            btn.disabled = false;
-            btn.textContent = "Retry Migration";
-        }
-    }
-  </script>
 </body>
-
 
 </html>
