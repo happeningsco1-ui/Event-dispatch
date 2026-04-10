@@ -5511,8 +5511,8 @@
         // Removed ld() to prevent UI block
         // Priority 1: Critical data needed for the Dashboard/Bookings
         Promise.all([
-          // Optimized: Fetch inventory without the massive photo column
-          db("inventory?select=id,name,qty,cat,subcat&order=created_at.asc"),
+          // Now includes photo (R2 URLs are short strings, not base64)
+          db("inventory?select=id,name,qty,cat,subcat,photo&order=created_at.asc"),
           db("bookings?order=date.asc"),
           db("tasks?order=due_at.asc")
         ]).then(function (r) {
