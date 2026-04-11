@@ -4145,6 +4145,9 @@
       <div class="ctab" data-cat="Setup">Setup</div>
       <div class="ctab" data-cat="Lighting">Lighting</div>
     </div>
+    <div style="padding:0 12px 10px;">
+      <input class="fi" id="dispatch-search" placeholder="&#x1F50D; Search items..." style="font-size:12px;padding:8px 12px;background:var(--mob-bm);border-radius:8px;color:var(--mob-cream);">
+    </div>
     <div class="inv-grid" id="inv-grid"></div>
     <div class="cart-bar" id="cart-bar" style="display:none;">
       <div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Cart</span></div>
@@ -4274,6 +4277,9 @@
       <div class="ctab" data-cat="Detailing">Detailing</div>
       <div class="ctab" data-cat="Setup">Setup</div>
       <div class="ctab" data-cat="Lighting">Lighting</div>
+    </div>
+    <div style="padding:0 12px 10px;">
+      <input class="fi" id="reserve-search" placeholder="&#x1F50D; Search items..." style="font-size:12px;padding:8px 12px;background:var(--mob-bm);border-radius:8px;color:var(--mob-cream);">
     </div>
     <div class="inv-grid" id="reserve-inv-grid"></div>
     <div style="padding:12px;">
@@ -4788,6 +4794,7 @@
       var curFilter = "upcoming", curDetailId = null, curScreen = "s-dash";
       var isDesk = window.innerWidth >= 768;
       var curInvCat = "All", curInvSearch = "", curStaffAssign = [], invoiceBkgId = null;
+      var curDispatchSearch = "", curReserveSearch = "", curNbReserveSearch = "";
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
       var CATS = JSON.parse(localStorage.getItem("ev_cats")) || ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
       var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
@@ -5280,6 +5287,7 @@
             + '<div id="nb-step3-desk" style="display:none;max-width:1200px;">'
 
             + '<div style="background:var(--desk-card);border:1px solid var(--desk-brd);border-radius:12px;padding:16px;margin-bottom:16px;">'
+            + '<div style="padding:0 0 10px;"><input class="fi" id="nb-reserve-search-d" placeholder="&amp;#128269; Search inventory..." style="font-size:12px;padding:9px 12px;"></div>'
             + '<div class="cattabs" id="nb-reserve-cattabs-d" style="background:transparent;border:none;margin-bottom:12px;">'
             + '<div class="ctab on" data-cat="All">All</div><div class="ctab" data-cat="Decor Rental">Decor</div>'
             + '<div class="ctab" data-cat="Backdrops">Backdrops</div><div class="ctab" data-cat="Florals">Florals</div>'
@@ -5296,6 +5304,7 @@
             + '</div></div>';
           setTimeout(function () {
             bindNewBkn();
+            bindNbReserveSearch();
             // Desktop step navigation
             var nextBtn = document.getElementById("nb-next-btn");
             if (nextBtn) nextBtn.onclick = function () {
@@ -5357,11 +5366,11 @@
         else if (id === "s-dispatch-hub") { dc.innerHTML = '<div class="list" id="dispatch-hub-list" style="padding:0;overflow:visible;flex:none;"></div>'; rDispatchHub(); }
         else if (id === "s-dispatch") {
           dc.innerHTML = '<div class="dinfo" id="dinfo"></div>'
+            + '<div style="padding:0 0 10px;"><input class="fi" id="dispatch-search" placeholder="&amp;#128269; Search items..." style="font-size:12px;padding:9px 12px;"></div>'
             + '<div class="cattabs" id="cattabs">' + getCattabsHtml("All") + '</div>'
             + '<div class="inv-grid" id="inv-grid" style="height:750px;"></div>'
-
-
             + '<div class="cart-bar" id="cart-bar" style="display:none;border-radius:10px;margin-top:12px;"><div class="cb-l"><span class="cb-cnt" id="cart-cnt">0</span><span class="cb-txt">View Cart</span></div><div class="cb-r">Review &#8594;</div></div>';
+          bindDispatchSearch();
           bindDispatchCattabs();
           document.getElementById("cart-bar").addEventListener("click", function () { go("s-cart"); });
           if (curBkg) {
@@ -5429,11 +5438,13 @@
           };
         }
         else if (id === "s-inv-reserve") {
-          dc.innerHTML = '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;">' + getCattabsHtml("All") + '</div>'
+          dc.innerHTML = '<div style="padding:0 0 10px;"><input class="fi" id="reserve-search" placeholder="&amp;#128269; Search inventory..." style="font-size:12px;padding:9px 12px;"></div>'
+            + '<div class="cattabs" id="reserve-cattabs" style="background:transparent;border:none;margin-bottom:12px;">' + getCattabsHtml("All") + '</div>'
             + '<div class="inv-grid" id="reserve-inv-grid" style="height:750px;"></div>'
 
 
             + '<div style="margin-top:12px;"><div class="cart-bar" id="reserve-cart-bar" style="display:none;border-radius:10px;margin-bottom:8px;"><div class="cb-l"><span class="cb-cnt" id="reserve-cart-cnt">0</span><span class="cb-txt">Items Selected</span></div><div class="cb-r"></div></div><button class="btn-save" id="confirm-reserve-btn2">Confirm Reservation</button></div>';
+          bindReserveSearch();
           bindReserveCattabs();
           rReserveGrid("All");
           document.getElementById("confirm-reserve-btn2").addEventListener("click", confirmReserve);
@@ -6079,7 +6090,11 @@
       function rNbReserveGridD(cat) {
         var grid = document.getElementById("nb-reserve-grid-d"); if (!grid) return;
         var date = (document.getElementById("nb-date") || {}).value || null;
-        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        var filtered = INV.filter(function (i) {
+          var cM = (cat === "All" || i.cat === cat);
+          var sM = !curNbReserveSearch || (i.name.toLowerCase().indexOf(curNbReserveSearch) > -1) || (i.subcat && i.subcat.toLowerCase().indexOf(curNbReserveSearch) > -1);
+          return cM && sM;
+        });
         if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--desk-mut);'>No items.</div>"; return; }
         
         var pIdx = currentPages["nb-reserve-grid-d"] || 0;
@@ -6158,7 +6173,11 @@
       function rNbReserveGrid(cat) {
         var grid = document.getElementById("nb-reserve-grid"); if (!grid) return;
         var date = (document.getElementById("nb-date") || {}).value || null;
-        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        var filtered = INV.filter(function (i) {
+          var cM = (cat === "All" || i.cat === cat);
+          var sM = !curNbReserveSearch || (i.name.toLowerCase().indexOf(curNbReserveSearch) > -1) || (i.subcat && i.subcat.toLowerCase().indexOf(curNbReserveSearch) > -1);
+          return cM && sM;
+        });
         if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1;padding:20px;text-align:center;color:var(--mob-mut,#7A6347);'>No items in this category.</div>"; updNbBar(); return; }
         
         var pIdx = currentPages["nb-reserve-grid"] || 0;
@@ -6492,7 +6511,11 @@
 
       function rGrid(cat) {
         var grid = document.getElementById("inv-grid"); if (!grid) return;
-        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        var filtered = INV.filter(function (i) {
+          var cM = (cat === "All" || i.cat === cat);
+          var sM = !curDispatchSearch || (i.name.toLowerCase().indexOf(curDispatchSearch) > -1) || (i.subcat && i.subcat.toLowerCase().indexOf(curDispatchSearch) > -1);
+          return cM && sM;
+        });
         if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updBar(); return; }
         
         var pIdx = currentPages["inv-grid"] || 0;
@@ -6662,7 +6685,11 @@
 
       function rReserveGrid(cat) {
         var grid = document.getElementById("reserve-inv-grid"); if (!grid) return;
-        var filtered = (cat === "All") ? INV : INV.filter(function (i) { return i.cat === cat; });
+        var filtered = INV.filter(function (i) {
+          var cM = (cat === "All" || i.cat === cat);
+          var sM = !curReserveSearch || (i.name.toLowerCase().indexOf(curReserveSearch) > -1) || (i.subcat && i.subcat.toLowerCase().indexOf(curReserveSearch) > -1);
+          return cM && sM;
+        });
         if (!filtered.length) { grid.innerHTML = "<div style='grid-column:1/-1' class='empty'><div class='empty-ic'>&#128230;</div><div class='empty-tx'>No items here.</div></div>"; updRBar(); return; }
         
         var pIdx = currentPages["reserve-inv-grid"] || 0;
@@ -7017,6 +7044,56 @@
           }, 300);
         });
       }
+      var dispatchSearchTimeout;
+      function bindDispatchSearch() {
+        var el = document.getElementById("dispatch-search"); if (!el) return;
+        el.addEventListener("input", function () { 
+          clearTimeout(dispatchSearchTimeout);
+          var val = this.value.toLowerCase().trim();
+          dispatchSearchTimeout = setTimeout(function() {
+            curDispatchSearch = val; 
+            var cat = document.querySelector("#cattabs .ctab.on") ? document.querySelector("#cattabs .ctab.on").getAttribute("data-cat") : "All";
+            currentPages["inv-grid"] = 0; rGrid(cat); 
+          }, 300);
+        });
+      }
+      var reserveSearchTimeout;
+      function bindReserveSearch() {
+        var el = document.getElementById("reserve-search"); if (!el) return;
+        el.addEventListener("input", function () { 
+          clearTimeout(reserveSearchTimeout);
+          var val = this.value.toLowerCase().trim();
+          reserveSearchTimeout = setTimeout(function() {
+            curReserveSearch = val; 
+            var cat = document.querySelector("#reserve-cattabs .ctab.on") ? document.querySelector("#reserve-cattabs .ctab.on").getAttribute("data-cat") : "All";
+            currentPages["reserve-inv-grid"] = 0; rReserveGrid(cat); 
+          }, 300);
+        });
+      }
+      var nbReserveSearchTimeout;
+      function bindNbReserveSearch() {
+        var els = [document.getElementById("nb-reserve-search"), document.getElementById("nb-reserve-search-d")];
+        els.forEach(function(el) {
+          if (!el) return;
+          el.addEventListener("input", function () { 
+            clearTimeout(nbReserveSearchTimeout);
+            var val = this.value.toLowerCase().trim();
+            nbReserveSearchTimeout = setTimeout(function() {
+              curNbReserveSearch = val; 
+              els.forEach(function(other) { if(other && other !== el) other.value = val; });
+              var cat = "All";
+              var catEl = document.querySelector("#nb-reserve-cattabs .ctab.on") || document.querySelector("#nb-reserve-cattabs-d .ctab.on");
+              if (catEl) cat = catEl.getAttribute("data-cat");
+              if (document.getElementById("nb-reserve-grid")) {
+                currentPages["nb-reserve-grid"] = 0; rNbReserveGrid(cat);
+              }
+              if (document.getElementById("nb-reserve-grid-d")) {
+                currentPages["nb-reserve-grid-d"] = 0; rNbReserveGridD(cat);
+              }
+            }, 300);
+          });
+        });
+      }
       function bindInvCattabs() {
         var el = document.getElementById("inv-cattabs"); if (!el) return;
         el.addEventListener("click", function (e) {
@@ -7028,6 +7105,7 @@
 
       // Initial render for dynamic parts
       rInvTabs(); rInvCatSelect();
+      bindInvSearch(); bindDispatchSearch(); bindReserveSearch(); bindNbReserveSearch();
 
       function openAddItem() {
         mItemId = null;
@@ -8153,5 +8231,4 @@
 
     } catch (e) { console.warn("Init Error:", e.message); }</script>
 </body>
-
 </html>
