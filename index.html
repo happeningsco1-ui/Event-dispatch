@@ -5753,9 +5753,16 @@
             return new Date(a.due_at) - new Date(b.due_at);
           }).slice(0, 3).forEach(function(t) {
             var over = new Date(t.due_at) < new Date() && t.status === "pending";
-            h += "<div class='task-card' data-tid='" + t.id + "'><div class='task-row'><div class='task-check " + (t.status === "completed" ? "done" : "") + "'></div>";
-            h += "<div class='task-main'><div class='task-title " + (t.status === "completed" ? "dn" : "") + "'>" + t.title + "</div><div class='task-mta " + (over ? "r" : "") + "'>" + fD(t.due_at) + " &middot; " + fT(t.due_at) + "</div></div>";
-            h += "<div class='task-remove'>✕</div></div></div>";
+            var dObj = new Date(t.due_at);
+            var dateStr = dObj.toLocaleDateString("en-PK", { day: "numeric", month: "short" });
+            var timeStr = dObj.toLocaleTimeString("en-PK", { hour: "numeric", minute: "2-digit", hour12: true });
+
+            h += "<div class='task-card' data-tid='" + t.id + "' style='display:flex; align-items:center; gap:10px; padding:8px 12px;'>";
+            h += "<div class='task-check " + (t.status === "completed" ? "done" : "") + "'></div>";
+            h += "<div class='task-title " + (t.status === "completed" ? "dn" : "") + "' style='flex:1; font-size:13px; margin:0;'>" + t.title + "</div>";
+            h += "<div class='task-mta " + (over ? "r" : "") + "' style='font-size:10px; opacity:0.7; white-space:nowrap;'>" + dateStr + " &middot; " + timeStr + "</div>";
+            h += "<div class='task-remove' style='opacity:0.5; padding:4px; font-size:12px;'>✕</div>";
+            h += "</div>";
           });
           h += "</div></div>";
         }
