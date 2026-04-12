@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "Event management system with Cloudflare R2 storage",
   "main": "index.html",
+  "scripts": {
+    "start": "serve -p 3000 ."
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
+    "@aws-sdk/s3-request-presigner": "^3.1025.0",
     "@supabase/supabase-js": "^2.40.0",
-    "formidable": "^3.5.1"
+    "formidable": "^3.5.1",
+    "serve": "^14.2.4"
   }
 }
