@@ -2169,7 +2169,7 @@
     }
 
     .task-container {
-      max-height: 140px;
+      max-height: 280px;
       overflow-y: auto;
       padding-right: 4px;
       margin-bottom: 10px;
@@ -5751,7 +5751,7 @@
             if (a.status === "completed" && b.status === "pending") return 1;
             if (a.status === "pending" && b.status === "completed") return -1;
             return new Date(a.due_at) - new Date(b.due_at);
-          }).slice(0, 3).forEach(function(t) {
+          }).forEach(function(t) {
             var over = new Date(t.due_at) < new Date() && t.status === "pending";
             var dObj = new Date(t.due_at);
             var dateStr = dObj.toLocaleDateString("en-PK", { day: "numeric", month: "short" });
