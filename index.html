@@ -7765,46 +7765,46 @@
 
           '<div style="position:relative; z-index:1; padding:40px 50px;">' +
           '<!-- Header -->' +
-          '<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:40px;">' +
-          '<img src="' + logoSrc + '" style="height:90px; width:90px; object-fit:contain; border-radius:50%; border:2px solid #8B6E32; padding:5px;">' +
+          '<div style="position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:35pt;">' +
+          '<img src="' + logoSrc + '" style="position:absolute; left:0; height:70pt; width:70pt; object-fit:contain; border-radius:50%; border:2pt solid #8B6E32; padding:4pt;">' +
           '<div style="text-align:center;">' +
-          '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:42pt; margin:0; font-weight:700; line-height:1;">Happenings.co</h1>' +
-          '<div style="display:flex; align-items:center; gap:10px; justify-content:center; color:#C9A84C; margin-top:5px;">' +
-          '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
-          '<span style="font-size:14pt; letter-spacing:2px; font-weight:500;">Event organiser</span>' +
-          '<div style="height:3px; width:60px; background:#C9A84C; border-radius:3px;"></div>' +
+          '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:38pt; margin:0; font-weight:700; line-height:1;">' + BN + '</h1>' +
+          '<div style="display:flex; align-items:center; gap:8pt; justify-content:center; color:#C9A84C; margin-top:4pt;">' +
+          '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
+          '<span style="font-size:12pt; letter-spacing:2pt; font-weight:500;">Event organiser</span>' +
+          '<div style="height:2pt; width:50pt; background:#C9A84C;"></div>' +
           '</div>' +
           '</div>' +
           '</div>' +
 
           '<!-- Info Grid -->' +
-          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px; font-size:9pt; line-height:1.6;">' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5;">' +
           '<div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
           '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + b.name.toUpperCase() + '</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + b.name.toUpperCase() + '</span>' +
           '</div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
           '<span style="color:#777; font-weight:600;">CONTACT PERS.</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">-</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">-</span>' +
           '</div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
           '<span style="color:#777; font-weight:600;">LOCATION</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.venue || "CHAUPAL").toUpperCase() + '</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.venue || "-").toUpperCase() + '</span>' +
           '</div>' +
           '</div>' +
           '<div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
           '<span style="color:#777; font-weight:600;">BOOKING DATE</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + today + '</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + today + '</span>' +
           '</div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px; margin-bottom:8px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
           '<span style="color:#777; font-weight:600;">MOBILE #</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + (b.phone || "-") + '</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + (b.phone || "-") + '</span>' +
           '</div>' +
-          '<div style="display:grid; grid-template-columns:100px 1fr; gap:10px;">' +
+          '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt;">' +
           '<span style="color:#777; font-weight:600;">EVENT DATE</span>' +
-          '<span style="font-weight:700; border-bottom:1px solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
+          '<span style="font-weight:700; border-bottom:0.5pt solid #eee;">' + fD(b.date).toUpperCase() + '</span>' +
           '</div>' +
           '</div>' +
           '</div>' +
@@ -7846,7 +7846,7 @@
           '<div style="margin-bottom:50px; font-size:11pt; line-height:1.4;">' +
           '<div>Yours Truly</div>' +
           '<div style="font-weight:800; text-transform:uppercase;">Finance Manager</div>' +
-          '<div style="font-weight:800; text-transform:uppercase;">Happenings.co</div>' +
+          '<div style="font-weight:800; text-transform:uppercase;">' + BN + '</div>' +
           '</div>' +
 
           '<div style="font-size:9pt; color:#777; font-style:italic;">** System generated bill. Signature not required **</div>' +
