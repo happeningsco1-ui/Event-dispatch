@@ -5169,7 +5169,7 @@
           if (id === "s-dash") rDash();
           else if (id === "s-cal") rCal();
           else if (id === "s-bkns") rBkns();
-          else if (id === "s-inv") rINV();
+          else if (id === "s-inv") { rInvTabs(); bindInvCattabs(); rInvCatSelect(); rINV(); }
           else if (id === "s-fin") rFin();
           else if (id === "s-dispatch-hub") rDispatchHub();
           else if (id === "s-dispatch") rGrid("All");
