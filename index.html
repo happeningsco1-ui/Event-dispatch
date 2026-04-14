@@ -8089,11 +8089,12 @@
             }
           });
 
-          var fileInp = document.getElementById("media-file");
-          if (fileInp) fileInp.addEventListener("change", handleMediaUpload);
-
           el.dataset.delegated = "true";
         }
+        // Always rebind the file input – rMedia() recreates the DOM each call,
+        // so the previous <input> element (and its listener) is destroyed.
+        var fileInp = document.getElementById("media-file");
+        if (fileInp) fileInp.addEventListener("change", handleMediaUpload);
         renderMediaGridOnly();
       }
 
@@ -8162,8 +8163,10 @@
             document.getElementById("media-tags-inp").value = "";
             document.getElementById("media-preview").innerHTML = isVideo ? "<video src='" + src + "' style='width:100%;max-height:200px;border-radius:8px;' controls></video>" : "<img src='" + src + "' style='width:100%;max-height:200px;object-fit:cover;border-radius:8px;'>";
             document.getElementById("media-save-btn").onclick = async function () {
+              var saveBtn = document.getElementById("media-save-btn");
               var t2 = document.getElementById("media-title-inp").value.trim() || f.name, c = catSel.value, tg = document.getElementById("media-tags-inp").value;
-              ld();
+              // Show uploading state directly on the button (visible above modal)
+              if (saveBtn) { saveBtn.textContent = "Uploading..."; saveBtn.disabled = true; saveBtn.style.opacity = "0.7"; }
               
               var uploadFile = async function(fileToUpload) {
                 try {
@@ -8199,10 +8202,13 @@
                   MEDIA.unshift(savedData);
                   cM("media-add-modal");
                   rMedia();
-                  toast("Success!");
+                  toast("✅ Photo saved!");
                 } catch (e) {
                   console.error("Upload error:", e);
                   toast("Upload failed: " + e.message);
+                  // Restore button so user can retry
+                  var sb = document.getElementById("media-save-btn");
+                  if (sb) { sb.textContent = "Save to Gallery"; sb.disabled = false; sb.style.opacity = ""; }
                 } finally {
                   hd();
                 }
