@@ -4728,10 +4728,7 @@
     <div class="modal">
       <div class="modal-handle"></div>
       <div class="mname">Add Pending Task</div>
-      <div class="schedule-toggle">
-        <div class="st-btn on" id="task-today-btn">Today</div>
-        <div class="st-btn" id="task-future-btn">Future</div>
-      </div>
+
       <div class="fg" style="margin-bottom:12px;">
         <div class="fl">Task Name</div>
         <input class="fi" id="task-title-inp" placeholder="e.g. Call client for backdrop">
@@ -5518,24 +5515,7 @@
       }
 
       function bindTasks() {
-        var todayBtn = document.getElementById("task-today-btn");
-        var futureBtn = document.getElementById("task-future-btn");
-        var dateGroup = document.getElementById("task-date-group");
         var saveBtn = document.getElementById("task-save-btn");
-
-        if (todayBtn) todayBtn.onclick = function() {
-          todayBtn.classList.add("on");
-          futureBtn.classList.remove("on");
-          dateGroup.style.display = "none";
-          var now = new Date();
-          document.getElementById('task-date-inp').value = now.toISOString().split('T')[0];
-        };
-
-        if (futureBtn) futureBtn.onclick = function() {
-          futureBtn.classList.add("on");
-          todayBtn.classList.remove("on");
-          dateGroup.style.display = "block";
-        };
 
         if (saveBtn) saveBtn.onclick = async function() {
           var title = document.getElementById("task-title-inp").value.trim();
@@ -5813,9 +5793,6 @@
 
             if (e.target.closest("#add-task-btn")) {
               oM('task-modal');
-              document.getElementById('task-date-group').style.display = 'none';
-              document.getElementById('task-today-btn').className = 'st-btn on';
-              document.getElementById('task-future-btn').className = 'st-btn';
               var now = new Date();
               document.getElementById('task-date-inp').value = now.toISOString().split('T')[0];
               document.getElementById('task-time-inp').value = String(now.getHours() + 1).padStart(2, '0') + ":00";
