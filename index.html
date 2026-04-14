@@ -810,6 +810,13 @@
       gap: 6px;
       overflow-x: auto;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+
+    .ctab {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .cattabs::-webkit-scrollbar {
@@ -827,6 +834,10 @@
       background: #2C1A0E;
       color: #7A6347;
       white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .ctab.on {
@@ -4796,7 +4807,9 @@
       var curInvCat = "All", curInvSearch = "", curStaffAssign = [], invoiceBkgId = null;
       var curDispatchSearch = "", curReserveSearch = "", curNbReserveSearch = "";
       var invoiceLines = [], bknCounter = parseInt(localStorage.getItem("ev_bkn_counter") || "0");
-      var CATS = JSON.parse(localStorage.getItem("ev_cats")) || ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting"];
+      var CATS = JSON.parse(localStorage.getItem("ev_cats")) || ["Decor Rental", "Backdrops", "Florals", "Crockery and Cutlery", "Detailing", "Setup", "Lighting", "Others"];
+      // Ensure "Others" is always present as a permanent category
+      if (CATS.indexOf("Others") === -1) { CATS.push("Others"); localStorage.setItem("ev_cats", JSON.stringify(CATS)); }
       var CAT_SUBS = { "Decor Rental": ["Basic", "Fancy", "Premium"], "Florals": ["White", "Pink", "Mixed", "Leaves", "Other"], "Lighting": ["Basic", "Fancy", "Outdoor"], "Backdrops": ["Floral", "Fairy Lights", "Custom", "Printed"] };
       var COST_COLS = JSON.parse(localStorage.getItem("ev_cost_cols") || '["Transport", "Florist", "Labour", "Lighting", "Balloon", "Printing", "Decor", "Rental", "Panel", "Truss", "Leaves", "Misc", "Note"]');
       var STAFF_LIST = JSON.parse(localStorage.getItem("ev_staff") || "[]");
@@ -7041,9 +7054,17 @@
         var list = document.getElementById("inv-cats-list"); if (!list) return;
         var hArr = [];
         CATS.forEach(function (c, i) {
+          var isPermanent = (c === "Others");
           var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
+          row += "<div style='display:flex;align-items:center;gap:6px;'>";
           row += "<div style='font-size:14px; color:#333333;'>" + c + "</div>";
-          row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delicat='" + i + "'>&#10005;</div>";
+          if (isPermanent) row += "<div style='font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(201,168,76,0.15);color:var(--gold);'>Permanent</div>";
+          row += "</div>";
+          if (isPermanent) {
+            row += "<div style='font-size:11px;color:#7A6347;padding:4px;'>&#128274;</div>";
+          } else {
+            row += "<div style='color:var(--red); cursor:pointer; font-size:18px; padding:4px;' data-delicat='" + i + "'>&#10005;</div>";
+          }
           row += "</div>";
           hArr.push(row);
         });
@@ -7051,12 +7072,19 @@
         list.querySelectorAll("[data-delicat]").forEach(function (btn) {
           btn.onclick = function () {
             var idx = parseInt(this.getAttribute("data-delicat"));
-            if (confirm("Remove category '" + CATS[idx] + "'? Items in this category will still exist but might not show up correctly until reassigned.")) {
-              var removed = CATS.splice(idx, 1)[0];
-              if (curInvCat === removed) curInvCat = "All";
-              localStorage.setItem("ev_cats", JSON.stringify(CATS));
-              rInvCats(); rInvTabs(); rInvCatSelect(); rINV();
-            }
+            var catName = CATS[idx];
+            if (!confirm("Remove category '" + catName + "'?\nAll items in this category will be moved to 'Others'.")) return;
+            // Reassign all items in this category to "Others" both locally and in Supabase
+            var itemsToMove = INV.filter(function (i) { return i.cat === catName; });
+            itemsToMove.forEach(function (item) {
+              item.cat = "Others";
+              db("inventory?id=eq." + item.id, "PATCH", { cat: "Others" });
+            });
+            CATS.splice(idx, 1);
+            if (curInvCat === catName) curInvCat = "All";
+            localStorage.setItem("ev_cats", JSON.stringify(CATS));
+            rInvCats(); rInvTabs(); rInvCatSelect(); rINV();
+            if (itemsToMove.length) toast(itemsToMove.length + " item(s) moved to Others.");
           };
         });
       }
@@ -7135,8 +7163,16 @@
       }
       function bindInvCattabs() {
         var el = document.getElementById("inv-cattabs"); if (!el) return;
-        el.addEventListener("click", function (e) {
+        var handleCatTab = function (e) {
           var t = e.target.closest(".ctab[data-icat]"); if (!t) return;
+          e.preventDefault();
+          el.querySelectorAll(".ctab[data-icat]").forEach(function (x) { x.classList.remove("on"); });
+          t.classList.add("on"); curInvCat = t.getAttribute("data-icat"); rINV();
+        };
+        el.addEventListener("click", handleCatTab);
+        el.addEventListener("touchend", function(e) {
+          var t = e.target.closest(".ctab[data-icat]"); if (!t) return;
+          e.preventDefault();
           el.querySelectorAll(".ctab[data-icat]").forEach(function (x) { x.classList.remove("on"); });
           t.classList.add("on"); curInvCat = t.getAttribute("data-icat"); rINV();
         });
