@@ -6045,7 +6045,7 @@
         var bars = ["step-bar-1", "step-bar-2", "step-bar-3"];
         if (fbody) fbody.style.display = step === 1 ? "block" : "none";
         if (step2) step2.style.display = step === 2 ? "block" : "none";
-        if (step3) step3.style.display = step === 3 ? "block" : "none";
+        if (step3) step3.style.display = step === 3 ? "flex" : "none";
         bars.forEach(function (id, i) {
           var el = document.getElementById(id);
           if (el) el.style.background = i < step ? "var(--gold)" : "var(--mob-brs)";
