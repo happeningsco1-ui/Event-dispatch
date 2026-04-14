@@ -6080,10 +6080,15 @@
           var date = (document.getElementById("nb-date") || {}).value || "";
           if (!name.trim() || !date) { alert("Please enter client name and date."); return; }
           if (isDesk) {
-            var s1 = document.querySelector("#s-new-bkn [style*='max-width:700px']"); if (s1) s1.style.display = "none";
+            var s1 = document.getElementById("nb-step1-desk"); if (s1) s1.style.display = "none";
             var s2d = document.getElementById("nb-step2-desk"); if (s2d) s2d.style.display = "block";
             var bar2 = document.getElementById("step-bar-2"); if (bar2) bar2.style.background = "var(--gold)";
             var dSub = document.getElementById("desk-page-sub"); if (dSub) dSub.textContent = "Step 2 of 3 — Event Details";
+            // Bind inspo photo upload for step 2 (needed when coming from edit flow)
+            var edAdd = document.getElementById("ed-inspo-add-d");
+            if (edAdd) edAdd.onclick = function () { document.getElementById("ed-inspo-file-d").click(); };
+            var edFile = document.getElementById("ed-inspo-file-d");
+            if (edFile && !edFile.dataset.bound) { edFile.dataset.bound = "1"; edFile.onchange = function () { Array.from(this.files).forEach(function (f) { if (curEventInspos.length >= 10) return; rF(f, function (s) { curEventInspos.push(s); rEdInspoThumbsD(); }); }); this.value = ""; }; }
           } else {
             showNbStep(2);
           }
