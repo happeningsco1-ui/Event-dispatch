@@ -8155,6 +8155,10 @@
           rF(f, function (src) {
             var title = f.name.replace(/\.[^.]+$/, "");
             oM("media-add-modal");
+            // Always reset the save button — the modal is a persistent DOM element,
+            // so a previous upload's "Uploading..." state would carry over otherwise.
+            var saveBtnReset = document.getElementById("media-save-btn");
+            if (saveBtnReset) { saveBtnReset.textContent = "Save to Gallery"; saveBtnReset.disabled = false; saveBtnReset.style.opacity = ""; }
             var catSel = document.getElementById("media-cat-sel");
             catSel.innerHTML = "";
             MEDIA_CATS.forEach(function (c) { if (c !== "All") { var o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o); } });
