@@ -3864,7 +3864,6 @@
           <div class="tb-sub" id="nb-step-sub">Step 1 of 3 — Booking Details</div>
         </div>
       </div>
-      <button class="tbtn" id="back-new-bkn">&#8592; Back</button>
     </div>
     <div style="display:flex;gap:4px;padding:10px 14px 0;background:var(--mob-bg2,#1A0F08);">
       <div style="flex:1;height:3px;border-radius:2px;background:var(--gold);" id="step-bar-1"></div>
@@ -5927,31 +5926,24 @@
         el.innerHTML = h;
 
         if (!el.dataset.delegated) {
+          // Single click: View button and Invoice button
           el.addEventListener("click", function(e) {
             var detailBtn = e.target.closest("[data-detail]");
             if (detailBtn) { curDetailId = detailBtn.getAttribute("data-detail"); go("s-bkn-detail"); return; }
-            
+
             var invoiceBtn = e.target.closest("[data-invoice]");
             if (invoiceBtn) { openInvoice(invoiceBtn.getAttribute("data-invoice")); return; }
-            
+          });
+
+          // Double click: Delete booking
+          el.addEventListener("dblclick", function(e) {
             var delBtn = e.target.closest("[data-del]");
             if (delBtn) {
               var id = delBtn.getAttribute("data-del");
-              if (delBtn.getAttribute("data-c") === "1") {
-                ld(); db("bookings?id=eq." + id, "DELETE").then(function () { BKN = BKN.filter(function (b) { return b.id !== id; }); hd(); rBkns(); toast("Deleted."); }).catch(function () { hd(); });
-              } else {
-                delBtn.setAttribute("data-c", "1"); delBtn.textContent = "Sure?"; delBtn.style.color = "var(--red)";
-                setTimeout(function () { if (delBtn.getAttribute("data-c") === "1") { delBtn.removeAttribute("data-c"); delBtn.innerHTML = "&#128465;"; delBtn.style.color = ""; } }, 2000);
-              }
-              return;
-            }
-            
-            var card = e.target.closest(".bcard");
-            if (card) {
-              var did = card.querySelector("[data-detail]");
-              if (did) { curDetailId = did.getAttribute("data-detail"); go("s-bkn-detail"); }
+              ld(); db("bookings?id=eq." + id, "DELETE").then(function () { BKN = BKN.filter(function (b) { return b.id !== id; }); hd(); rBkns(); toast("Deleted."); }).catch(function () { hd(); });
             }
           });
+
           el.dataset.delegated = "true";
         }
       }
@@ -7821,7 +7813,7 @@
           '</div>' +
 
           '<!-- Info Grid -->' +
-          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5;">' +
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:25pt; margin-bottom:30pt; font-size:9pt; line-height:1.5; word-break:break-word; overflow-wrap:break-word;">' +
           '<div>' +
           '<div style="display:grid; grid-template-columns:85pt 1fr; gap:8pt; margin-bottom:6pt;">' +
           '<span style="color:#777; font-weight:600;">CUSTOMER</span>' +
