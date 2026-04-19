@@ -892,17 +892,35 @@
     }
 
     .iqbtn {
-      width: 40px;
+      width: 38px;
+      min-width: 38px;
       height: 100%;
       background: transparent;
       border: none;
       color: var(--gold);
-      font-size: 20px;
+      font-size: 18px;
+      font-weight: 700;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background 0.15s;
     }
 
     .iqbtn:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .iqbtn.iminus {
+      color: var(--red);
+      font-size: 22px;
+    }
+
+    .iqbtn.iplus {
+      color: var(--grn);
     }
 
     .iqinp {
@@ -5588,6 +5606,19 @@
           INV = Array.isArray(r[0]) ? r[0] : [];
           BKN = Array.isArray(r[1]) ? r[1].map(prepareBooking) : [];
           TASKS = Array.isArray(r[2]) ? r[2] : [];
+
+          // ── Sync CATS from Supabase inventory data ──────────────────────────
+          // Items uploaded on other devices (e.g. mobile) may belong to categories
+          // not present in this device's localStorage. Discover and merge them so
+          // they appear everywhere.
+          var catsChanged = false;
+          INV.forEach(function (item) {
+            if (item.cat && CATS.indexOf(item.cat) === -1) {
+              CATS.push(item.cat);
+              catsChanged = true;
+            }
+          });
+          if (catsChanged) localStorage.setItem("ev_cats", JSON.stringify(CATS));
 
           initBiz();
           var sc = localStorage.getItem("cur_screen") || "s-dash";
