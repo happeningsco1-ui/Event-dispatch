@@ -3864,6 +3864,7 @@
           <div class="tb-sub" id="nb-step-sub">Step 1 of 3 — Booking Details</div>
         </div>
       </div>
+      <button class="tbtn" id="back-new-bkn" style="display:inline-block;">← Back</button>
     </div>
     <div style="display:flex;gap:4px;padding:10px 14px 0;background:var(--mob-bg2,#1A0F08);">
       <div style="flex:1;height:3px;border-radius:2px;background:var(--gold);" id="step-bar-1"></div>
@@ -5282,12 +5283,6 @@
             });
           });
           rBkns();
-          // Rebind invoice buttons after render
-          setTimeout(function () {
-            document.querySelectorAll("[data-invoice]").forEach(function (btn) {
-              btn.onclick = function (e) { e.stopPropagation(); e.preventDefault(); openInvoice(this.getAttribute("data-invoice")); };
-            });
-          }, 100);
         }
         else if (id === "s-new-bkn") {
           // Render all steps inline for desktop
@@ -5335,17 +5330,21 @@
           setTimeout(function () {
             bindNewBkn();
             bindNbReserveSearch();
-            // Desktop step navigation
+            // Desktop step navigation — helper to toggle topbar back button visibility
+            function deskSetBackBtn(show) {
+              var dbn = document.getElementById("d-back-new");
+              if (dbn) dbn.style.display = show ? "inline-flex" : "none";
+            }
             var nextBtn = document.getElementById("nb-next-btn");
             if (nextBtn) nextBtn.onclick = function () {
               var name = (document.getElementById("nb-name") || {}).value || "";
               var date = (document.getElementById("nb-date") || {}).value || "";
               if (!name.trim() || !date) { alert("Enter client name and date."); return; }
               var s1 = document.getElementById("nb-step1-desk"); if (s1) s1.style.display = "none";
-
               document.getElementById("nb-step2-desk").style.display = "block";
               document.getElementById("step-bar-2").style.background = "var(--gold)";
               document.getElementById("desk-page-sub").textContent = "Step 2 of 3 — Event Details";
+              deskSetBackBtn(false);
               var edAdd = document.getElementById("ed-inspo-add-d");
               if (edAdd) edAdd.onclick = function () { document.getElementById("ed-inspo-file-d").click(); };
               var edFile = document.getElementById("ed-inspo-file-d");
@@ -5357,8 +5356,8 @@
             if (backEd) backEd.onclick = function () {
               document.getElementById("nb-step2-desk").style.display = "none";
               var s1 = document.getElementById("nb-step1-desk"); if (s1) s1.style.display = "block";
-
               document.getElementById("step-bar-2").style.background = "var(--desk-brd)";
+              deskSetBackBtn(true);
             };
             var nextEd = document.getElementById("next-ed-d");
             if (nextEd) nextEd.onclick = function () {
@@ -5367,6 +5366,7 @@
               document.getElementById("nb-step3-desk").style.display = "block";
               document.getElementById("step-bar-3").style.background = "var(--gold)";
               document.getElementById("desk-page-sub").textContent = "Step 3 of 3 — Inventory";
+              deskSetBackBtn(false);
               rNbReserveGridD("All");
               var cats = document.getElementById("nb-reserve-cattabs-d");
               if (cats) {
@@ -5375,8 +5375,6 @@
                   var t = e.target.closest(".ctab"); if (!t) return;
                   cats.querySelectorAll(".ctab").forEach(function (x) { x.classList.remove("on"); });
                   t.classList.add("on"); currentPages["nb-reserve-grid-d"] = 0; rNbReserveGridD(t.getAttribute("data-cat"));
-
-
                 };
               }
             };
@@ -5385,6 +5383,7 @@
               document.getElementById("nb-step3-desk").style.display = "none";
               document.getElementById("nb-step2-desk").style.display = "block";
               document.getElementById("step-bar-3").style.background = "var(--desk-brd)";
+              // No need to show topbar back — step 2 has its own inline back
             };
             var confirmBtn = document.getElementById("confirm-booking-d");
             if (confirmBtn) confirmBtn.onclick = function () { doFinalSave(true); };
@@ -6077,6 +6076,9 @@
         var subs = ["", "Step 1 of 3 — Booking Details", "Step 2 of 3 — Event Details", "Step 3 of 3 — Inventory"];
         if (titleEl) titleEl.textContent = titles[step] || "";
         if (subEl) subEl.textContent = subs[step] || "";
+        // Show topbar Back button only on step 1 (steps 2&3 have inline back buttons)
+        var mobileBackBtn = document.getElementById("back-new-bkn");
+        if (mobileBackBtn) mobileBackBtn.style.display = step === 1 ? "inline-block" : "none";
         // Refresh reserve grid on step 3
         if (step === 3) { currentPages["nb-reserve-grid"] = 0; rNbReserveGrid("All"); }
 
