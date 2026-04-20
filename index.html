@@ -2201,7 +2201,7 @@
     }
 
     .task-container {
-      max-height: 280px;
+      max-height: 180px;
       overflow-y: auto;
       padding-right: 4px;
       margin-bottom: 10px;
@@ -4070,10 +4070,10 @@
     <div id="nb-step3" style="display:none; flex: 1; flex-direction: column; overflow: hidden;">
       <div class="cattabs" id="nb-reserve-cattabs">
         <div class="ctab on" data-cat="All">All</div>
-        <div class="ctab" data-cat="Decor Rental">Decor</div>
+        <div class="ctab" data-cat="Decor Rental">Decor Rental</div>
         <div class="ctab" data-cat="Backdrops">Backdrops</div>
         <div class="ctab" data-cat="Florals">Florals</div>
-        <div class="ctab" data-cat="Crockery and Cutlery">Crockery</div>
+        <div class="ctab" data-cat="Crockery and Cutlery">Crockery and Cutlery</div>
         <div class="ctab" data-cat="Detailing">Detailing</div>
         <div class="ctab" data-cat="Setup">Setup</div>
         <div class="ctab" data-cat="Lighting">Lighting</div>
@@ -4172,7 +4172,7 @@
       <div class="ctab" data-cat="Decor Rental">Decor Rental</div>
       <div class="ctab" data-cat="Backdrops">Backdrops</div>
       <div class="ctab" data-cat="Florals">Florals</div>
-      <div class="ctab" data-cat="Crockery and Cutlery">Crockery</div>
+      <div class="ctab" data-cat="Crockery and Cutlery">Crockery and Cutlery</div>
       <div class="ctab" data-cat="Detailing">Detailing</div>
       <div class="ctab" data-cat="Setup">Setup</div>
       <div class="ctab" data-cat="Lighting">Lighting</div>
@@ -4882,7 +4882,7 @@
         attrName = attrName || "data-cat";
         var h = '<div class="ctab ' + (activeCat === "All" ? "on" : "") + '" ' + attrName + '="All">All</div>';
         CATS.forEach(function (c) {
-          h += '<div class="ctab ' + (activeCat === c ? "on" : "") + '" ' + attrName + '="' + c + '">' + c.split(" ")[0] + '</div>';
+          h += '<div class="ctab ' + (activeCat === c ? "on" : "") + '" ' + attrName + '="' + c + '">' + c + '</div>';
         });
         return h;
       }
@@ -6337,6 +6337,14 @@
         var nameEl = document.getElementById("nb-name"), dateEl = document.getElementById("nb-date");
         var name = nameEl ? nameEl.value.trim() : "", date = dateEl ? dateEl.value : "";
         if (!name || !date) { alert("Please enter client name and date."); showNbStep(1); return; }
+        // Validate advance does not exceed total payment
+        var totalVal = parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0;
+        var paidVal = parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0;
+        if (totalVal > 0 && paidVal > totalVal) {
+          alert("Advance paid (PKR " + paidVal.toLocaleString() + ") cannot exceed the total amount (PKR " + totalVal.toLocaleString() + "). Please correct the Finance fields.");
+          showNbStep(1);
+          return;
+        }
         var ext = [];
         document.querySelectorAll(".echk.on").forEach(function (e) { ext.push(e.getAttribute("data-v")); });
 
