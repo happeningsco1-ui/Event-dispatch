@@ -6153,7 +6153,7 @@
           showNbStep(3);
         };
         var skipStep2 = document.getElementById("nb-skip-step2");
-        if (skipStep2) skipStep2.onclick = function () { doFinalSave(false); };
+        if (skipStep2) skipStep2.onclick = function () { showNbStep(3); };
         // Step 3
         var backStep3 = document.getElementById("nb-back-step3");
         if (backStep3) backStep3.onclick = function () { showNbStep(2); };
@@ -7128,7 +7128,7 @@
           var isPermanent = (c === "Others");
           var row = "<div style='display:flex; justify-content:space-between; align-items:center; padding:9px 12px; border-bottom:1px solid rgba(201,168,76,0.1);'>";
           row += "<div style='display:flex;align-items:center;gap:6px;'>";
-          row += "<div style='font-size:14px; color:#333333;'>" + c + "</div>";
+          row += "<div style='font-size:14px; color:#F0E6D3; font-weight:500;'>" + c + "</div>";
           if (isPermanent) row += "<div style='font-size:9px;padding:2px 6px;border-radius:10px;background:rgba(201,168,76,0.15);color:var(--gold);'>Permanent</div>";
           row += "</div>";
           if (isPermanent) {
@@ -7440,12 +7440,12 @@
         STAFF_ROLES.forEach(function (role) {
           var members = STAFF_LIST.filter(function (s) { return (s.role || "Other") === role; });
           if (!members.length) return;
-          h += "<div style='font-size:10px;color:#8B6E32;letter-spacing:1px;text-transform:uppercase;padding:12px 0 6px;font-weight:700;'>" + role + "</div>";
+          h += "<div style='font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;padding:12px 0 6px;font-weight:700;'>" + role + "</div>";
           members.forEach(function (s) {
             var i = STAFF_LIST.indexOf(s);
-            h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);'>";
-            h += "<span style='font-size:14px;color:#333;font-weight:500;'>" + s.name + "</span>";
-            h += "<button style='background:none;border:none;color:#B85C4A;cursor:pointer;font-size:16px;' data-si='" + i + "'>&#128465;</button></div>";
+            h += "<div style='display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(201,168,76,0.1);'>";
+            h += "<span style='font-size:14px;color:#F0E6D3;font-weight:500;'>" + s.name + "</span>";
+            h += "<button style='background:none;border:none;color:var(--red,#B85C4A);cursor:pointer;font-size:16px;' data-si='" + i + "'>&#128465;</button></div>";
           });
         });
         if (!STAFF_LIST.length) h = "<div style='font-size:12px;color:var(--mob-mut,#7A6347);padding:8px 0;'>No staff added yet.</div>";
