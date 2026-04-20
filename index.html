@@ -4809,9 +4809,7 @@
     try {
       var AP = null, FP = localStorage.getItem("ev_fin_p") || "12345678";
       var INV = [], BKN = [], TASKS = [];
-      var PAGE_SIZE = 24;
-
-
+      var PAGE_SIZE = 999999;
       var currentPages = {};
 
 
@@ -6102,8 +6100,12 @@
         var nextBtn = document.getElementById("nb-next-btn");
         if (nextBtn) nextBtn.onclick = function () {
           var name = (document.getElementById("nb-name") || {}).value || "";
+          var phone = (document.getElementById("nb-phone") || {}).value || "";
           var date = (document.getElementById("nb-date") || {}).value || "";
-          if (!name.trim() || !date) { alert("Please enter client name and date."); return; }
+          var type = (document.getElementById("nb-type") || {}).value || "";
+          var loc = (document.getElementById("nb-venue") || {}).value || "";
+          var cost = (document.getElementById("nb-total") || {}).value || "";
+          if (!name.trim() || !phone.trim() || !date || !type.trim() || !loc.trim() || String(cost).trim() === "") { alert("Please enter Client name, Location, Number, Date, Total Costs, and Event type."); return; }
           if (isDesk) {
             var s1 = document.getElementById("nb-step1-desk"); if (s1) s1.style.display = "none";
             var s2d = document.getElementById("nb-step2-desk"); if (s2d) s2d.style.display = "block";
@@ -6336,7 +6338,11 @@
       function doFinalSave(withInventory) {
         var nameEl = document.getElementById("nb-name"), dateEl = document.getElementById("nb-date");
         var name = nameEl ? nameEl.value.trim() : "", date = dateEl ? dateEl.value : "";
-        if (!name || !date) { alert("Please enter client name and date."); showNbStep(1); return; }
+        var phone = (document.getElementById("nb-phone") || {}).value || "";
+        var type = (document.getElementById("nb-type") || {}).value || "";
+        var loc = (document.getElementById("nb-venue") || {}).value || "";
+        var cost = (document.getElementById("nb-total") || {}).value || "";
+        if (!name || !phone.trim() || !date || !type.trim() || !loc.trim() || String(cost).trim() === "") { alert("Please enter Client name, Location, Number, Date, Total Costs, and Event type."); showNbStep(1); return; }
         // Validate advance does not exceed total payment
         var totalVal = parseFloat((document.getElementById("nb-total") || { value: "0" }).value) || 0;
         var paidVal = parseFloat((document.getElementById("nb-paid") || { value: "0" }).value) || 0;
@@ -6382,7 +6388,7 @@
           }).catch(function (err) { hd(); alert("Error: " + err.message); });
         } else {
           bknCounter++;
-          var refNum = "HAP-2026-" + String(bknCounter).padStart(3, "0");
+          var refNum = "";
           var b = {
             id: "b" + Date.now(), name: name, date: date, ref: refNum,
             phone: (document.getElementById("nb-phone") || { value: "" }).value || "",
@@ -6403,7 +6409,7 @@
             b.discussionLog = []; b.staffAssigned = []; b.invoiceItems = [];
             b.eventInspos = curEventInspos || []; b.eventNotes = curEventNotes || "";
             BKN.push(b); BKN.sort(function (a, c) { return a.date > c.date ? 1 : -1; });
-            hd(); toast("Booking saved! Ref: " + refNum);
+            hd(); toast("Booking saved!");
             clearNewBkn();
             go("s-bkns");
           }).catch(function (err) { hd(); alert("Error: " + err.message); });
@@ -6512,7 +6518,7 @@
       // ── WHATSAPP ────────────────────────────────────────────────────────────────
       function sendWhatsApp(id) {
         var b = BKN.find(function (x) { return x.id === id; }); if (!b) return;
-        var msg = "Assalam o Alaikum Team,%0A%0A*New Booking Confirmed* %E2%9C%85%0A%0A*Client:* " + b.name + "%0A*Ref:* " + b.ref + "%0A*Date:* " + b.date + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + (b.ready || "-") + "%0A*Pickup:* " + (b.pickup || "-") + "%0A%0AJazakAllah";
+        var msg = "Assalam o Alaikum Team,%0A%0A*New Booking Confirmed* %E2%9C%85%0A%0A*Client:* " + b.name + (b.ref ? "%0A*Ref:* " + b.ref : "") + "%0A*Date:* " + b.date + "%0A*Event:* " + b.type + "%0A*Venue:* " + (b.venue || "-") + "%0A*Ready:* " + (b.ready || "-") + "%0A*Pickup:* " + (b.pickup || "-") + "%0A%0AJazakAllah";
         goWA("", msg);
       }
 
