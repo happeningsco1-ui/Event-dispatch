@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Happenings">
   <meta name="theme-color" content="#0F0905">
   <title>Happenings — Event Management</title>
+  <link id="favicon-link" rel="icon" type="image/png" href="">
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap"
     rel="stylesheet">
@@ -828,11 +829,11 @@
       padding: 5px 10px;
       border-radius: 20px;
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       border: 1px solid var(--mob-brs);
       background: #2C1A0E;
-      color: #7A6347;
+      color: #C4A882;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1182,60 +1183,74 @@
     .sh-hdr {
       background: #1A0F08;
       border: 1px solid var(--mob-brd);
-      border-radius: 11px;
-      padding: 13px;
-      margin-bottom: 13px;
+      border-radius: 13px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
 
     .sh-biz {
       font-size: 9px;
       color: var(--gold);
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      font-weight: 600;
     }
 
     .sh-name {
       font-family: "Cormorant Garamond", serif;
-      font-size: 19px;
+      font-size: 23px;
+      font-weight: 700;
       color: #F0E6D3;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      line-height: 1.2;
     }
 
     .sh-meta {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 8px;
+      background: rgba(201,168,76,0.04);
+      border: 1px solid var(--mob-brs);
+      border-radius: 9px;
+      padding: 10px;
     }
 
     .sh-f {
-      font-size: 10px;
+      font-size: 9px;
       color: #7A6347;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
     .sh-f span {
       color: #F0E6D3;
       display: block;
-      font-size: 11px;
-      margin-top: 1px;
+      font-size: 12px;
+      margin-top: 2px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
     }
 
     .sh-event-details {
-      background: rgba(201, 168, 76, 0.06);
-      border-left: 2px solid var(--gold);
-      padding: 10px 14px;
-      border-radius: 6px;
+      background: rgba(201, 168, 76, 0.07);
+      border-left: 3px solid var(--gold);
+      padding: 11px 14px;
+      border-radius: 8px;
       margin-top: 10px;
     }
 
     .sh-event-details span {
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 400;
       color: #F0E6D3;
-      line-height: 1.5;
+      line-height: 1.6;
       margin-top: 4px;
       white-space: pre-wrap;
+      display: block;
     }
 
     .sh-inspo-lbl {
@@ -1243,60 +1258,64 @@
       color: var(--gold);
       letter-spacing: 1px;
       text-transform: uppercase;
-      margin: 8px 0 5px;
+      margin: 10px 0 6px;
+      font-weight: 600;
     }
 
     .sh-inspo-wrap {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 7px;
     }
 
     .sh-inspo-wrap img {
       width: 100%;
       max-width: 280px;
-      height: 180px;
+      height: 190px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 9px;
     }
 
     .sheet-cat {
-      margin-bottom: 13px;
+      margin-bottom: 16px;
     }
 
     .sheet-cat-hdr {
       font-family: "Cormorant Garamond", serif;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
       color: #F0E6D3;
-      padding: 6px 0 5px;
+      padding: 7px 0 6px;
       border-bottom: 1px solid var(--mob-brd);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      letter-spacing: 0.3px;
     }
 
     .sheet-cat-cnt {
       font-size: 9px;
       color: var(--gold);
       background: var(--gdim);
-      padding: 2px 7px;
+      padding: 3px 9px;
       border-radius: 20px;
       font-family: Jost, sans-serif;
+      font-weight: 600;
     }
 
     .sheet-items-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-      gap: 7px;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
     }
 
     .scard {
-      background: #2C1A0E;
-      border: 1px solid var(--mob-brs);
-      border-radius: 8px;
+      background: #221309;
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 10px;
       overflow: hidden;
+      transition: transform 0.15s;
     }
 
     .scard-img {
@@ -1306,7 +1325,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 26px;
       overflow: hidden;
     }
 
@@ -1317,20 +1336,21 @@
     }
 
     .scard-body {
-      padding: 5px 7px;
+      padding: 7px 8px;
+      border-top: 1px solid rgba(201,168,76,0.1);
     }
 
     .scard-name {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 500;
       color: #F0E6D3;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
       line-height: 1.3;
     }
 
     .scard-qty {
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
       color: var(--gold);
     }
 
@@ -2820,7 +2840,8 @@
       .ctab {
         background: var(--desk-bg2);
         border-color: var(--desk-brd);
-        color: var(--desk-mut);
+        color: #2C1A0E;
+        font-weight: 600;
       }
 
       .icard {
@@ -4033,9 +4054,7 @@
         </div>
       </div>
       <button class="btn-save" id="nb-next-btn">Next — Event Details &#8594;</button>
-      <button
-        style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;"
-        id="save-bkn-later-btn">Save Only (Skip Details)</button>
+
     </div>
 
     <!-- STEP 2: EVENT DETAILS -->
@@ -4094,9 +4113,6 @@
             id="nb-back-step3">&#8592; Back</button>
           <button class="btn-save" style="flex:2;" id="nb-confirm-booking">Confirm &amp; Save Booking &#10003;</button>
         </div>
-        <button
-          style="width:100%;padding:11px;background:transparent;border:1px solid var(--mob-brd);color:#7A6347;border-radius:9px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif;margin-top:8px;"
-          id="nb-skip-step3">Save Without Inventory</button>
       </div>
     </div>
   </div>
@@ -5384,9 +5400,13 @@
               // No need to show topbar back — step 2 has its own inline back
             };
             var confirmBtn = document.getElementById("confirm-booking-d");
-            if (confirmBtn) confirmBtn.onclick = function () { doFinalSave(true); };
-            var skipLater = document.getElementById("save-bkn-later-btn");
-            if (skipLater) skipLater.onclick = function () { doFinalSave(false); };
+            if (confirmBtn) confirmBtn.onclick = function () {
+              if (!draftCart || !Object.keys(draftCart).some(function(k){ return draftCart[k] > 0; })) {
+                alert("Please select at least one inventory item before saving.");
+                return;
+              }
+              doFinalSave(true);
+            };
           }, 50);
         }
         else if (id === "s-bkn-detail") { dc.innerHTML = '<div class="bdetail-wrap" id="bdetail-body" style="padding:0;overflow:visible;flex:none;"></div>'; if (curDetailId) rDetail(curDetailId); }
@@ -6138,9 +6158,13 @@
         var backStep3 = document.getElementById("nb-back-step3");
         if (backStep3) backStep3.onclick = function () { showNbStep(2); };
         var confirmBtn = document.getElementById("nb-confirm-booking");
-        if (confirmBtn) confirmBtn.onclick = function () { doFinalSave(true); };
-        var skipStep3 = document.getElementById("nb-skip-step3");
-        if (skipStep3) skipStep3.onclick = function () { doFinalSave(false); };
+        if (confirmBtn) confirmBtn.onclick = function () {
+          if (!draftCart || !Object.keys(draftCart).some(function(k){ return draftCart[k] > 0; })) {
+            alert("Please select at least one inventory item before saving.");
+            return;
+          }
+          doFinalSave(true);
+        };
         // Inspo photos step 2
         var edAdd = document.getElementById("nb-ed-add");
         if (edAdd) edAdd.onclick = function () { document.getElementById("nb-ed-file").click(); };
@@ -7078,7 +7102,10 @@
         ps += "</div>";
         document.getElementById("print-sheet").innerHTML = ps;
       }
-      var doneSheetEl = document.getElementById("done-sheet"); if (doneSheetEl) doneSheetEl.addEventListener("click", function () { go("s-bkns"); });
+      var doneSheetEl = document.getElementById("done-sheet"); if (doneSheetEl) doneSheetEl.addEventListener("click", function () {
+        if (curBkg && curBkg.id) { curDetailId = curBkg.id; go("s-bkn-detail"); }
+        else { go("s-dispatch-hub"); }
+      });
       var editSheetEl = document.getElementById("edit-sheet"); if (editSheetEl) editSheetEl.addEventListener("click", function () { go("s-cart"); });
       var printBtnEl = document.getElementById("print-btn"); if (printBtnEl) printBtnEl.addEventListener("click", function () { window.print(); });
       // Old Text WhatsApp removed to favor PDF sending
@@ -7292,6 +7319,7 @@
       });
       document.getElementById("add-cancel").addEventListener("click", function () { cM("add-modal"); });
       document.getElementById("add-confirm").addEventListener("click", async function () {
+        var btn = this;
         var name = document.getElementById("ai-name").value.trim();
         var qty = parseInt(document.getElementById("ai-qty").value) || 0;
         if (!name) { alert("Please enter item name."); return; }
@@ -7299,17 +7327,27 @@
         var subcatEl = document.getElementById("ai-subcat");
         var subcat = subcatEl ? subcatEl.value : "";
 
-        ld();
-
         // Upload new photo to R2 if one was selected
         if (curItemPhotoFile) {
+          var origText = btn.textContent;
+          btn.textContent = "Uploading...";
+          btn.disabled = true;
+          btn.style.opacity = "0.8";
           try {
             curItemPhoto = await uploadToR2(curItemPhotoFile);
             curItemPhotoFile = null;
           } catch(e) {
-            hd(); alert("Photo upload to R2 failed: " + e.message); return;
+            btn.textContent = origText;
+            btn.disabled = false;
+            btn.style.opacity = "";
+            alert("Photo upload to R2 failed: " + e.message); return;
           }
+          btn.textContent = origText;
+          btn.disabled = false;
+          btn.style.opacity = "";
         }
+
+        ld();
 
         if (mItemId) {
           // Update
@@ -8372,6 +8410,14 @@
         sendPdfToWhatsApp("sheet-body", curBkg.id, "Dispatch-Sheet");
       };
 
+      // Set favicon from logo
+      try {
+        var logoImg = document.getElementById("desk-logo-img") || document.querySelector(".tb-logo img");
+        if (logoImg && logoImg.src) {
+          var fl = document.getElementById("favicon-link");
+          if (fl) fl.href = logoImg.src;
+        }
+      } catch(fe) {}
     } catch (e) { console.warn("Init Error:", e.message); }</script>
 </body>
 
