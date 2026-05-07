@@ -462,4 +462,4 @@ For support, feature requests, or bug reports:
 
 ---
 
-**Built with ❤️ by Happenings.co Team**
+**Built by HAMZA JABBAR**
